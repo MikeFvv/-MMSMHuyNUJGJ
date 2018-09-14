@@ -18,14 +18,12 @@ import Regex from '../../../skframework/component/Regex';
 export default class PayModelList extends Component {
 
     static navigationOptions = ({ navigation }) => ({
-
         header: (
             <CustomNavBar
                 centerText={navigation.state.params.title}
                 leftClick={() => navigation.goBack()}
             />
         ),
-
     });
 
     constructor(props) {
@@ -38,6 +36,8 @@ export default class PayModelList extends Component {
         };
 
         this.recharNumber = '';//充值金额
+        this.lockReconnect = false;//避免重复连接
+        this.reconnectCount = 0; //重连接次数,最大不超过30次
     }
 
     componentWillMount() {
@@ -52,6 +52,10 @@ export default class PayModelList extends Component {
             this._getPayDataByType();
             this._onRershRMB();
         }
+    }
+
+    componentWillUnmount() {
+        this.timer && clearInterval(this.timer);
     }
 
     //刷新金额
@@ -96,17 +100,13 @@ export default class PayModelList extends Component {
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
             .then((response) => {
-                console.log('response--->', response);
-
                 if (response.msg != 0) {
                     this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                     return;
                 }
-
                 this.setState({
                     dataSource: response.data,
                 });
-
             })
             .catch((err) => {
                 if (err && typeof (err) === 'string' && err.length > 0) {
@@ -119,7 +119,6 @@ export default class PayModelList extends Component {
 
         return (
             <View style={styles.container}>
-
                 <View style={styles.accountInfo}>
                     <View style={styles.account}>
                         <CusBaseText style={styles.namePrefix}>账号：</CusBaseText>
@@ -192,17 +191,13 @@ export default class PayModelList extends Component {
                     showsVerticalScrollIndicator={false}
                     //extraData={this.state}
                 />
-
                 <LoadingView ref="LoadingView" />
-
             </View>
         );
 
     }
 
-
     _renderItem = (info) => {
-
         return (
             <PayModelCell
                 paytype={this.paytype}
@@ -228,12 +223,10 @@ export default class PayModelList extends Component {
 
     // 检查输入金额
     _inspectInputAmount = () => {
-
         if (this.recharNumber.length <= 0) {
             this.refs.LoadingView && this.refs.LoadingView.showFaile('请输入充值金额');
             return false;
         }
-
         if (!Regex(this.recharNumber, "money")) {
             this.refs.LoadingView && this.refs.LoadingView.showFaile('请输入合法金额');
             return false;
@@ -245,9 +238,7 @@ export default class PayModelList extends Component {
         if (this._inspectInputAmount() == false) {
             return;
         }
-
         if (item.man == 1){ //直接跳
-
             this.props.navigation.navigate('RechargeInfo',
                 {
                     payObject: item,
@@ -255,18 +246,23 @@ export default class PayModelList extends Component {
                     defaultSteps:this.defaultSteps,
                     loginObject: this.loginObject,
                 });
-
         }else {
             //第三方
             this._getThridData(item);
-
         }
 
     }
 
     _getThridData = (item) => {
-
         this.refs.LoadingView && this.refs.LoadingView.showLoading('loading');
+
+        if (item.is_socket == 1) {
+            this._createWebSocket(item);
+            return;
+        }else if (item.is_socket == 2) {
+            this._request2(item);
+            return;
+        }
 
         let params = new FormData();
         params.append("ac", "submitPayThrid");
@@ -276,57 +272,10 @@ export default class PayModelList extends Component {
         params.append("price", this.recharNumber);
         params.append("thrid_id", item.id);
         params.append("type", item.type);
-
-        console.log('params--->', params);
-
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
             .then((response) => {
-
-                if (response.msg != 0) {
-                    this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
-                    return;
-                }
-
-                this.refs.LoadingView && this.refs.LoadingView.cancer();
-
-                let data = response.data;
-
-                if (data.qrcode == 1) { //跳到webview
-
-                    let urlString = '';
-
-                    if (data.method === 'post') {
-
-                        urlString = data.url;
-                        let body = data.data.replace(/>/g, '');
-
-                        this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method, body: body });
-
-                    } else { //get
-
-                        if (data.data && data.data.length != 0) {
-                            urlString = data.url + '?' + data.data.replace(/>/g, '');
-                        } else {
-                            urlString = data.url;
-                        }
-
-                        this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method });
-                    }
-
-                } else { //跳到本地页
-
-                    item.orderNumber = data.dingdan;//订单号
-                    item.qrcode = data.url;//二维码链接
-
-                    this.props.navigation.navigate('RechargeInfo',
-                        {
-                            payObject: item,
-                            recharNumber: this.recharNumber,
-                            defaultSteps:this.defaultSteps,
-                            loginObject: this.loginObject,
-                        });
-                }
+                this._handThridData(response, item);
             })
             .catch((err) => {
                 if (err && typeof (err) === 'string' && err.length > 0) {
@@ -335,13 +284,116 @@ export default class PayModelList extends Component {
             })
     }
 
+    _createWebSocket = (item) => {
+
+        let ws = new WebSocket('ws://'+item.url);
+
+        ws.onopen = () => {
+            // connection opened
+            console.log('send!!!!!!!!!!!!!!!!!!!!!!!!');
+            let sendMsg = `{"data":"${item.socket_data}","price":${this.recharNumber}}`;
+            ws.send(sendMsg); // send a message
+        };
+
+        ws.onmessage = (e) => {
+            // a message was received
+            console.log(e.data);
+            ws.close();
+            this._handThridData(JSON.parse(e.data),item);
+        };
+
+        ws.onerror = (e) => {
+            // an error occurred
+            console.log(e.message);
+            this._reconnect(item);
+        };
+
+        ws.onclose = (e) => {
+            // connection closed
+            console.log(e.code, e.reason);
+        };
+    }
+
+    //断线重连
+    _reconnect = (item) => {
+
+        if (this.reconnectCount > 30) {
+            this.refs.LoadingView && this.refs.LoadingView.cancer();
+            return;
+        }
+
+        if(this.lockReconnect) {
+            return;
+        }
+        this.lockReconnect = true;
+
+        this.reconnectCount += 1;
+
+        //没连接上会一直重连，设置延迟2s避免请求过多
+        this.timer = setTimeout(() => {
+            this._createWebSocket(item);
+            this.lockReconnect = false;
+        }, 2000);
+
+    }
+
+    // is_socket = 2
+    _request2 = (item) => {
+        let params = new FormData();
+        params.append("data", item.socket_data);
+        params.append("price", this.recharNumber);
+        fetch(item.url, {
+            method: 'POST',
+            headers: {'BXVIP-UA': 'ios'},
+            body: params, // 参数
+            timeout: 15, // 超时了
+        })
+            .then((responseData) => responseData.json())
+            .then((response) => {
+                this._handThridData(response,item);
+            })
+            .catch((err) => {});
+    }
+
+    _handThridData = (response, item) => {
+        if (response.msg != 0) {
+            this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
+            return;
+        }
+        this.refs.LoadingView && this.refs.LoadingView.cancer();
+        let data = response.data;
+        if (data.qrcode == 1) { //跳到webview
+            let urlString = '';
+            if (data.method === 'post') {
+                urlString = data.url;
+                let body = data.data.replace(/>/g, '');
+                this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method, body: body });
+            } else { //get
+                if (data.data && data.data.length != 0) {
+                    urlString = data.url + '?' + data.data.replace(/>/g, '');
+                } else {
+                    urlString = data.url;
+                }
+                this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method });
+            }
+        } else { //跳到本地页
+            item.orderNumber = data.dingdan;//订单号
+            item.qrcode = data.url;//二维码链接
+            this.props.navigation.navigate('RechargeInfo',
+                {
+                    payObject: item,
+                    recharNumber: this.recharNumber,
+                    defaultSteps:this.defaultSteps,
+                    loginObject: this.loginObject,
+                });
+        }
+    }
 }
 
 class PayModelCell extends Component {
 
     constructor(props) {
         super(props);
-
         this.dictImage = {
             "alipay.png": require('./img/ic_alipay.png'),
             "man_bank.png": require('./img/ic_man_bank.png'),
@@ -364,11 +416,9 @@ class PayModelCell extends Component {
             "pay_icon_jd.png": require('./img/ic_pay_icon_jd.png'),
             "pay_icon_jd2.png": require('./img/ic_pay_icon_jd2.png'),
         };
-
     }
 
     render() {
-
         return (
             <TouchableOpacity
                 activeOpacity={1}
@@ -378,33 +428,27 @@ class PayModelCell extends Component {
                 }}
             >
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-
                     <Image
                         style={styles.payModelImg}
                         source={this.dictImage[this.props.item.icon]}
                     />
-
                     <View style={styles.cellLef}>
                         <CusBaseText style={styles.modelName} numberOfLines={2}>{this.props.item.name ? this.props.item.name : ''}</CusBaseText>
                         <CusBaseText style={styles.modelDesc} numberOfLines={2}>{this._modelDesc(this.props.item)}</CusBaseText>
                     </View>
-
                 </View>
                 <Image
                     style={styles.payNextImg}
                     source={require('./img/ic_recharge_next.png')}
                 />
             </TouchableOpacity>
-
         );
     }
 
     _modelDesc = (item) => {
-
         if (item.qrcode) { //main
             return item.tips ? item.tips : '';
         }
-
         //auto
         if (this.props.paytype == 3) {
             return item.tips ? item.tips : this.props.defaultTips.wx;
@@ -415,18 +459,14 @@ class PayModelCell extends Component {
         }else if (this.props.paytype == 13) {
             return item.tips ? item.tips : this.props.defaultTips.bank;
         }
-
     }
 
 }
 
-
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
     },
-
     //账户信息
     accountInfo: {
         flexDirection: 'row',
@@ -436,41 +476,34 @@ const styles = StyleSheet.create({
         height: 40,
         backgroundColor: 'rgb(240,240,245)',
     },
-
     account: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginLeft: 15,
     },
-
     namePrefix: {
         fontSize: 15,
         color: 'rgb(110,110,110)',
     },
-
     name: {
         fontSize: 15,
         color: 'red',
     },
-
     balance: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 15,
     },
-
     //充值金额
     rechaAmount: {
         backgroundColor: 'white',
     },
-
     rechaAmountSelect: {
         paddingTop: 10,
         paddingBottom: 10,
     },
-
     inputAmount: {
         flexDirection: 'row',
         paddingTop: 10,
@@ -479,7 +512,6 @@ const styles = StyleSheet.create({
         width: SCREEN_WIDTH,
         height: 40,
     },
-
     inputText: {
         flex: 1,
         borderBottomWidth: 1,
@@ -490,17 +522,14 @@ const styles = StyleSheet.create({
         height: 28,
         textAlign: 'center',
     },
-
     itemStyle: {
         backgroundColor: 'white',
     },
-
     itemSeparator: {
         backgroundColor: '#cccccc',
         width: SCREEN_WIDTH,
         height: 1,
     },
-
     payModelCell: {
         backgroundColor: 'white',
         flexDirection: 'row',
@@ -509,32 +538,27 @@ const styles = StyleSheet.create({
         width: SCREEN_WIDTH,
         height: 55,
     },
-
     cellLef: {
         flex: 1,
         justifyContent: 'center',
         marginLeft: 15,
         marginRight:5,
     },
-
     modelName: {
         fontSize:Adaption.Font(16,8),
         marginBottom: 2,
         color: '#000000',
     },
-
     modelDesc: {
         marginTop:5,
         fontSize:Adaption.Font(14,8),
         color: 'rgb(163,163,163)',
     },
-
     payModelImg: {
         marginLeft: 15,
         width: 30,
         height: 30,
     },
-
     payNextImg: {
         marginRight: 15,
         width: 15,

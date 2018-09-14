@@ -198,7 +198,7 @@ export default class Verification extends Component {
         if(reslutContent&&reslutContent.lengthh !=0){
 
             for (let i = 0; i < n; ++i) {
-                reslutView.push( <Text key={i} style={[defalutStyles.randomText,this.props.randomText,{transform:reslutDeg[i],fontSize:reslutSize[i], fontWeight:reslutWeight[i],color:reslutColor[i],fontStyle:reslutFont[i]}]}>{reslutContent[i]}</Text>)
+                reslutView.push( <Text allowFontScaling={false} key={i} style={[defalutStyles.randomText,this.props.randomText,{transform:reslutDeg[i],fontSize:reslutSize[i], fontWeight:reslutWeight[i],color:reslutColor[i],fontStyle:reslutFont[i]}]}>{reslutContent[i]}</Text>)
             }
             return reslutView
         }

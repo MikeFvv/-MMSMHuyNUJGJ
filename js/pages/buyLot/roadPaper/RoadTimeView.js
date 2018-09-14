@@ -13,6 +13,7 @@ export default class RoadTimeView extends Component {
     constructor(props) {
         super(props);
 
+        this.finishTime = props.finishTime;
         this.nextData = props.nextData ? props.nextData : [];
         this.currentIdx = 0;  // 为防止用户要投注界面停留了几期后 才进入路图。所以idx不能固定取0
 
@@ -28,8 +29,8 @@ export default class RoadTimeView extends Component {
 
         let opentime = 0, stoptime = 0;
         if (this.nextData.length > 0) {  // 倒计时
-            opentime = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - props.finishTime) - Math.round(new Date() / 1000);
-            stoptime = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - props.finishTime) - Math.round(new Date() / 1000);
+            opentime = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            stoptime = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - this.finishTime) - Math.round(new Date() / 1000);
         }
 
         this.state = {
@@ -76,8 +77,8 @@ export default class RoadTimeView extends Component {
             let currOpen = 0, currStop = 0;
             if (this.currentIdx < this.nextData.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
-                currOpen = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - this.props.finishTime) - Math.round(new Date() / 1000);
-                currStop = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                currOpen = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - this.finishTime) - Math.round(new Date() / 1000);
+                currStop = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - this.finishTime) - Math.round(new Date() / 1000);
             }
 
             this.setState({
@@ -102,11 +103,11 @@ export default class RoadTimeView extends Component {
                     this.nextData = response.data[0].next;
                     this.currentIdx = 0;  // 重置。
 
-                    this.props.finishTime = Math.round(new Date() / 1000);
+                    this.finishTime = Math.round(new Date() / 1000);
 
                     // 倒计时时间直接用opentime 减 手机系统时间。
-                    let openTime = nextModel.opentime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
-                    let stopTime = nextModel.stoptime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                    let openTime = nextModel.opentime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
+                    let stopTime = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
                     let qishu = this.nextData[0].qishu;
 
                     this.setState({

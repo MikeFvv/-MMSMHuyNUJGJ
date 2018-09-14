@@ -108,6 +108,10 @@ export default {
     }
   },
 
+  getLhcShengxiaoBalls(isHeXiao) {
+    return shengxiaoIdxBalls(isHeXiao);
+  }
+  
 }
 
 function lhcBallColor() {
@@ -120,7 +124,7 @@ function lhcBallColor() {
 }
 
 // 生肖下标 的号码
-function shengxiaoIdxBalls() {
+function shengxiaoIdxBalls(isHeXiao) {
 
   var default_shengxiao = {
     ba_0: { name: '鼠', idx: 0, balls: [] },
@@ -147,7 +151,7 @@ function shengxiaoIdxBalls() {
       start_balls = 12 + start_balls;
     }
     // 输出生肖对应的号码
-    for (var i = start_balls; i < 50; i += 12) {
+    for (var i = start_balls; i < (isHeXiao ? 49 : 50); i += 12) {
       if (i === 0) {
         continue;
       }

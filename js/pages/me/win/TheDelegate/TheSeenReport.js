@@ -259,9 +259,9 @@ export default class TheSeenReport extends React.Component {
                 refreshState:RefreshState.Idle,
               });
 
-              Alert.alert('温馨提示',  response.param, [{text:'确定', onPress: () => {
-                this.props.navigation.goBack();  
-              }}])
+              // Alert.alert('温馨提示',  response.param, [{text:'确定', onPress: () => {
+              //   this.props.navigation.goBack();  
+              // }}])
             }
 
            })
@@ -372,7 +372,7 @@ export default class TheSeenReport extends React.Component {
                         //  重新缓存数据
                          let datas = JSON.stringify(nextuIdArray);
                         AsyncStorage.setItem('DailiId', datas, (error) => {}); 
-                        goBack();
+                         goBack();
 
                       }
                       

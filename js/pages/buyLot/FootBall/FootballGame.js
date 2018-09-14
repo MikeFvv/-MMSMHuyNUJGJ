@@ -463,22 +463,17 @@ export default class FootballGame extends Component {
                                         dataDict: pushDict,
                                         gameType: this.state.gameTypeIdx,
                                     });
-                                }
-                                else {
-
-                                    //没有选择号码点击下注则提示
+                                } else {
                                     this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
                                 }
                             }
                             else {
-
-                                Alert.alert(
-                                    '温馨提示',
-                                    '您还未登录,请先去登录!',
+                                Alert.alert('温馨提示', '您还未登录,请先去登录',
                                     [
+                                        { text: '取消', onPress: () => { } },
                                         { text: '确定', onPress: () => this.props.navigation.navigate('Login', { title: '登录', loginClick: true }) },
-                                        { text: '取消', onPress: () => { } }
-                                    ])
+                                    ]
+                                )
                             }
                         }}
                         PickDataDict={this.state.selctBallsDict}
@@ -505,13 +500,12 @@ export default class FootballGame extends Component {
                                     }
                                 }
                                 else {
-                                    Alert.alert(
-                                        '温馨提示',
-                                        '您还未登录,请先去登录!',
+                                    Alert.alert('温馨提示', '您还未登录,请先去登录',
                                         [
+                                            { text: '取消', onPress: () => { } },
                                             { text: '确定', onPress: () => this.props.navigation.navigate('Login', { title: '登录', loginClick: true }) },
-                                            { text: '取消', onPress: () => { } }
-                                        ])
+                                        ]
+                                    )
                                 }
                             }}
                             normalPickDataDict={this.state.selctBallsDict}
@@ -521,7 +515,6 @@ export default class FootballGame extends Component {
                             sportID={this.state.footBallID} />
                 }
 
-                {/* 通用底部 */}
 
                 {/* 更多 */}
                 <ScorceSlectAlert

@@ -121,6 +121,7 @@ export default class NewMe extends Component {
 
         //接受用户退出登录的通知
         this.subscription4 = PushNotification.addListener('LoginOutSuccess', ()=>{
+            this.refs.Toast && this.refs.Toast.show('退出登录成功!', 1000);
             this.setState({isLogin:'',messageArray:0,gerenfankui:0,qiandao:0,anquanzhongxin:0});
         });
 
@@ -270,6 +271,17 @@ export default class NewMe extends Component {
                 })
                 .catch(err => {
                 });
+        }else {
+            this.setState({
+                isLogin: '',  //Token
+                userName: '', //用户名
+                headerIcon: '',//用户头像
+                totalMoney: '',//用户总金额
+                tkPrice: '', //提款金额
+                Level:'',//代理
+         
+    
+            })
         }
 
     }
@@ -774,6 +786,7 @@ export default class NewMe extends Component {
                 numColumns={3} //指定多少列
                 scrollEnabled={false} //禁止滑动
                 showsVerticalScrollIndicator={false} //不显示右边滚动条
+                extraData={this.state}
             />
             <Modal
                 visible={this.state.isShowShiWan}

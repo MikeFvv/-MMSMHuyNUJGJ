@@ -253,7 +253,7 @@ export default class Login extends Component {
 
                         if (response.param) {
 
-                            if (response.param.startsWith('JSON')){
+                            if (response.param.includes('JSON')){
                                 this.refs.LoadingView && this.refs.LoadingView.showFaile('登录失败!');
                             }
                             else {
@@ -276,7 +276,7 @@ export default class Login extends Component {
                             errStr = '网络请求失败';
                         }
                     }
-                    else if (errStr.startsWith('JSON')){
+                    else if (errStr.includes('JSON')){
 
                         this.refs.LoadingView && this.refs.LoadingView.showFaile('服务器错误,登录失败!');
                     }

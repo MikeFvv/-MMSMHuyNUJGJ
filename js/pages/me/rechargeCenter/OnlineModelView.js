@@ -1,5 +1,4 @@
 'use strict';
-
 import React, { Component } from 'react';
 
 import {
@@ -18,14 +17,12 @@ import Regex from '../../../skframework/component/Regex';
 export default class OnlineModelView extends Component {
 
 	static navigationOptions = ({ navigation }) => ({
-
 		header: (
 			<CustomNavBar
 				centerText={navigation.state.params.title}
 				leftClick={() => navigation.goBack()}
 			/>
 		),
-
 	});
 
 	constructor(props) {
@@ -37,6 +34,8 @@ export default class OnlineModelView extends Component {
 		};
 
 		this.recharNumber = '';//充值金额
+        this.lockReconnect = false;//避免重复连接
+        this.reconnectCount = 0; //重连接次数,最大不超过30次
 
         this.dictImage = {
             "bank1": require('./img/bank-logo/bank1.png'),
@@ -83,7 +82,11 @@ export default class OnlineModelView extends Component {
 		}
 	}
 
-	//刷新金额
+    componentWillUnmount() {
+        this.timer && clearInterval(this.timer);
+    }
+
+    //刷新金额
 	_onRershRMB() {
 
 		let params = new FormData();
@@ -94,25 +97,20 @@ export default class OnlineModelView extends Component {
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
 			.then(response => {
-
 				if (response.msg == 0) {
-
 					this.setState({
 						totalMoney: response.data.price,
 					});
-
 					this.loginObject.TotalMoney = response.data.price;
 					let loginStringValue = JSON.stringify(this.loginObject);
 					UserDefalts.setItem('userInfo', loginStringValue, (error) => { });
 				}
-
 			})
 			.catch(err => { });
 	}
 
 	//获取相应支付接口的数据
 	_getPayDataByType() {
-
 		this.refs.LoadingView && this.refs.LoadingView.showLoading('loading');
 
 		let params = new FormData();
@@ -125,23 +123,18 @@ export default class OnlineModelView extends Component {
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
 			.then((response) => {
-				console.log('response--->', response);
-
 				if (response.msg != 0) {
 					this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
 					return;
 				}
-
 				let onlineList = [];
 				for (let key in response.data) {
 					onlineList.push(response.data[key]);
 				}
-
 				this.setState({
 					dataSource: onlineList,
 					item: onlineList[0],
 				});
-
 			})
 			.catch((err) => {
 				if (err && typeof (err) === 'string' && err.length > 0) {
@@ -267,14 +260,12 @@ export default class OnlineModelView extends Component {
 
 	// 检查输入金额
 	_inspectInputAmount = () => {
-
 		if (this.recharNumber.length <= 0) {
-			Alert.alert('请输入充值金额');
+            this.refs.LoadingView && this.refs.LoadingView.showFaile('请输入充值金额');
 			return false;
 		}
-
 		if (!Regex(this.recharNumber, "money")) {
-			Alert.alert('请输入合法金额');
+            this.refs.LoadingView && this.refs.LoadingView.showFaile('请输入合法金额');
 			return false;
 		}
 	}
@@ -286,11 +277,19 @@ export default class OnlineModelView extends Component {
         this._getThridData(item);
 	}
 
-
 	// auto  通过第三方支付 跳转web
 	_getThridData(item) {
 
 		this.refs.LoadingView && this.refs.LoadingView.showLoading('loading');
+
+        if (item.is_socket == 1) {
+            this._createWebSocket(item);
+            return;
+        }else if (item.is_socket == 2) {
+        	this._request2(item);
+            return;
+		}
+
 		let params = new FormData();
 		params.append("ac", "submitPayThrid");
 		params.append("uid", this.loginObject.Uid);
@@ -300,45 +299,10 @@ export default class OnlineModelView extends Component {
         params.append("type", "1");
 		params.append("subtype", item.id);  // 二级类型，针对type=1 在线支付
 
-		console.log('params--->', params);
-
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
 			.then((response) => {
-
-				if (response.msg != 0) {
-					this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
-					return;
-				}
-
-				this.refs.LoadingView && this.refs.LoadingView.cancer();
-
-				let data = response.data;
-
-				if (data.qrcode == 1) { //webview
-
-					let urlString = '';
-
-					if (data.method === 'post') {
-
-						urlString = data.url;
-						let body = data.data.replace(/>/g, '');
-
-						this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method, body: body });
-
-					} else { //get
-
-						if (data.data && data.data.length != 0) {
-							urlString = data.url + '?' + data.data.replace(/>/g, '');
-						} else {
-							urlString = data.url;
-						}
-
-						this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method});
-					}
-
-				}
-
+                this._handThridData(response,item);
 			})
 			.catch((err) => {
 				if (err && typeof (err) === 'string' && err.length > 0) {
@@ -347,7 +311,108 @@ export default class OnlineModelView extends Component {
 			})
 	}
 
+    _createWebSocket = (item) => {
 
+        let ws = new WebSocket('ws://'+item.url);
+
+        ws.onopen = () => {
+            // connection opened
+            console.log('send!!!!!!!!!!!!!!!!!!!!!!!!');
+            let sendMsg = `{"data":"${item.socket_data}","price":${this.recharNumber}}`;
+            ws.send(sendMsg); // send a message
+        };
+
+        ws.onmessage = (e) => {
+            // a message was received
+            console.log(e.data);
+            ws.close();
+            this._handThridData(JSON.parse(e.data),item);
+        };
+
+        ws.onerror = (e) => {
+            // an error occurred
+            console.log(e.message);
+            this._reconnect(item);
+        };
+
+        ws.onclose = (e) => {
+            // connection closed
+            console.log(e.code, e.reason);
+        };
+    }
+
+    //断线重连
+    _reconnect = (item) => {
+        if (this.reconnectCount > 30) {
+            this.refs.LoadingView && this.refs.LoadingView.cancer();
+            return;
+        }
+        if(this.lockReconnect) {
+            return;
+        }
+        this.lockReconnect = true;
+        this.reconnectCount += 1;
+        //没连接上会一直重连，设置延迟2s避免请求过多
+        this.timer = setTimeout(() => {
+            this._createWebSocket(item);
+            this.lockReconnect = false;
+        }, 2000);
+
+    }
+
+    // is_socket = 2
+    _request2 = (item) => {
+        let params = new FormData();
+        params.append("data", item.socket_data);
+        params.append("price", this.recharNumber);
+        fetch(item.url, {
+            method: 'POST',
+            headers: {'BXVIP-UA': 'ios'},
+            body: params, // 参数
+            timeout: 15, // 超时了
+        })
+            .then((responseData) => responseData.json())
+            .then((response) => {
+                this._handThridData(response,item);
+            })
+            .catch((err) => {});
+    }
+
+    _handThridData = (response,item) => {
+
+        if (response.msg != 0) {
+            this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
+            return;
+        }
+        this.refs.LoadingView && this.refs.LoadingView.cancer();
+        let data = response.data;
+        if (data.qrcode == 1) { //跳到webview
+            let urlString = '';
+            if (data.method === 'post') {
+                urlString = data.url;
+                let body = data.data.replace(/>/g, '');
+                this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method, body: body });
+            } else { //get
+                if (data.data && data.data.length != 0) {
+                    urlString = data.url + '?' + data.data.replace(/>/g, '');
+                } else {
+                    urlString = data.url;
+                }
+                this.props.navigation.navigate('ThridWebPay', { webUrl: urlString, method: data.method });
+            }
+
+        } else { //跳到本地页
+            item.orderNumber = data.dingdan;//订单号
+            item.qrcode = data.url;//二维码链接
+            this.props.navigation.navigate('RechargeInfo',
+                {
+                    payObject: item,
+                    recharNumber: this.recharNumber,
+                    defaultSteps:this.defaultSteps,
+                    loginObject: this.loginObject,
+                });
+        }
+    }
 
 }
 
@@ -356,7 +421,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-
 	//账户信息
 	accountInfo: {
 		flexDirection: 'row',
@@ -366,41 +430,34 @@ const styles = StyleSheet.create({
 		height: 40,
 		backgroundColor: 'rgb(240,240,245)',
 	},
-
 	account: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginLeft: 15,
 	},
-
 	namePrefix: {
 		fontSize: 15,
 		color: 'rgb(110,110,110)',
 	},
-
 	name: {
 		fontSize: 15,
 		color: 'red',
 	},
-
 	balance: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginRight: 15,
 	},
-
 	//充值金额
 	rechaAmount: {
 		backgroundColor: 'white',
 	},
-
 	rechaAmountSelect: {
 		paddingTop: 10,
 		paddingBottom: 10,
 	},
-
 	inputAmount: {
 		flexDirection: 'row',
 		paddingTop: 10,
@@ -409,7 +466,6 @@ const styles = StyleSheet.create({
 		width: SCREEN_WIDTH,
 		height: 40,
 	},
-
 	inputText: {
 		flex: 1,
 		borderBottomWidth: 1,
@@ -420,13 +476,11 @@ const styles = StyleSheet.create({
 		height: 28,
 		textAlign: 'center',
 	},
-
 	itemSeparator: {
 		backgroundColor: '#cccccc',
 		width: SCREEN_WIDTH,
 		height: 1,
 	},
-
     itemStyle: {
         flexDirection:'row',
         justifyContent:'space-between',
@@ -435,12 +489,10 @@ const styles = StyleSheet.create({
         height: 60,
         backgroundColor:'white',
     },
-
 	itemText: {
 		marginLeft:20,
 		fontSize: 15,
 	},
-
     nextImg: {
         marginRight: 15,
         width: 15,
@@ -448,4 +500,3 @@ const styles = StyleSheet.create({
     },
 
 });
-

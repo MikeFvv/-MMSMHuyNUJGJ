@@ -43,11 +43,15 @@ class NewOpenInfoView extends Component {
     //构造器
     constructor(props) {
         super(props);
+
+        this.finishTime = props.finishTime;
+
         let qishu = 0, jieZhiTime = 0, fengPan = 0;
         if (props.nextTimeList.length > 0) {  // 倒计时
-            jieZhiTime = props.nextTimeList[0].opentime - (props.nextTimeList[0].server_time - props.finishTime) - Math.round(new Date() / 1000);
-            fengPan = props.nextTimeList[0].stoptime - (props.nextTimeList[0].server_time - props.finishTime) - Math.round(new Date() / 1000);
+            jieZhiTime = props.nextTimeList[0].opentime - (props.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            fengPan = props.nextTimeList[0].stoptime - (props.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
             qishu = props.nextTimeList[0].qishu; //下一个期数
+            console.log('props.nextTimeList', props.nextTimeList);
         }
 
         let prevQiShu = 0, openBallsArr = [];
@@ -84,9 +88,10 @@ class NewOpenInfoView extends Component {
         
         // 本地到计时数组
         if (nextProps.nextTimeList.length > 0 && this.state.nextCountDownList.length <= 0) {
-            let jieZhiTime = nextProps.nextTimeList[0].opentime - (nextProps.nextTimeList[0].server_time - nextProps.finishTime) - Math.round(new Date() / 1000);
-            let fengPanTime = nextProps.nextTimeList[0].stoptime - (nextProps.nextTimeList[0].server_time - nextProps.finishTime) - Math.round(new Date() / 1000);
-
+            this.finishTime = nextProps.finishTime;
+            let jieZhiTime = nextProps.nextTimeList[0].opentime - (nextProps.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            let fengPanTime = nextProps.nextTimeList[0].stoptime - (nextProps.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            console.log('nextProps.nextTimeList', nextProps.nextTimeList);
             this.setState({
                 nextQiShu: nextProps.nextTimeList[0].qishu,          //下一个期数
                 nextJieZhi: jieZhiTime,        //这一期开奖截止时间
@@ -135,8 +140,6 @@ class NewOpenInfoView extends Component {
 
             }, expire * 1000);
         }
-
-        this.props.getQiShu ? this.props.getQiShu(this.state.nextQiShu) : null;  //把头部视图的期数传到上一个界面
 
         if (this.timer1) {
             this.timer1 = null;  //先注销掉, 保证不会生成多个定时器，造成警告
@@ -333,7 +336,7 @@ class NewOpenInfoView extends Component {
 
         } else if (this.state.js_tag == 'ssc') {
             flexArr = [0.14, 0.19, 0.11, 0.11, 0.11, 0.11, 0.11, 0.12];
-            titleArr = ['期号', '开奖号码', '万位', '千位', '百位', '十位', '个位', '前三'];
+            titleArr = ['期号', '开奖号码', '万位', '千位', '百位', '十位', '个位', '后三'];
 
         } else if (this.state.js_tag == '11x5') {
             flexArr = [0.25, 0.3, 0.13, 0.17, 0.15];
@@ -489,7 +492,7 @@ class NewOpenInfoView extends Component {
                     let ballStatus = `${ball <= 4 ? '小' : '大'}${ball % 2 == 0 ? '双' : '单'}`;
                     cellTitArr.push(ballStatus);
                 }
-                cellTitArr.push(this._sscQianSanStatus([parseInt(ballsArr[0]), parseInt(ballsArr[1]), parseInt(ballsArr[2])]));
+                cellTitArr.push(this._sscQianSanStatus([parseInt(ballsArr[2]), parseInt(ballsArr[3]), parseInt(ballsArr[4])]));
             } else {
                 cellTitArr = [...cellTitArr, ...['-', '-', '-', '-', '-', '-']]
             }
@@ -793,7 +796,7 @@ class NewOpenInfoView extends Component {
 
         this.timer = setInterval(() => {
 
-            if (this.state.nextJieZhi < 1 && this.state.nextQiShu != 0 && this.state.prevQiShu != 0) {
+            if (this.state.nextJieZhi == 0 && this.state.nextQiShu != 0 && this.state.prevQiShu != 0) {
 
                 this.currentCountDownIndex += 1;
 
@@ -814,7 +817,7 @@ class NewOpenInfoView extends Component {
                 this._fetchCountDownData(this.state.tag);
             }
 
-            if (this.state.nextFengPan < 1 && this.state.nextQiShu != 0) {
+            if (this.state.nextFengPan == 0 && this.state.nextQiShu != 0) {  //走一次就好了。之前判断会一直走。存在未知的问题
 
                 let lockTime = this.state.nextJieZhi;
 
@@ -837,21 +840,22 @@ class NewOpenInfoView extends Component {
 
             if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
-                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
-                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
+                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
+                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
             }
 
-            this.state.nextJieZhi = currOpen > 0 ? currOpen : 0;
+            this.state.nextJieZhi = currOpen;
             this.state.nextFengPan = currStop;
 
-            global.time = currOpen;
-
-        }, 1000);
+        }, 332);
     }
 
     _changeTime(totalTime) {
 
-        if (isNaN(totalTime)) {
+        if (isNaN(totalTime) || totalTime <= 0) {
+            if (totalTime < 0) {
+                console.log('nextJieZhi 小于0 == ', totalTime);
+            }
             return `00: 00: 00`;
 
         } else {
@@ -878,7 +882,7 @@ class NewOpenInfoView extends Component {
                 seconds = '0' + seconds;
             }
 
-            return `${hour}: ${min}: ${seconds}`;  //格式化输出
+            return `${hour}:${min}:${seconds}`;  //格式化输出
         }
     }
 
@@ -945,20 +949,19 @@ class NewOpenInfoView extends Component {
                         let nextList = responseData.data[0].next;
                         let nextModel = nextList[0];
 
-                        this.props.finishTime = Math.round(new Date() / 1000);
+                        this.finishTime = Math.round(new Date() / 1000);
 
                         // 倒计时时间直接用opentime 减 手机系统时间。
-                        let currOpen = nextModel.opentime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
-                        let currStop = nextModel.stoptime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                        let currOpen = nextModel.opentime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
+                        let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
                         this.currentCountDownIndex = 0;//当前下标
+                        this.props.againRequestTime ? this.props.againRequestTime(this.finishTime, nextList) : null;
+                        console.log('请求的nextList。。。', nextList);
 
-                        //先拿LockTime倒计时封盘
-                        this.setState({
-                            nextCountDownList: nextList,
-                            nextQiShu: nextModel.qishu,
-                            nextJieZhi: currOpen,
-                            nextFengPan: currStop,
-                        });
+                        this.state.nextCountDownList = nextList;
+                        this.state.nextQiShu = nextModel.qishu;
+                        this.state.nextJieZhi = currOpen;
+                        this.state.nextFengPan = currStop;
                     }
                 } else {
                     this.refs.Toast && this.refs.Toast.show(responseData.param, 1000);
@@ -1036,43 +1039,39 @@ class NewOpenInfoView extends Component {
                 {/*下面倒计时*/}
                 <View style = {{height: 40, flexDirection:'row'}}>
 
-                    <View style = {{flex:0.54, flexDirection:'row', flexDirection:'row', alignItems:'center'}}>
+                    <View style = {{flex:0.55, flexDirection:'row', flexDirection:'row', alignItems:'center'}}>
                         <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:10}}>
-                            {`第${this.state.nextQiShu ? `${this.state.nextQiShu}`.substr(`${this.state.nextQiShu}`.length - 4, 4) : '- -'}期${this.state.nextFengPan < 1 ? '已封盘' : '开奖时间'}:`}
+                            {`第${this.state.nextQiShu ? `${this.state.nextQiShu}`.substr(`${this.state.nextQiShu}`.length - 4, 4) : '- -'}期${this.state.nextFengPan < 1 ? '已封盘' : '截止时间'}: `}
                         </CusBaseText>
-                        <ImageBackground resizeMode={'contain'} style = {{width:Adaption.Width(85), height:40, backgroundColor:'rgba(0,0,0,0)', justifyContent:'center', alignItems:'center'}} source = {require('../img/ic_buyLot_endTZ.png')}>
-                            <CusBaseText style = {{fontSize:Adaption.Font(15), color:'white'}}>
-                                {this._changeTime(this.state.nextJieZhi)}
-                            </CusBaseText>
-                        </ImageBackground>
+                        <CusBaseText style = {{fontSize:Adaption.Font(16), color:'#eb3349'}}>
+                            {this._changeTime(this.state.nextJieZhi)}
+                        </CusBaseText>
                     </View>
-                    {this.state.isShowUserMoney == true ? <View style = {{ flex:0.35, flexDirection:'row', alignItems:'center'}}>
-                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:18, textAlign:'right'}}>
-                            余额: <CusBaseText style = {{fontSize:Adaption.Font(15), color:'#eb3349', marginLeft:5}}>
-                            {global.UserLoginObject.TotalMoney != '' ? global.UserLoginObject.TotalMoney : '0.00'}
-                        </CusBaseText>
-                        </CusBaseText>
-                    </View> : <View style = {{ flex:0.35, flexDirection:'row', alignItems:'center'}}>
-                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:global.UserLoginObject.Uid != '' ? SCREEN_WIDTH * 0.24 : SCREEN_WIDTH * 0.21, textAlign:'right'}}>
-                            {global.UserLoginObject.Uid != '' ?  `余额:` : `余额:请`}
-                        </CusBaseText>
-                    </View>}
-                    <TouchableOpacity activeOpacity={0.8} style = {{flex:0.11, marginRight:5, justifyContent:'center'}} onPress = {() => {
+                    <View style = {{flex:0.45,  alignItems:'flex-end', justifyContent:'center'}}>
+                    <TouchableOpacity activeOpacity={0.8} style = {{marginRight:5, justifyContent:'center'}} onPress = {() => {
 
-                        if (global.UserLoginObject.Uid != '' ){
+                            if (global.UserLoginObject.Uid != '' ){
 
-                            this.setState({isShowUserMoney:!this.state.isShowUserMoney})
-                        }
-                        else {
+                                this.setState({isShowUserMoney:!this.state.isShowUserMoney})
+                            }
+                            else {
 
-                            this.props.NoLoginClick ?  this.props.NoLoginClick() : null;
-                        }
+                                this.props.NoLoginClick ?  this.props.NoLoginClick() : null;
+                            }
 
-                    }}>
-                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:'#00a3e9'}}>
-                            {global.UserLoginObject.Uid != '' ? this.state.isShowUserMoney == true ? `[隐藏]` : `[显示]` : `[登录]`}
-                        </CusBaseText>
-                    </TouchableOpacity>
+                        }}>
+                        {global.UserLoginObject.Uid ? <CusBaseText style = {{fontSize:Adaption.Font(15)}}>
+                            余额:<CusBaseText style = {{fontSize:Adaption.Font(15), color:this.state.isShowUserMoney == true ? '#eb3349' : '#00a3e9'}}>
+                                {this.state.isShowUserMoney == true ? global.UserLoginObject.TotalMoney : `[显示]`}
+                            </CusBaseText>{this.state.isShowUserMoney == true ? '元' : ''}
+                            </CusBaseText> :
+                            <CusBaseText style = {{fontSize:Adaption.Font(15)}}>
+                                余额:请<CusBaseText style = {{fontSize:Adaption.Font(15), color:'#00a3e9'}}>
+                                [登录]
+                            </CusBaseText>
+                            </CusBaseText>}
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={{height: 1, width: SCREEN_WIDTH, backgroundColor:'#ddd'}} />
             </View>

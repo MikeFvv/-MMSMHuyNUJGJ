@@ -9,9 +9,9 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import {
-  StyleSheet,
   View,
   Text,
+  TextInput,
   ScrollView,
   FlatList,
   TouchableOpacity,
@@ -26,7 +26,7 @@ import NewGameDateSelctView from './NewGameDateSelctView'; //新版玩法选择�
 import NewBalls0_9Peilv from './NewBalls/NBalls0_9Peilv'
 import NSquareBallsView from './NewBalls/NSquareBallsView'
 import SingleInputView from './NewBalls/SingleInputView'
-import SSCRxBottomView from '../../BuyCenter/Balls/SSCRxBottomView'
+import NLhcOptionView from './NewBalls/NLhcOptionView'
 import GetBallStatus from '../newBuyTool/GetBallStatus';
 
 let leftW = SCREEN_WIDTH * 0.26;
@@ -199,18 +199,19 @@ class NewBuyCenter extends Component {
       return this._pk10CreateViews(Values);
 
     } else if (this.props.js_tag == 'lhc') {
-      return this._lhcCreateViews(Values);
+      return this.props.wanfaindex == 0 ? this._lhcCreateViews(Values) : this._lhcOptionViews(Values);
     }
   }
 
   // 选号回调处理方法。
   _ballsHandle(selectBalls, value) {
 
-    let peilvStr = this._getPeilvWithPlayid(value.playid);
     let ballDict = this.state.ballsData;
 
     // lhc特殊的加个赔率
     if (this.props.js_tag == 'lhc') {
+      let peilvStr = this._getPeilvWithPlayid(value.playid);
+
       if (value.tpl == '7' || value.tpl == '12') {
         // 特肖-合肖 || 自选不中
         let baseIdx = value.tpl == '7' ? 2 : 6;  // 合肖2个号，自选不中要6个号
@@ -226,6 +227,13 @@ class NewBuyCenter extends Component {
         // 连码 || 连选-连肖、连尾
         selectBalls['赔率'] = peilvStr;
       }
+
+      // 自选 统一输入金额的。
+      if (this.props.wanfaindex == 0 && ballDict['LhcPrice'] == null && selectBalls['LhcPrice'] == null && this.refs.PriceInput) {
+        let price = this.refs.PriceInput._lastNativeText ? this.refs.PriceInput._lastNativeText : '0';
+        selectBalls['LhcPrice'] = price;
+      }
+
     }
 
 
@@ -244,6 +252,10 @@ class NewBuyCenter extends Component {
 
       if (ballDict[`赔率`] != null) { // 可能还有一个赔率的，也要删除。
         delete ballDict[`赔率`];
+      }
+
+      if (ballDict[`LhcPrice`] != null) { // 六合彩自选的价格
+        delete ballDict[`LhcPrice`];
       }
 
       if (ballDict.rx_title != null) {
@@ -623,6 +635,48 @@ class NewBuyCenter extends Component {
     return blockViews;
   }
 
+    // 六合彩自选的视图
+    _ballsLhcOptionView(values, balls, viewHeight, numColumn) {
+      if (balls.length <= 0) { return [] }
+  
+      let contentArr = [values.playname];
+      let peilvArr = this._getPeilvWithPlayid(values.playid).split('|');
+  
+      // 拼好balls需要的数据,
+      for (let i = 0; i < balls.length; i++) {
+        balls[i] = { ball: balls[i] };
+        if (peilvArr.length > 1) {
+          balls[i].peilv = peilvArr[i];
+        } 
+      }
+      this.state.TitlesArr = contentArr;
+      this.state.BallAsrr = balls;
+  
+      return (
+        <NLhcOptionView style={{ width: rightW, height: Adaption.Width(viewHeight) }}
+          balls={balls}
+          title={values.playname}
+          numColumn={numColumn} 
+          isBallsChange={this.state.isBallsChange ? true : false} // 是否随机
+          clearAllBalls={this.state.clearAllBalls ? true : false} // 是否清空号码
+          tpl={values.tpl}
+          playid={values.playid}
+          ballClick={(selectBalls) => {
+            let val = { leftTitles: contentArr, playid: values.playid, tpl: values.tpl };
+            let dict = this._ballsHandle(selectBalls, val);
+            this.props.ballsClick ? this.props.ballsClick(dict, this.state.currentPlayDate, this.state.TitlesArr, this.state.BallAsrr) : null;
+            // 选了号码回来了，要重新设为false。
+            this.setState({
+              isBallsChange: false,
+              clearAllBalls: false,
+            })
+          }}
+        >
+        </NLhcOptionView>
+      )
+    }
+
+  
   // 创建单式的视图 
   _createSingleInputView(values) {
 
@@ -1136,6 +1190,98 @@ class NewBuyCenter extends Component {
     }
   }
 
+  
+  // 六合彩自选下注的视图
+  _lhcOptionViews(values) {
+    var balls = [];
+    let viewHeight = 0, numColumn = 3;
+
+    if (values.tpl == 0) {
+      // 特码A B 
+      numColumn = 4;
+      for (var i = 1; i <= 49; i++) {
+        balls.push(i < 10 ? `0${i}` : `${i}`);
+      }
+
+    } else if (values.tpl == 1) {
+      // 特码两面
+      balls = ['特大', '特双', '特小单', '特地肖', '特小', '特大单', '特小双', '特前肖', '特大尾', '特大双', '特合单', '特后肖', '特小尾', '特合大', '特合双', '特家肖', '特单', '特合小', '特天肖', '特野肖'];
+      viewHeight = Math.ceil(balls.length / numColumn) * 90;
+
+    } else if (values.tpl == 2) {
+      // 特码色波
+      numColumn = 2;
+      balls = ['红波', '蓝波', '绿波'];
+
+    } else if (values.tpl == 3) {
+      // 特半波
+      balls = ['红大', '红小', '红单', '红双', '蓝大', '蓝小', '蓝单', '蓝双', '绿大', '绿小', '绿单', '绿双'];
+
+    } else if (values.tpl == 4) {
+      // 特半半波
+      balls = ['红大单', '红小单', '红大双', '红小双', '蓝大单', '蓝小单', '蓝大双', '蓝小双', '绿大单', '绿小单', '绿大双', '绿小双'];
+      viewHeight = Math.ceil(balls.length / numColumn) * 90;
+
+    } else if (values.tpl == 5) {
+      // 特码尾数
+      balls = ['0头', '1头', '2头', '3头', '4头', '1尾', '2尾', '3尾', '4尾', '5尾', '6尾', '7尾', '8尾', '9尾', '0尾'];
+
+    } else if (values.tpl == 6) {
+      // 特肖、平特一肖
+      numColumn = 2;
+      balls = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+
+    } else if (values.tpl == 8) {
+      // 五行
+      numColumn = 2;
+      balls = ['金', '木', '水', '火', '土'];
+      
+    } else if (values.tpl == 9) {
+      // 平特尾数 
+      numColumn = 2;
+      balls = ['0尾', '1尾', '2尾', '3尾', '4尾', '5尾', '6尾', '7尾', '8尾', '9尾'];
+
+    } else if (values.tpl == 10) {
+      // 七色波
+      numColumn = 2;
+      balls = ['红波', '蓝波', '绿波', '和局'];
+
+    } else if (values.tpl == 11) {
+      // 总肖
+      numColumn = 2;
+      balls = ['2肖', '3肖', '4肖', '5肖', '6肖', '7肖', '总肖单', '总肖双'];
+
+    } else if (values.tpl == 7 || values.tpl == 14) {
+      // 合肖 || 二三四五连肖
+      var default_shengxiao = this._shengxiaoIdxBalls(values.tpl == 7 ? true : false);
+      for (let b in default_shengxiao) {
+        balls.push({ ball: default_shengxiao[b].name, ballNumDec: default_shengxiao[b].balls.join(' ') });
+      }
+      return this._ballsSquareCreateView(values, balls, false, 600, 2);
+
+    } else if (values.tpl == 15) {
+      // 2345连尾
+      let name = ['0尾', '1尾', '2尾', '3尾', '4尾', '5尾', '6尾', '7尾', '8尾', '9尾'];
+      let ballsNumDec = ['10 20 30 40', '01 11 21 31 41', '02 12 22 32 42', '03 13 23 33 43', '04 14 24 34 44', '05 15 25 35 45', '06 16 26 36 46', '07 17 27 37 47', '08 18 28 38 48', '09 19 29 39 49'];
+      for (let i = 0; i < name.length; i++) {
+        balls.push({ ball: name[i], ballNumDec: ballsNumDec[i] });
+      }
+      return this._ballsSquareCreateView(values, balls, false, 500, 2);
+
+    } else if (values.tpl == 12 || values.tpl == 13) {
+      // 自选不中 / 连码 
+      for (let i = 1; i <= 49; i++) {
+        balls.push({ key: i, ball: i < 10 ? `0${i}` : `${i}` })
+      }
+      return this._balls09PeilvCreateView(values, balls, false, 13 * 60);
+
+    }
+
+    viewHeight = viewHeight > 0 ? viewHeight : Math.ceil(balls.length / numColumn) * 70;
+    return this._ballsLhcOptionView(values, balls, viewHeight, numColumn);
+  }
+
+
   // 生肖下标 的号码
   _shengxiaoIdxBalls(isHeXiao) {
 
@@ -1273,7 +1419,12 @@ class NewBuyCenter extends Component {
       } else if (playid == '30' || playid == '33') {
         // 三中二/三 || 二中特
         // peilvArr = [peilvStr];
-        peilvArr = playid == '30' ? [`${GetBallStatus.peilvHandle(peilvArr[0])}(中二)/${GetBallStatus.peilvHandle(peilvArr[1])}(中三)`] : [`${GetBallStatus.peilvHandle(peilvArr[0])}(中特)/${GetBallStatus.peilvHandle(peilvArr[1])}(中二)`];
+        // peilvArr = playid == '30' ? [`${GetBallStatus.peilvHandle(peilvArr[0])}(中二)/${GetBallStatus.peilvHandle(peilvArr[1])}(中三)`] : [`${GetBallStatus.peilvHandle(peilvArr[0])}(中特)/${GetBallStatus.peilvHandle(peilvArr[1])}(中二)`];
+        if (this.props.wanfaindex != 0) {
+          peilvArr = [peilvStr];
+        } else {
+          peilvArr = playid == '30' ? [`${GetBallStatus.peilvHandle(peilvArr[0])}(中二)/${GetBallStatus.peilvHandle(peilvArr[1])}(中三)`] : [`${GetBallStatus.peilvHandle(peilvArr[0])}(中特)/${GetBallStatus.peilvHandle(peilvArr[1])}(中二)`];
+        }
       }
     }
 
@@ -1354,7 +1505,7 @@ class NewBuyCenter extends Component {
                   }
                 </View>
               </TouchableOpacity>
-              {peilvArr.length == 1 && this.props.peilvDataArr.length > 0 ?
+              {peilvArr.length == 1 && this.props.peilvDataArr.length > 0 && !(this.props.js_tag == 'lhc' && this.props.wanfaindex == 1) ?
                 <Text allowFontScaling={false} style={{ marginTop: 5, color: '#707070', fontSize: Adaption.Font(16) }}>(赔率：{GetBallStatus.peilvHandle(peilvArr[0])})</Text>
                 : null
               }
@@ -1362,13 +1513,31 @@ class NewBuyCenter extends Component {
             : null
           }
 
-          {peilvArr.length == 1 && this.state.isShowSelectPlay == false && this.props.peilvDataArr.length > 0 ?
+          {peilvArr.length == 1 && this.state.isShowSelectPlay == false && this.props.peilvDataArr.length > 0 && !(this.props.js_tag == 'lhc' && this.props.wanfaindex == 1) ?
             <View style={{ height: 40, alignItems: 'flex-end', justifyContent: 'center', marginRight:Adaption.Width(20) }}>
               <Text allowFontScaling={false} style={{ color: '#707070', fontSize: Adaption.Font(16) }}>(赔率：{GetBallStatus.peilvHandle(peilvArr[0])})</Text>
             </View>
             : null
           }
           
+          {peilvArr.length == 1 && this.props.js_tag == 'lhc' && this.props.wanfaindex == 1 ?
+            <View style={{ height: Adaption.Width(this.state.isShowSelectPlay == false ? 60 : 40), flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(17), color: '#494949', marginRight: Adaption.Width(7) }}>总金额</Text>
+              <TextInput ref='PriceInput' allowFontScaling={false} keyboardType={'numeric'} maxLength={6} 
+                style={{ textAlign: 'center', width: Adaption.Width(80), height: Adaption.Width(30), borderRadius: 3, borderColor: '#ccc', borderWidth: 1, fontSize: Adaption.Font(18) }}
+                onBlur={(e) => {
+                  let price = e.nativeEvent.text ? e.nativeEvent.text : '0';
+                  // ballsData有值再写入price，再回调
+                  if (Object.keys(this.state.ballsData).length > 0) {
+                    this.state.ballsData['LhcPrice'] = price;
+                    this.props.ballsClick ? this.props.ballsClick(this.state.ballsData, this.state.currentPlayDate, this.state.TitlesArr, this.state.BallAsrr) : null;
+                  }
+                }}>
+              </TextInput>
+              <Text allowFontScaling={false} style={{ marginLeft: Adaption.Width(7), fontSize: Adaption.Font(17), color: '#494949' }}>赔率: <Text allowFontScaling={false} style={{ color: '#f00' }}>{GetBallStatus.peilvHandle(peilvArr[0])}</Text></Text>
+            </View>
+            :null
+          }
 
           <ScrollView style={{ height: this.props.style.height }}
             key={this.state.currentPlayDate ? this.state.currentPlayDate.playid : ''}
@@ -1423,7 +1592,7 @@ class NewBuyCenter extends Component {
       return; // js_tag值还没回来时，下面判断会延迟。
     }
 
-    var showSelectPlay = this.props.wanfaindex == 1 ? false : true; // 默认都显示,双面玩法不显示。 SSC\11x5\3D\PK10
+    var showSelectPlay = this.props.js_tag == 'lhc' ? true : this.props.wanfaindex == 1 ? false : true; // 默认都显示,双面玩法不显示。 SSC\11x5\3D\PK10
 
     if (this.props.js_tag == 'k3') {
       showSelectPlay = false;

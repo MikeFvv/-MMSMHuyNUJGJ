@@ -43,7 +43,7 @@ global.GLOBALisRNParameters = true;
 global.SwitchRoute = 1;
 
 // 版本号    版本号的格式：v<主版本号>.<副版本号>.<发布号>
-global.VersionNum = 'v2.53.2';
+global.VersionNum = 'v2.53.6';
 // --------------------
 
 // 业主请求URL 每个App的请求域名(每个App都不一样) 会返回不同的域名及状态

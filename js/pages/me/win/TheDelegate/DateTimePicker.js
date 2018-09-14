@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 57,
+    marginTop: 10,
     backgroundColor: '#fff',
     alignSelf: 'stretch',
     justifyContent: 'center',

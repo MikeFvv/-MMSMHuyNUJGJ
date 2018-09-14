@@ -29,12 +29,12 @@ const screenHight = height
             nextjiezhitime:props.jiezhitime ? props.jiezhitime : '', //当前时间
             oneqishu:props.prevqishu ? props.prevqishu:'',
             fengPanTime:props.fengPanTime ? props.fengPanTime:'',
-            finishTime: Math.round(new Date() / 1000),
+            finishTime: props.finishTime ? props.finishTime:'',
         };
 
         this.timer01= null;
         this.timer02=null;
-        this.currentIdx = 0;  // 为防止用户要投注界面停留了几期后 才进入路图。所以idx不能固定取0
+        this.currentIdx = 0;  // 所以idx不能固定取0
 
 
         if (this.state.oneqishu > 0 && this.state.dataTime.length > 0) {
@@ -62,6 +62,7 @@ const screenHight = height
             oneqishu:nextProps.prevqishu,
             nextjiezhitime:nextProps.jiezhitime,
             fengPanTime:nextProps.fengPanTime ? nextProps.fengPanTime:'',
+            finishTime: nextProps.finishTime ? nextProps.finishTime:'',
           })
           }
 
@@ -132,16 +133,8 @@ const screenHight = height
             fengPanTime: currStop,
             nextjiezhitime:currStop,
         });
-
-
           }, 1000);
-
-
         }
-
-
-        
-   
 
     render() {
 

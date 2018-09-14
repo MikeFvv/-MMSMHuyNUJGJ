@@ -12,6 +12,7 @@
  import FC3DCaculMethod from './caculator/FC3DCaculator';  //福彩3D计算注数的方法
  import PCDDCaculMethod from './caculator/PCDDCaculator';  //PCDD计算注数的方法
  import LHCCaculMethod from './caculator/LHCCaculator';  //六合彩计算注数的方法
+ import GetBallStatus from './touzhu2.0/newBuyTool/GetBallStatus'; // 用于拿六合彩生肖对应的号码
 
 export default {
 
@@ -52,6 +53,50 @@ function getPeilvWithPlayid(playid, plDataArr) {
     }
   }
   return peilvStr;
+}
+
+// 通过生肖去获取对应的号码
+function getLhcStatusBalls(sxStr, isHeXiao) {
+
+  let ballStr = '';
+  let shengxiao = GetBallStatus.getLhcShengxiaoBalls(isHeXiao);
+
+  for (let b in shengxiao) {
+    if (shengxiao[b].name == sxStr) {
+      ballStr = shengxiao[b].balls.join(',');
+      break;
+    }
+  }
+  return ballStr;
+}
+
+// 获取*连尾 and 五行 对应的号码，
+function getLhcLianWeiBalls(tit) {
+
+  let ballStr = '';
+  if (tit.includes('尾')) {
+    let baArray = [];
+    let weiInt = parseInt(tit.substr(0, 1));
+    if (weiInt == 0) {
+      weiInt = 10;
+    }
+    for (let i = weiInt; i < 50; i += 10) {
+      baArray.push(i < 10 ? `0${i}` : `${i}`);
+    }
+    ballStr = baArray.join(',');
+
+  } else if (tit == '金') {
+    ballStr = '04,05,18,19,26,27,34,35,48,49';
+  } else if (tit == '木') {
+    ballStr = '01,08,09,16,17,30,31,38,39,46,47';
+  } else if (tit == '水') {
+    ballStr = '06,07,14,15,22,23,36,37,44,45';
+  } else if (tit == '火') {
+    ballStr = '02,03,10,11,24,25,32,33,40,41';
+  } else if (tit == '土') {
+    ballStr = '12,13,20,21,28,29,42,43';
+  }
+  return ballStr;
 }
 
 // 六合彩投注号码拼接
@@ -95,9 +140,24 @@ function handleLHCTouZhuBalls(params) {
        ballsXiangQing = `${maNum}:(${ballsXiangQing})`
      }
 
+     let lhcBallsXiangqing = '';
+     if (playData.tpl == '7') {
+        // 合肖。和号码拼接在一起。
+        for (let m = 0; m < ballArr.length; m++) {
+          let shengxiaoStr = ballArr[m];
+          let shengxiaoBalls = getLhcStatusBalls(shengxiaoStr, true);
+          lhcBallsXiangqing += `${shengxiaoStr}(${shengxiaoBalls}) `;
+        }
+      }
+
+      let price = params.singlePrice;
+      if (ballsData['LhcPrice']) {
+        price = parseFloat(ballsData['LhcPrice']) / params.zhushu;  // 输入的总金额 除 注数
+      }
+
      let shopCarModel = {
-         singlePrice: params.singlePrice,  //单价
-         totalPrice: params.singlePrice,   //总价
+         singlePrice: price,  //单价
+         totalPrice: price,   //总价
          zhushu: params.zhushu,       //注数
          balls: ballNums,  // 号码拼接的字符串： '09 01 01'
          wanfa: playData.wanfa,  // 玩法
@@ -105,6 +165,7 @@ function handleLHCTouZhuBalls(params) {
          gameid: params.gameid,
          playid: playData.playid,  // playid
          xiangqing: ballsXiangQing,  // 详情
+         lhcBallsXiangqing: lhcBallsXiangqing,  // 六合彩 生肖有号码的详情。
          qishu: params.qishu,   // 期数
          tag: params.tag,   //彩种种类
      };
@@ -112,7 +173,7 @@ function handleLHCTouZhuBalls(params) {
      shopCarModelArr.push({value:shopCarModel});
 
   } else if (playData.tpl == '13' || playData.tpl == '14' || playData.tpl == '15') {
-    // 连码 连选
+    // 连码 连肖 连尾
     let newBallsArr = lhcZhu_lianxuan_lianma(ballArr, playData.playid);
     let newBallsZW = [];
     if (ballsData[`${title}0`] != null) {
@@ -128,10 +189,25 @@ function handleLHCTouZhuBalls(params) {
         xiangqingStr = newBallsZW[i].join(' ');
       }
 
+      let lhcBallsXiangqing = '';
+      if (playData.tpl == '14' || playData.tpl == '15') {
+        // 连肖 // 连尾
+        for (let n = 0; n < newBallsZW[i].length; n++) {
+          let shengxiaoStr = newBallsZW[i][n];
+          let shengxiaoBalls = playData.tpl == '15' ? getLhcLianWeiBalls(shengxiaoStr) : getLhcStatusBalls(shengxiaoStr);
+          lhcBallsXiangqing += `${shengxiaoStr}(${shengxiaoBalls}) `;
+        }
+      }
+
+      let price = params.singlePrice;
+      if (ballsData['LhcPrice']) {
+        price = parseFloat(ballsData['LhcPrice']) / params.zhushu;  // 输入的总金额 除 注数
+      }
+
       // 定义对象，类似Model
       let shopCarModel = {
-          singlePrice: params.singlePrice,  //单价
-          totalPrice: params.singlePrice,   //总价
+          singlePrice: price,  //单价
+          totalPrice: price,   //总价
           zhushu: 1,   //注数
           balls: ballNum,
           wanfa: playData.wanfa,  // 玩法
@@ -139,6 +215,7 @@ function handleLHCTouZhuBalls(params) {
           gameid: params.gameid,
           playid: playData.playid,
           xiangqing: xiangqingStr,  // 详情
+          lhcBallsXiangqing: lhcBallsXiangqing,
           qishu: params.qishu,
           tag: params.tag,
       };
@@ -168,10 +245,23 @@ function handleLHCTouZhuBalls(params) {
         xiangqingStr = `${title}：${ballArr[i]}`;
       }
 
+      let lhcBallsXiangqing = '';
+      if (playid == '7' || playid == '17' || playid == '18' || playid == '9') {
+        // 特肖 || 平特一肖 || 平特尾数 || 五行
+        let shengxiaoStr = ballArr[i];
+        let shengxiaoBalls = (playid == '7' || playid == '17') ? getLhcStatusBalls(shengxiaoStr) : getLhcLianWeiBalls(shengxiaoStr);
+        lhcBallsXiangqing += `${shengxiaoStr}(${shengxiaoBalls})`;
+      }
+
+      let price = params.singlePrice;
+      if (ballsData['LhcPrice'] && ballsData['LhcPrice'][i]) {
+        price = parseFloat(ballsData['LhcPrice'][i]);
+      }
+
         // 定义对象，类似Model
         let shopCarModel = {
-            singlePrice: params.singlePrice,  //单价
-            totalPrice: params.singlePrice,   //总价
+            singlePrice: price,  //单价
+            totalPrice: price,   //总价
             zhushu: 1,   //注数
             balls: ballNum,  // 号码拼接的字符串： '09 01 01'
             wanfa: playData.wanfa,  // 玩法
@@ -179,6 +269,7 @@ function handleLHCTouZhuBalls(params) {
             gameid: params.gameid,  // gameid
             playid: playData.playid,  // playid
             xiangqing: xiangqingStr, //`${title}(${ballArr[i]})`,  // 详情
+            lhcBallsXiangqing: lhcBallsXiangqing,
             qishu: params.qishu,   // 期数
             tag: params.tag,   //彩种种类
         };
@@ -189,7 +280,7 @@ function handleLHCTouZhuBalls(params) {
 
     for(let i = 0 ; i < shopCarModelArr.length; i++){
         shopCarModelArr[i].key = i;
-
+        shopCarModelArr[i]['isFoldClick'] = false; //是否点击展开或折叠。默认为false, 低频彩折叠判断 5月18日
     }
   return (shopCarModelArr);
 }
@@ -463,7 +554,7 @@ function handleTouZhuBalls(params) {
 
     for(let i = 0 ; i < shopCarModelArr.length; i++){
         shopCarModelArr[i].key = i;
-
+        shopCarModelArr[i]['isFoldClick'] = false; //是否点击展开或折叠。默认为false, 低频彩折叠判断 5月18日
     }
 
   return shopCarModelArr;

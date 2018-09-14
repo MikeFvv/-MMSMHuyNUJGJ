@@ -56,7 +56,7 @@ function returnTuoZhuParam(parameter) {
     params.append('stop', parameter.isStop); // 0中奖后继续追号， 1中奖后停追。
     params.append('ver', global.VersionNum);
     params.append('data', JSON.stringify(listArr));
-    params.append('form_unique_token', Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Math.round(new Date() / 1000));
+    // params.append('form_unique_token', Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) + Math.round(new Date() / 1000));
 
     console.log(params);
     return params;

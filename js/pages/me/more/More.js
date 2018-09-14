@@ -77,7 +77,7 @@ import Adaption from "../../../skframework/tools/Adaption";
     _updateUserHobby() {
 
         let keys = Object.keys(global.GTouZhuGameID);
-        if (keys.length <= 0) {
+        if (keys.length <= 0 || global.UserLoginObject.is_Guest == 2) {
             return;  // 没有值直接退出
         }
 
@@ -113,9 +113,11 @@ import Adaption from "../../../skframework/tools/Adaption";
      //退出登录的方法
      _loginOutMethod(){
 
-         //试玩账号直接退出
-         if (global.UserLoginObject.is_Guest == 2) {
+        //  //试玩账号直接退出
+        //  if (global.UserLoginObject.is_Guest == 2) {
             
+            this._updateUserHobby(); // 提交gameid, 用于后台搞游戏偏好的。
+
              //进入APP 默认去读缓存
              global.UserInfo.shareInstance();
              global.UserInfo.removeUserInfo((result) => {
@@ -126,48 +128,48 @@ import Adaption from "../../../skframework/tools/Adaption";
                      this.props.navigation.goBack();
                  }
              });
-         }
-         else {
+        //  }
+        //  else {
 
-            this._updateUserHobby(); // 提交gameid, 用于后台搞游戏偏好的。
+        //     this._updateUserHobby(); // 提交gameid, 用于后台搞游戏偏好的。
 
-            PersonMessageArray=0;
-            Hongbaolihe = 0;
-            Gerenfankui = 0;
-            Fuliqiandao = 0;
-             this.refs.LoadingView && this.refs.LoadingView.showLoading('正在退出...');
+        //     PersonMessageArray=0;
+        //     Hongbaolihe = 0;
+        //     Gerenfankui = 0;
+        //     Fuliqiandao = 0;
+        //      this.refs.LoadingView && this.refs.LoadingView.showLoading('正在退出...');
 
-             let params = new FormData();
-             params.append("ac", "userLogout");
-             params.append("uid", global.UserLoginObject.Uid);
-             params.append("token", global.UserLoginObject.Token);
-             params.append('sessionkey', global.UserLoginObject.session_key);
+        //      let params = new FormData();
+        //      params.append("ac", "userLogout");
+        //      params.append("uid", global.UserLoginObject.Uid);
+        //      params.append("token", global.UserLoginObject.Token);
+        //      params.append('sessionkey', global.UserLoginObject.session_key);
 
-             var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+        //      var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 
-             promise
-                 .then(response => {
+        //      promise
+        //          .then(response => {
 
-                     this.refs.LoadingView && this.refs.LoadingView.cancer();
+        //              this.refs.LoadingView && this.refs.LoadingView.cancer();
 
-                     if (response.msg == 0) {
+        //              if (response.msg == 0) {
 
-                         //进入APP 默认去读缓存
-                         global.UserInfo.shareInstance();
-                         global.UserInfo.removeUserInfo((result) => {
+        //                  //进入APP 默认去读缓存
+        //                  global.UserInfo.shareInstance();
+        //                  global.UserInfo.removeUserInfo((result) => {
 
-                             if (result == true) {
+        //                      if (result == true) {
 
-                                 PushNotification.emit('LoginOutSuccess');
-                                 this.props.navigation.goBack();
-                             }
-                         });
-                     }
+        //                          PushNotification.emit('LoginOutSuccess');
+        //                          this.props.navigation.goBack();
+        //                      }
+        //                  });
+        //              }
 
-                 })
-                 .catch(err => {
-                 });
-         }
+        //          })
+        //          .catch(err => {
+        //          });
+        //  }
      }
 
      render() {

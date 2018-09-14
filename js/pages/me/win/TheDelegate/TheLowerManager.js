@@ -186,7 +186,7 @@ export default class TheLowerManager extends React.Component {
                               isNoData:true,
                               refreshState:RefreshState.Idle,
                             });
-                            Alert.alert(response.param)
+                            // Alert.alert(response.param)
                         }
 
                     })

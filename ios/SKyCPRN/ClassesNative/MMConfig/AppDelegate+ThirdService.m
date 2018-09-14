@@ -14,11 +14,21 @@
 #endif
 
 #import "WYWebController.h"
+//#import "IQKeyboardManager.h"
 
 @implementation AppDelegate (ThirdService)
 
 
 
+//-(void)configureBoardManager
+//{
+//  IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
+//  manager.enable = YES;
+//  manager.shouldResignOnTouchOutside = YES;
+//  //  manager.shouldToolbarUsesTextFieldTintColor = YES;
+//  manager.keyboardDistanceFromTextField = 10;
+//  manager.enableAutoToolbar = YES;
+//}
 
 
 

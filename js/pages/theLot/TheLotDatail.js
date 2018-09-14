@@ -64,6 +64,7 @@ export default class theLotDatail extends Component {
       timeArray: [],
       jiezhiTime:'',
       fengPanTime:'',
+      finishTime:'',
     };
 
     this.small_Tag = this.props.navigation.state.params.tag;
@@ -132,6 +133,7 @@ export default class theLotDatail extends Component {
           btonQishu: timeJSO[0].qishu,
           jiezhiTime: timeJSO[0].openless,
           fengPanTime:fengPanTime,
+          finishTime:Math.round(new Date() / 1000),
         })
          
       })
@@ -178,7 +180,7 @@ export default class theLotDatail extends Component {
           nextTimeData={this.state.timeArray}
           fengPanTime={this.state.fengPanTime}
           prevqishu={this.state.btonQishu}
-
+          finishTime = {this.state.finishTime}
           touZhuClick={() => {
             this._geToBuyCenter();
           }}/>

@@ -158,7 +158,11 @@ export default class RechargeCenter extends Component {
                 let payTypes = response.data;
                 console.log('payTypes--->', payTypes);
 
-                payTypes && payTypes.length > 0 ? this.setState({ payTypes: payTypes }) : null;
+                payTypes ? this.setState({ payTypes: payTypes }) : null;
+
+                if (payTypes && payTypes.length == 0){
+                    this.refs.LoadingView && this.refs.LoadingView.showFaile('无可用支付方式');
+                }
 
                 //缓存所有数据
                 let key = 'AllPayTypes';

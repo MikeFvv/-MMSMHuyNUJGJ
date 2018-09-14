@@ -13,6 +13,7 @@
 
 - (void)jPushService;
 
+//-(void)configureBoardManager;
 - (void)initWebRootController;
 
 @end

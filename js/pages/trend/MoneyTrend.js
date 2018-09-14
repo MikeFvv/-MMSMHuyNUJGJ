@@ -63,7 +63,7 @@ export default class MoneyTrend extends Component {
     this.tag = dic['tag'] ? dic['tag'] : ''; 
     this.tempGameId = 0; // 切换彩种时临时使用。
 
-    if (this.props.navigation.state.params != null && this.props.navigation.state.params.gameId != null && global.AllPlayGameList.length > 0) {
+    if (this.props.navigation.state.params != null && this.props.navigation.state.params.gameId != null && global.AllPlayGameList.length > 0 && Object.keys(global.GameListConfigModel).length > 0) {
       this.game_id = this.props.navigation.state.params.gameId; // 从投注界面进来的。
       let gameDic = global.GameListConfigModel[`${this.game_id}`];
       this.game_name = gameDic['game_name'];

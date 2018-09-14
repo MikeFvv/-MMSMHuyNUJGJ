@@ -26,10 +26,10 @@ export default class FBShopCarList extends Component {
             <CustomNavBar
                 centerText = {"综合过关"}
                 leftClick={() =>  navigation.state.params ? navigation.state.params.clearShopCar() : null}
-                rightView = {navigation.state.params ? <View style = {{width:40, height:46, alignItems:'center', justifyContent:'center', marginRight:20, marginTop:SCREEN_HEIGHT == 812 ? 40 : 15}}>
-                     <CusBaseText style = {{color:'#fff', fontSize:Adaption.Font(18,15)}}>
-                     {navigation.state.params.navCountDownText ? navigation.state.params.navCountDownText : '0'}
-                </CusBaseText></View> : null}
+                // rightView = {navigation.state.params ? <View style = {{width:40, height:46, alignItems:'center', justifyContent:'center', marginRight:20, marginTop:SCREEN_HEIGHT == 812 ? 40 : 15}}>
+                //      <CusBaseText style = {{color:'#fff', fontSize:Adaption.Font(18,15)}}>
+                //      {navigation.state.params.navCountDownText ? navigation.state.params.navCountDownText : '0'}
+                // </CusBaseText></View> : null}
             />
         ),
     });
@@ -61,40 +61,33 @@ export default class FBShopCarList extends Component {
             clearShopCar: this._clearShopCar,
         })
 
-        this._countDownTime();
+        // this._countDownTime();
 
     }
 
     //倒计时刷新开奖数据
-    _countDownTime(){
-
-        if (this.timer1) {
-            return;
-        }
-
-        this.timer1 = setInterval(() => {
-
-            if (this.props.navigation.state.params.navCountDownText < 1){
-                this.props.navigation.state.params.navCountDownText = 10;
-                this._refreshNewPeilv();
-            }
-            else {
-
-                this.props.navigation.state.params.navCountDownText -= 1;
-            }
-
-            this.props.navigation.setParams({
-                navCountDownText: this.props.navigation.state.params.navCountDownText,
-            });
-        }, 1000)
-    }
-
-    //移除通知
-    componentWillUnmount(){
-
-        //清除定时器
-        this.timer1 && clearInterval(this.timer1);
-    }
+    // _countDownTime(){
+    //
+    //     if (this.timer1) {
+    //         return;
+    //     }
+    //
+    //     this.timer1 = setInterval(() => {
+    //
+    //         if (this.props.navigation.state.params.navCountDownText < 1){
+    //             this.props.navigation.state.params.navCountDownText = 10;
+    //             this._refreshNewPeilv();
+    //         }
+    //         else {
+    //
+    //             this.props.navigation.state.params.navCountDownText -= 1;
+    //         }
+    //
+    //         this.props.navigation.setParams({
+    //             navCountDownText: this.props.navigation.state.params.navCountDownText,
+    //         });
+    //     }, 1000)
+    // }
 
     //每10秒刷新选择赛事的最新赔率
     _refreshNewPeilv(){
@@ -234,16 +227,16 @@ export default class FBShopCarList extends Component {
     }
 
     //移除通知
-    componentWillUnmount(){
-
-        //清除定时器
-        this.timer1 && clearInterval(this.timer1);
-
-        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
-        this.setState = (state,callback) => {
-            return;
-        }
-    }
+    // componentWillUnmount(){
+    //
+    //     //清除定时器
+    //     this.timer1 && clearInterval(this.timer1);
+    //
+    //     //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
+    //     this.setState = (state,callback) => {
+    //         return;
+    //     }
+    // }
 
     //根据对应的缩写转换成中文的描述
     _handlePlayMethodDesc(playMehtod){

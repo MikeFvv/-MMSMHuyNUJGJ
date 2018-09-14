@@ -583,7 +583,11 @@ export default class TheStatements extends Component {
                             maxLength={15}
                             underlineColorAndroid='transparent'
                             // onEndEditing={(event)=> this.setSearch({event})}
-                            onChangeText={(text) => this.searchId = text}>
+                            defaultValue={this.searchId}
+                            onChangeText={(text) => 
+                            this.searchId = text
+                           
+                            }>
                         </TextInput>
                         <TouchableOpacity activeOpacity={1}
                                           style={{

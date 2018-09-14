@@ -541,23 +541,25 @@ onClickGoToBank(item){
     return(
       <TouchableOpacity activeOpacity={1} style = {{flex:1}} onPress={()=> this.onRequestClose()}>
        <View style={{backgroundColor:'rgba(0,0,0,0.2)', flex:1, alignItems:'center'}}>
-         <View style = {{width:width-100,height:105,justifyContent:'center',alignItems:'center',backgroundColor:'#eeeeee',borderRadius:5,marginTop:iOS?height==812?height-180:height-150:height-200,padding:5}}>
+         <View style = {{width:width,height:105,justifyContent:'center',alignItems:'center',backgroundColor:'#eeeeee',marginTop:iOS?height==812?height-180:height-150:height-200}}>
            <TouchableOpacity activeOpacity={1}
-             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width-100}}
+             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width}}
              onPress={()=> this.onClickXiuGai(0,array,navigate)}>
              <CusBaseText style = {{fontSize:Adaption.Font(15,14),color:'#222222',textAlign:'center'}}>
               设置默认银行卡
              </CusBaseText>
            </TouchableOpacity>
+           <View style = {{width:width,height:1,backgroundColor:'#cdcdcd'}}></View>
            <TouchableOpacity activeOpacity={1}
-             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width-100}}
+             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width}}
              onPress={()=> this.onClickXiuGai(1,array,navigate)}>
              <CusBaseText style = {{fontSize:Adaption.Font(15,14),color:'#222222',textAlign:'center'}}>
                修改
              </CusBaseText>
            </TouchableOpacity>
+           <View style = {{width:width,height:1,backgroundColor:'#cdcdcd'}}></View>
            <TouchableOpacity activeOpacity={1}
-             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width-100,marginTop:-1}}
+             style = {{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'white',width:width}}
              onPress={()=> this.onClickXiuGai(2,array,navigate)}>
              <CusBaseText style = {{fontSize:Adaption.Font(15,14),color:'#222222',textAlign:'center'}}>
                解除绑定
@@ -565,9 +567,9 @@ onClickGoToBank(item){
            </TouchableOpacity>
          </View>
          <TouchableOpacity activeOpacity={1}
-           style = {{width:width-100,height:35,justifyContent:'center',alignItems:'center',backgroundColor:'white',borderRadius:5,marginTop:10}}
+           style = {{width:width,height:35,justifyContent:'center',alignItems:'center',backgroundColor:'white',marginTop:10}}
            onPress={()=> this.onRequestClose()}>
-           <CusBaseText style = {{fontSize:Adaption.Font(15,14),color:'#222222',textAlign:'center'}}>
+           <CusBaseText style = {{fontSize:Adaption.Font(15,14),color:'red',textAlign:'center'}}>
              取消
            </CusBaseText>
          </TouchableOpacity>

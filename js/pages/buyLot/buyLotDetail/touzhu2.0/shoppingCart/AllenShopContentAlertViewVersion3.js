@@ -181,7 +181,7 @@ export default class ShopContentAlertView extends Component {
                                             <Text allowFontScaling={false} style={{ color:'#171717', fontSize:Adaption.Font(19,16) }}>{this.state.currentGameName}</Text>
                                         </View>
                                         <View style={{height: Adaption.Height(25)}}>
-                                            <Text allowFontScaling={false} style={{ color:'#919191', fontSize:Adaption.Font(17,14) }}>第 <Text allowFontScaling={false} style={{color:'#e56664', fontSize: Adaption.Font(16,13)}}>{this.state.currentQiShu}</Text> 期</Text>
+                                            <Text allowFontScaling={false} style={{ color:'#919191', fontSize:Adaption.Font(17,14) }}>第 <Text allowFontScaling={false} style={{color:'#F00', fontSize: Adaption.Font(18, 15)}}>{this.state.currentQiShu}</Text> 期</Text>
                                         </View>
                                     </View>
                                     <TouchableOpacity style={{flex: 0.1, marginTop: Adaption.Height(20)}} activeOpacity={1} onPress={() => {this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'}); this.props.closeClick ? this.props.closeClick() : null}}>

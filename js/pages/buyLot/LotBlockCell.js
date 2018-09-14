@@ -10,7 +10,14 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import {CachedImage, ImageCache} from "react-native-img-cache";
+// import {CachedImage, ImageCacheProvider} from "react-native-img-cache";
+
+
+import {
+    CachedImage,
+    ImageCacheProvider
+} from 'react-native-cached-image';
+
 
 const IMG_HEIGHT = 60;
 
@@ -81,22 +88,27 @@ export default class LotBlockCell extends Component {
 
             <View style={styles.container}>
 
-                <CachedImage
-                    // source={{
-                    //     uri: this.state.backupCpicon ? GlobalConfig.backupCpicon() + this.props.item.tag + '.png' : Cpicon + this.props.item.tag + '.png',
-                    //     cache: 'force-cache'
-                    // }}
-                    source={{
-                        uri: this.props.item.icon,
-                        cache: 'force-cache'
-                    }}
-                    style={styles.themeImg}
-                    onError={({nativeEvent: {error}}) => {
-                        this.setState({
-                            backupCpicon: true,
-                        });
-                    }}
-                />
+                <ImageCacheProvider>
+
+                    <CachedImage
+                        // source={{
+                        //     uri: this.state.backupCpicon ? GlobalConfig.backupCpicon() + this.props.item.tag + '.png' : Cpicon + this.props.item.tag + '.png',
+                        //     cache: 'force-cache'
+                        // }}
+                        style={styles.themeImg}
+
+                        source={{
+                            uri: this.props.item.icon,
+                            cache: 'force-cache'
+                        }}
+                        onError={({nativeEvent: {error}}) => {
+                            this.setState({
+                                backupCpicon: true,
+                            });
+                        }}
+                    />
+                </ImageCacheProvider>
+
                 <CusBaseText style={styles.themeName}>{this.props.item.game_name ? this.props.item.game_name : ''}</CusBaseText>
 
                 <CusBaseText
@@ -200,7 +212,7 @@ const styles = StyleSheet.create({
     },
 
     themeName: {
-        marginTop: 7,
+        marginTop: 12,
         fontSize: Adaption.Font(15, 13),
     },
 
@@ -208,7 +220,8 @@ const styles = StyleSheet.create({
         width: IMG_HEIGHT,
         height: IMG_HEIGHT,
         borderRadius: IMG_HEIGHT / 2,
-        marginTop: 10,
+        marginTop: 5,
+        // backgroundColor: 'red',
     },
 
     tip: {

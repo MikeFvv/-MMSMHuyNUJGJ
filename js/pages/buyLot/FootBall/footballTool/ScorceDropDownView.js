@@ -11,8 +11,8 @@ import {
     Image,
 } from 'react-native'
 
-let dropDownTitleList = [{key:0, title:'滚球', gameCount:0, sportID: 1}, {key:1, title:'今日赛事', gameCount:0, sportID: 1},
-    {key:2, title:'早盘', gameCount:0, sportID: 1}, {key:3, title:'综合过关', gameCount:0, sportID: 1}, {key:4, title:'冠军', gameCount:0, sportID: 1}];
+let dropDownTitleList = [{key:0, title:'滚球', gameCount:0, sportID: 2001}, {key:1, title:'今日赛事', gameCount:0, sportID: 2001},
+    {key:2, title:'早盘', gameCount:0, sportID: 2001}, {key:3, title:'综合过关', gameCount:0, sportID: 2001}, {key:4, title:'冠军', gameCount:0, sportID: 2001}];
 
 export  default  class ScorceDropDownView extends Component {
 
@@ -53,6 +53,11 @@ export  default  class ScorceDropDownView extends Component {
     componentDidMount() {
 
         this._fetchTypeData();
+    }
+
+    componentWillUnmount(){
+        dropDownTitleList = [{key:0, title:'滚球', gameCount:0, sportID: 2001}, {key:1, title:'今日赛事', gameCount:0, sportID: 2001},
+            {key:2, title:'早盘', gameCount:0, sportID: 2001}, {key:3, title:'综合过关', gameCount:0, sportID: 2001}, {key:4, title:'冠军', gameCount:0, sportID: 2001}];  //退出页面时全部赋值0条
     }
 
     //请求足彩列表的类型数据

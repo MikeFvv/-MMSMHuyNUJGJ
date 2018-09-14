@@ -65,6 +65,7 @@
       "Debug_YFCP02",
       "Debug_xunying01",
       "Debug_xunying02",
+      "Debug_QiDianCP01",
       "Debug_Test2",
       "Debug_TestQA",
       "Debug_TestRN"
@@ -89,6 +90,7 @@
       "Release_YFCP02",
       "Release_xunying01",
       "Release_xunying02",
+      "Release_QiDianCP01",
       "Release_Test2",
       "Release_TestQA",
       "Release_TestRN"

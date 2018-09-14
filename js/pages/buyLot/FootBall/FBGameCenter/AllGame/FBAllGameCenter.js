@@ -324,22 +324,42 @@ export default class FBAllGameCenter extends Component {
                 if (dkey.includes('1X2') && ballData[0].sltIdx <= 2) {
                     sltDic['sltIdx'] = ballData[0].sltIdx;
                 } else if (ballData[0].sltIdx <= 1) {
-                    if (ballData[0].sltIdx == 0) {
-                        if (dkey.includes('HC')) {
-                            sltDic['sltIdx'] = 3;
-                        } else if (dkey.includes('GL')) {
-                            sltDic['sltIdx'] = 6;
-                        } else if (dkey.includes('TGOE')) {
-                            sltDic['sltIdx'] = 9;
+
+                    if (0) {
+                        // 旧的进这里（独赢/让球/大小）
+                        if (ballData[0].sltIdx == 0) {
+                            if (dkey.includes('HC')) {
+                                sltDic['sltIdx'] = 3;
+                            } else if (dkey.includes('GL')) {
+                                sltDic['sltIdx'] = 6;
+                            } else if (dkey.includes('TGOE')) {
+                                sltDic['sltIdx'] = 9;
+                            }
+                        } else {
+                            if (dkey.includes('HC')) {
+                                sltDic['sltIdx'] = 5;
+                            } else if (dkey.includes('GL')) {
+                                sltDic['sltIdx'] = 8;
+                            } else if (dkey.includes('TGOE')) {
+                                sltDic['sltIdx'] = 11;
+                            }
                         }
+
                     } else {
-                        if (dkey.includes('HC')) {
-                            sltDic['sltIdx'] = 5;
-                        } else if (dkey.includes('GL')) {
-                            sltDic['sltIdx'] = 8;
-                        } else if (dkey.includes('TGOE')) {
-                            sltDic['sltIdx'] = 11;
-                        }
+                        // 新的进这里（让球/大小）
+                        if (ballData[0].sltIdx == 0) {
+                            if (dkey.includes('HC')) {
+                                sltDic['sltIdx'] = 0;
+                            } else if (dkey.includes('GL')) {
+                                sltDic['sltIdx'] = 2;
+                            }
+                        } else {
+                            if (dkey.includes('HC')) {
+                                sltDic['sltIdx'] = 1;
+                            } else if (dkey.includes('GL')) {
+                                sltDic['sltIdx'] = 3;
+                            }
+                        }   
                     }
                 }
 
@@ -530,8 +550,8 @@ export default class FBAllGameCenter extends Component {
                             } else {
                                 Alert.alert('温馨提示', '您还未登录,请先去登录!',
                                     [
-                                        { text: '确定', onPress: () => this.props.navigate('Login', { title: '登录' }) },
                                         { text: '取消', onPress: () => { } },
+                                        { text: '确定', onPress: () => this.props.navigate('Login', { title: '登录' }) },
                                     ]
                                 );
                             }
@@ -551,8 +571,8 @@ export default class FBAllGameCenter extends Component {
                                 Alert.alert(
                                     '温馨提示', '您还未登录,请先去登录!',
                                     [
+                                        { text: '取消', onPress: () => { } },
                                         { text: '确定', onPress: () => this.props.navigate('Login', { title: '登录' }) },
-                                        { text: '取消', onPress: () => { } }
                                     ]
                                 );
                             }

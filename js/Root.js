@@ -103,7 +103,6 @@ export default class Root extends Component {
 
     componentWillMount() {
 
-
         global.RouterIndex = this.props['router'];
         GlobalConfig.baseURL = this.props['mmUrl'];
         this.domainNameMm = this.props['mmUrl'];
@@ -465,7 +464,7 @@ export default class Root extends Component {
                     GlobalConfig.baseURL = baseURL;  // 保存url
                     GlobalConfig.userData = response.data;  // 保存系统信息
 
-                    
+
                     // if (this.state.isShowEnterUrlPage == true) {
                     //     global.GlobalLineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
                     //     GlobalConfig.lineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
@@ -1062,7 +1061,7 @@ export default class Root extends Component {
         this.domainNameMm = urlPath;
 
         let arrPlist = ['http://plist.aotubangfen.com:8089', 'http://plist.gotoguxiang.com:8089', 'http://plist.aujingift.com:8089', 'http://plist.jifenos.com:8089', 'http://plist.xmfn14.com:8089'];
-       
+
         let rmIndex = Math.floor(Math.random() * arrPlist.length);
 
         // 正式站  plistIndex
@@ -1260,6 +1259,69 @@ export default class Root extends Component {
             </View>
         )
     }
+
+
+
+    //需要Base64见：http://www.webtoolkit.info/javascript-base64.html  
+    _make_base_auth(user, password) {
+        var tok = user + ':' + pass;
+        var hash = Base64.encode(tok);
+        return "Basic " + hash;
+    }
+
+
+
+    // 获取地区 判断IP 地址
+    _getIPArea() {
+
+        let appcode = "078f9af041fa4d1684b1f5d7f10d2b51";
+        let host = "https://dm-81.data.aliyun.com";
+        let path = "/rest/160601/ip/getIpInfo.json";
+        let method = "GET";
+        let querys = "?ip=103.17.198.17";
+        let url = host + path + querys;
+        let bodys = "";
+
+        let auth = 'APPCODE ' + appcode;
+
+        // var auth = make_basic_auth('QLeelulu','mypassword');  
+
+        var request = new XMLHttpRequest();
+
+
+        var isTimeOut = false;
+
+        var timer = setTimeout(() => {
+            isTimeOut = true;
+            request.abort();
+            this.isLoadData = true;
+            this.inAppPage();
+        }, 10000);
+
+        request.onreadystatechange = (e) => {
+            if (request.readyState !== 4) {
+                return;
+            }
+            if (isTimeOut) return;
+            clearTimeout(timer);
+            // console.log('测试Area=========' + request);
+
+            if (request.status === 200) {
+
+                var responseData = JSON.parse(request.responseText);
+                console.log('结果=====' + responseData);
+
+            } else {
+
+
+            }
+        };
+        request.open(method, url);
+        request.setRequestHeader('Authorization', auth);
+        request.send();
+
+    }
+
 
 
 

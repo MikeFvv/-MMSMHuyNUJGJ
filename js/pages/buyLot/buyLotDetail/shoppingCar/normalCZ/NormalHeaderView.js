@@ -18,6 +18,8 @@ class NormalHeaderView extends Component {
     constructor(props) {
         super(props);
 
+        this.finishTime = props.finishTime;
+
         this.currentCountDownIndex = 0; //当前下标
         if (props.theQiShu > 0 && props.nextTimeList && props.nextTimeList.length > 0) {
             for (let a = 0; a < props.nextTimeList.length; a++) {
@@ -32,8 +34,8 @@ class NormalHeaderView extends Component {
 
         let jieZhiTime = 0, fengPan = 0;
         if (props.nextTimeList.length > 0) {  // 倒计时
-            jieZhiTime = props.nextTimeList[this.currentCountDownIndex].opentime - (props.nextTimeList[this.currentCountDownIndex].server_time - props.finishTime) - Math.round(new Date() / 1000);
-            fengPan = props.nextTimeList[this.currentCountDownIndex].stoptime - (props.nextTimeList[this.currentCountDownIndex].server_time - props.finishTime) - Math.round(new Date() / 1000);
+            jieZhiTime = props.nextTimeList[this.currentCountDownIndex].opentime - (props.nextTimeList[this.currentCountDownIndex].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            fengPan = props.nextTimeList[this.currentCountDownIndex].stoptime - (props.nextTimeList[this.currentCountDownIndex].server_time - this.finishTime) - Math.round(new Date() / 1000);
         }
 
         this.state = ({
@@ -104,11 +106,11 @@ class NormalHeaderView extends Component {
                         let nextList = responseData.data[0].next;
                         let nextModel = nextList[0];
 
-                        this.props.finishTime = Math.round(new Date() / 1000);
+                        this.finishTime = Math.round(new Date() / 1000);
 
                         // 倒计时时间直接用opentime 减 手机系统时间。
-                        let currOpen = nextModel.opentime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
-                        let currStop = nextModel.stoptime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                        let currOpen = nextModel.opentime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
+                        let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
                         this.currentCountDownIndex = 0;//当前下标
 
                         this.setState({
@@ -177,8 +179,8 @@ class NormalHeaderView extends Component {
             let currOpen = 0, currStop = 0;
             if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
-                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
-                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
+                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
+                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
             }
 
             this.setState({

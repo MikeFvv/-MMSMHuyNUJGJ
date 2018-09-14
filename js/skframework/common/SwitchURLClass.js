@@ -12,7 +12,7 @@ export default (index) => {
         case 0:
             // 测试库    
             //return 'http://test.ce64.com';   // 永城彩票
-            // return 'http://qaclient.sg04.com';   // QA测试
+            return 'http://qaclient.sg04.com';   // QA测试
             //  return 'http://app.zjgguolong.com';   // 测试外网
             //  return 'http://app.zjgguolong.com';   // 测试外网
             //  return 'http://client.sg04.com';     // 测试内网
@@ -20,7 +20,7 @@ export default (index) => {
             //  return 'http://ios4.yktytools.com';    // F彩    toltal001  fcadmin001
             //  return 'http://app.app679zzz.com';   // 679彩   时时采彡-掌上助手
             //  return 'http://hcw201.com';    //hcw901.com 红彩   tuhao002   123123qaz
-            return 'http://client1.sg04.com';     // 测试内网
+            // return 'http://client1.sg04.com';     // 测试内网
 
         case 1:
             // 七天彩01

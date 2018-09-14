@@ -1242,11 +1242,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 2J76P9Z7VU;
+						DevelopmentTeam = R9LFWWQ36H;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 2J76P9Z7VU;
+						DevelopmentTeam = R9LFWWQ36H;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
@@ -1769,7 +1769,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export DEVELOPMENT_BUILD_CONFIGURATIONS=\"+(Debug_qtc01|Debug_skyhc01|Debug_skyhc02|Debug_sky567c01|Debug_sky567c02|Debug_M567C01|Debug_M567C02|Debug_cpb01|Debug_cpb02|Debug_dafa01|Debug_dafa02|Debug_M369C01|Debug_MQC01|Debug_MQC02|Debug_YFCP01|Debug_YFCP02|Debug_xunying01|Debug_xunying02|Debug_Test2|Debug_TestQA|Debug_TestRN|Debug)\"\nexport NODE_BINARY=node\n../node_modules/react-native-schemes-manager/lib/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\nexport DEVELOPMENT_BUILD_CONFIGURATIONS=\"+(Debug_qtc01|Debug_skyhc01|Debug_skyhc02|Debug_sky567c01|Debug_sky567c02|Debug_M567C01|Debug_M567C02|Debug_cpb01|Debug_cpb02|Debug_dafa01|Debug_dafa02|Debug_M369C01|Debug_MQC01|Debug_MQC02|Debug_YFCP01|Debug_YFCP02|Debug_xunying01|Debug_xunying02|Debug_QiDianCP01|Debug_Test2|Debug_TestQA|Debug_TestRN|Debug)\"\n../node_modules/react-native-schemes-manager/lib/react-native-xcode.sh";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1893,7 +1893,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1939,7 +1939,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -1991,7 +1991,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.0;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2076,7 +2076,7 @@
 				CusAppName = "彩彩";
 				CusBuild = "";
 				CusVersion = 1.5.0;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2180,7 +2180,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.3;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2234,7 +2234,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -2406,7 +2406,7 @@
 				CusAppName = "好彩彩票";
 				CusBuild = "";
 				CusVersion = 1.6.3;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2458,7 +2458,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -2627,7 +2627,7 @@
 				CusAppName = "好彩彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2679,7 +2679,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -2854,7 +2854,7 @@
 				CusBuild = "";
 				CusVersion = 1.2.1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2904,7 +2904,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -3076,14 +3076,14 @@
 				CusAppName = "掌上购彩";
 				CusBuild = "";
 				CusVersion = 1.2.1;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=1";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -3128,7 +3128,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -3297,7 +3297,7 @@
 				CusAppName = "掌上购彩";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3349,7 +3349,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -3524,7 +3524,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.6;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3578,7 +3578,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -3774,14 +3774,14 @@
 				CusAppName = "大发彩票";
 				CusBuild = "";
 				CusVersion = 1.6.6;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=10";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -3826,7 +3826,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -4019,7 +4019,7 @@
 				CusAppName = "大发彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4071,7 +4071,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -4270,7 +4270,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.0;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4324,7 +4324,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4496,7 +4496,7 @@
 				CusAppName = "QA测试";
 				CusBuild = "";
 				CusVersion = 1.5.0;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4548,7 +4548,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -4723,7 +4723,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.0;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4777,7 +4777,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4949,7 +4949,7 @@
 				CusAppName = "测试彩票";
 				CusBuild = "";
 				CusVersion = 1.5.0;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5001,7 +5001,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -5170,7 +5170,7 @@
 				CusAppName = "测试彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5222,7 +5222,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -5397,7 +5397,7 @@
 				CusBuild = "";
 				CusVersion = 1.7.1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5451,7 +5451,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -5630,7 +5630,7 @@
 				CusBuild = "";
 				CusVersion = 1.7.2;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5684,7 +5684,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -5856,14 +5856,14 @@
 				CusAppName = "迅盈彩票";
 				CusBuild = "";
 				CusVersion = 1.7.1;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=13";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -5908,7 +5908,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -6100,14 +6100,14 @@
 				CusAppName = "迅盈彩票";
 				CusBuild = "";
 				CusVersion = 1.7.2;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=13";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -6152,7 +6152,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -6351,7 +6351,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.9;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6405,7 +6405,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -6601,14 +6601,14 @@
 				CusAppName = "易发彩票";
 				CusBuild = "";
 				CusVersion = 1.6.9;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=17";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -6653,7 +6653,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -6846,7 +6846,7 @@
 				CusAppName = "易发彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6898,7 +6898,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -7097,7 +7097,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.9;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7151,7 +7151,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -7347,14 +7347,14 @@
 				CusAppName = "易发彩票";
 				CusBuild = "";
 				CusVersion = 1.6.9;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=18";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -7399,7 +7399,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -7592,7 +7592,7 @@
 				CusAppName = "易发彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7644,7 +7644,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -7843,7 +7843,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.3;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7897,7 +7897,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -8069,14 +8069,14 @@
 				CusAppName = "好彩";
 				CusBuild = "";
 				CusVersion = 1.6.3;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=8";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -8121,7 +8121,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -8290,7 +8290,7 @@
 				CusAppName = "好彩彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8342,7 +8342,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -8517,7 +8517,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.4;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8567,7 +8567,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -8739,14 +8739,14 @@
 				CusAppName = "彩票榜";
 				CusBuild = "";
 				CusVersion = 1.6.4;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=3";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -8791,7 +8791,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -8960,7 +8960,7 @@
 				CusAppName = "彩票榜";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9012,7 +9012,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -9187,7 +9187,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.4;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9237,7 +9237,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -9409,14 +9409,14 @@
 				CusAppName = "彩票榜";
 				CusBuild = "";
 				CusVersion = 1.6.4;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=4";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -9461,7 +9461,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -9630,7 +9630,7 @@
 				CusAppName = "彩票榜";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9682,7 +9682,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -9857,7 +9857,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.5;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9911,7 +9911,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -10107,14 +10107,14 @@
 				CusAppName = "567彩票";
 				CusBuild = "";
 				CusVersion = 1.6.5;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=11";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -10159,7 +10159,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -10352,7 +10352,7 @@
 				CusAppName = "567彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -10404,7 +10404,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -10603,7 +10603,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.5;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -10657,7 +10657,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -10853,14 +10853,14 @@
 				CusAppName = "567彩票";
 				CusBuild = "";
 				CusVersion = 1.6.5;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=12";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -10905,7 +10905,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -11098,7 +11098,7 @@
 				CusAppName = "567彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -11150,7 +11150,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -11349,7 +11349,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.7;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -11403,7 +11403,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -11599,14 +11599,14 @@
 				CusAppName = "369彩票";
 				CusBuild = "";
 				CusVersion = 1.6.7;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=13";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -11651,7 +11651,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -11844,7 +11844,7 @@
 				CusAppName = "369彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -11896,7 +11896,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -12095,7 +12095,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.7;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12149,7 +12149,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -12345,14 +12345,14 @@
 				CusAppName = "369彩票";
 				CusBuild = "";
 				CusVersion = 1.6.7;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=14";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -12397,7 +12397,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -12590,7 +12590,7 @@
 				CusAppName = "369彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12642,7 +12642,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -12842,7 +12842,7 @@
 				CusBuild = "";
 				CusVersion = 1.6.6;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12896,7 +12896,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -13092,14 +13092,14 @@
 				CusAppName = "大发彩票";
 				CusBuild = "";
 				CusVersion = 1.6.6;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=9";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -13144,7 +13144,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -13337,7 +13337,7 @@
 				CusAppName = "大发彩票";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -13389,7 +13389,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -13581,7 +13581,7 @@
 				CusAppName = "测试内网";
 				CusBuild = "";
 				CusVersion = 1.5.0;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -13633,7 +13633,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -13808,7 +13808,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.0;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -13862,7 +13862,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -14035,7 +14035,7 @@
 				CusAppName = "彩彩";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -14087,7 +14087,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -14262,7 +14262,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.8;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -14316,7 +14316,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -14512,14 +14512,14 @@
 				CusAppName = "Q彩";
 				CusBuild = "";
 				CusVersion = 1.5.8;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=16";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -14564,7 +14564,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -14757,14 +14757,14 @@
 				CusAppName = "Q彩";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=16";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -14809,7 +14809,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -15008,7 +15008,7 @@
 				CusBuild = "";
 				CusVersion = 1.5.8;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -15062,7 +15062,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -15258,14 +15258,14 @@
 				CusAppName = "Q彩";
 				CusBuild = "";
 				CusVersion = 1.5.8;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=15";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-code-push",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
@@ -15310,7 +15310,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -15503,7 +15503,7 @@
 				CusAppName = "Q彩";
 				CusBuild = "";
 				CusVersion = "";
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -15555,7 +15555,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
@@ -15937,6 +15937,483 @@
 			};
 			name = Release;
 		};
+		D66DAD6720F490F50055583F /* Debug_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug_QiDianCP01;
+		};
+		D66DAD6820F490F50055583F /* Debug_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_QiDianCP01;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage_xunying01;
+				CODEPUSH_KEY = "";
+				CODE_SIGN_ENTITLEMENTS = SKyCPRN/SKyCPRN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				CusAppName = "起点彩票";
+				CusBuild = "";
+				CusVersion = 1.7.1;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"ROUTER=0",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../node_modules/react-native-code-push",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = SKyCPRN/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.enterprisemm.QiDianCP01;
+				PRODUCT_NAME = SKyCPRN;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug_QiDianCP01;
+		};
+		D66DAD6920F490F50055583F /* Debug_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..\node_modules\neact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..\node_modules\neact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = SKyCPRNTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SKyCPRN.app/SKyCPRN";
+			};
+			name = Debug_QiDianCP01;
+		};
+		D66DAD6A20F490F50055583F /* Debug_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..\node_modules\neact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..\node_modules\neact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = "SKyCPRN-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.enterprisemm.Test2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug_QiDianCP01;
+		};
+		D66DAD6B20F490F50055583F /* Debug_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "SKyCPRN-tvOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.SKyCPRN-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SKyCPRN-tvOS.app/SKyCPRN-tvOS";
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Debug_QiDianCP01;
+		};
+		D66DAD9B20F491200055583F /* Release_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release_QiDianCP01;
+		};
+		D66DAD9C20F491200055583F /* Release_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_QiDianCP01;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage_xunying01;
+				CODEPUSH_KEY = "C3JKKC_YEIOe5ZPRQtX2cmgjqYal9afe8b5b-cdf2-4643-bc5d-7d81e9f4cbe0";
+				CODE_SIGN_ENTITLEMENTS = SKyCPRN/SKyCPRN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				CusAppName = "起点彩票";
+				CusBuild = "";
+				CusVersion = 1.7.1;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PREFIX_HEADER = "$(SRCROOT)/SKyCPRN/PrefixHeader.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "ROUTER=0";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../node_modules/react-native-code-push",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = SKyCPRN/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.enterprisemm.QiDianCP01;
+				PRODUCT_NAME = SKyCPRN;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release_QiDianCP01;
+		};
+		D66DAD9D20F491200055583F /* Release_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = R9LFWWQ36H;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..\node_modules\neact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..\node_modules\neact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = SKyCPRNTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SKyCPRN.app/SKyCPRN";
+			};
+			name = Release_QiDianCP01;
+		};
+		D66DAD9E20F491200055583F /* Release_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/jcore-react-native/ios/RCTJCoreModule",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/react-native-shake-event/ios",
+					"$(SRCROOT)..\node_modules\neact-native-image-crop-pickerios/**",
+					"$(SRCROOT)..\node_modules\neact-native-image-pickerios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-camera/ios",
+					"$(SRCROOT)/../node_modules/react-native-audio/ios",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-video/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
+				);
+				INFOPLIST_FILE = "SKyCPRN-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.enterprisemm.Test2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release_QiDianCP01;
+		};
+		D66DAD9F20F491200055583F /* Release_QiDianCP01 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2J76P9Z7VU;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "SKyCPRN-tvOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.SKyCPRN-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SKyCPRN-tvOS.app/SKyCPRN-tvOS";
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Release_QiDianCP01;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -15945,6 +16422,7 @@
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
 				274B1F062099A8B900FEEC0C /* Debug_xunying01 */,
+				D66DAD6920F490F50055583F /* Debug_QiDianCP01 */,
 				274B1F3F2099A8E400FEEC0C /* Debug_xunying02 */,
 				2731DFC9200CD0CB0093DFA4 /* Debug_TestRN */,
 				27B4911D20A7FAE9000D3285 /* Debug_Test2 */,
@@ -15978,6 +16456,7 @@
 				27ADEE501FDE96E20060EA1B /* Release_dafa01 */,
 				279AC04F1FC7FE0800C5C705 /* Release_M369C01 */,
 				274B1F442099A8F800FEEC0C /* Release_xunying01 */,
+				D66DAD9D20F491200055583F /* Release_QiDianCP01 */,
 				274B1F492099A91300FEEC0C /* Release_xunying02 */,
 				279AC05E1FC7FE5B00C5C705 /* Release_M369C02 */,
 				14AB96A51FB5AE2A003FCC29 /* Release_skyhc02 */,
@@ -16011,6 +16490,7 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				274B1F052099A8B900FEEC0C /* Debug_xunying01 */,
+				D66DAD6820F490F50055583F /* Debug_QiDianCP01 */,
 				274B1F3E2099A8E400FEEC0C /* Debug_xunying02 */,
 				2731DFC8200CD0CB0093DFA4 /* Debug_TestRN */,
 				27B4911C20A7FAE9000D3285 /* Debug_Test2 */,
@@ -16044,6 +16524,7 @@
 				27ADEE4F1FDE96E20060EA1B /* Release_dafa01 */,
 				279AC04E1FC7FE0800C5C705 /* Release_M369C01 */,
 				274B1F432099A8F800FEEC0C /* Release_xunying01 */,
+				D66DAD9C20F491200055583F /* Release_QiDianCP01 */,
 				274B1F482099A91300FEEC0C /* Release_xunying02 */,
 				279AC05D1FC7FE5B00C5C705 /* Release_M369C02 */,
 				14AB96A41FB5AE2A003FCC29 /* Release_skyhc02 */,
@@ -16077,6 +16558,7 @@
 			buildConfigurations = (
 				2D02E4971E0B4A5E006451C7 /* Debug */,
 				274B1F072099A8B900FEEC0C /* Debug_xunying01 */,
+				D66DAD6A20F490F50055583F /* Debug_QiDianCP01 */,
 				274B1F402099A8E400FEEC0C /* Debug_xunying02 */,
 				2731DFCA200CD0CB0093DFA4 /* Debug_TestRN */,
 				27B4911E20A7FAE9000D3285 /* Debug_Test2 */,
@@ -16110,6 +16592,7 @@
 				27ADEE511FDE96E20060EA1B /* Release_dafa01 */,
 				279AC0501FC7FE0800C5C705 /* Release_M369C01 */,
 				274B1F452099A8F800FEEC0C /* Release_xunying01 */,
+				D66DAD9E20F491200055583F /* Release_QiDianCP01 */,
 				274B1F4A2099A91300FEEC0C /* Release_xunying02 */,
 				279AC05F1FC7FE5B00C5C705 /* Release_M369C02 */,
 				14AB96A61FB5AE2A003FCC29 /* Release_skyhc02 */,
@@ -16143,6 +16626,7 @@
 			buildConfigurations = (
 				2D02E4991E0B4A5E006451C7 /* Debug */,
 				274B1F082099A8B900FEEC0C /* Debug_xunying01 */,
+				D66DAD6B20F490F50055583F /* Debug_QiDianCP01 */,
 				274B1F412099A8E400FEEC0C /* Debug_xunying02 */,
 				2731DFCB200CD0CB0093DFA4 /* Debug_TestRN */,
 				27B4911F20A7FAE9000D3285 /* Debug_Test2 */,
@@ -16176,6 +16660,7 @@
 				27ADEE521FDE96E20060EA1B /* Release_dafa01 */,
 				279AC0511FC7FE0800C5C705 /* Release_M369C01 */,
 				274B1F462099A8F800FEEC0C /* Release_xunying01 */,
+				D66DAD9F20F491200055583F /* Release_QiDianCP01 */,
 				274B1F4B2099A91300FEEC0C /* Release_xunying02 */,
 				279AC0601FC7FE5B00C5C705 /* Release_M369C02 */,
 				14AB96A71FB5AE2A003FCC29 /* Release_skyhc02 */,
@@ -16209,6 +16694,7 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				274B1F042099A8B900FEEC0C /* Debug_xunying01 */,
+				D66DAD6720F490F50055583F /* Debug_QiDianCP01 */,
 				274B1F3D2099A8E400FEEC0C /* Debug_xunying02 */,
 				2731DFC7200CD0CB0093DFA4 /* Debug_TestRN */,
 				27B4911B20A7FAE9000D3285 /* Debug_Test2 */,
@@ -16242,6 +16728,7 @@
 				27ADEE4E1FDE96E20060EA1B /* Release_dafa01 */,
 				279AC04D1FC7FE0800C5C705 /* Release_M369C01 */,
 				274B1F422099A8F800FEEC0C /* Release_xunying01 */,
+				D66DAD9B20F491200055583F /* Release_QiDianCP01 */,
 				274B1F472099A91300FEEC0C /* Release_xunying02 */,
 				279AC05C1FC7FE5B00C5C705 /* Release_M369C02 */,
 				14AB96A31FB5AE2A003FCC29 /* Release_skyhc02 */,

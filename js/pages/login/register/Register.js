@@ -178,12 +178,14 @@ export default class Register extends Component {
                             }
                         })
                         .catch(err => {
-                            if (err != null && err != '') {
-                                this.refs.LoadingView && this.refs.LoadingView.showFaile(err.message);
+
+                            let errStr = err.message;
+
+                            if (errStr.includes("request failed")) {
+                                errStr = '服务器请求失败';
                             }
-                            else {
-                                this.refs.LoadingView && this.refs.LoadingView.cancer(0);
-                            }
+
+                            this.refs.LoadingView && this.refs.LoadingView.showFaile(errStr, 3);  //服务器请求错误提示
 
                         });
                 }

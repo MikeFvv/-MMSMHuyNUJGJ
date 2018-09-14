@@ -223,7 +223,7 @@ export default class TheSeenManagement extends React.Component {
                 isNoData:true,
                 refreshState:RefreshState.Idle,
               });
-              Alert.alert(response.param)
+              // Alert.alert(response.param)
             }
 
           })

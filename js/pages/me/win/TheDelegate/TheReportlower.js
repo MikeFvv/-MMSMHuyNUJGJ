@@ -228,7 +228,7 @@ this._fetchPreferentialData(true);
                 isNoData:true,
                 refreshState:RefreshState.Idle,
               });
-              Alert.alert(response.param)
+              // Alert.alert(response.param)
              }
           })
           promise.catch(err => { });

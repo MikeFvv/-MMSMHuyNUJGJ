@@ -73,6 +73,7 @@ export default class RqDxItemView extends Component {
                  if (this.props.lastSItemIdArr[i] == this.props.cuntSItemId) {
                      if (this.props.lastIdxArr[i] == idx) {
                          islastSlt = true;
+                         this.state.seleIdx = idx;
                      }
                  }
              }

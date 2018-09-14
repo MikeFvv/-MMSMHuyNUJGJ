@@ -16,11 +16,7 @@ import {
 } from "react-native";
 const { width, height } = Dimensions.get("window");
 const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
-import BaseNetwork from "../../../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../../../skframework/tools/Adaption";//字体适配
-import moment from 'moment';
-
 export default class DelegtTouXiangQing extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: '详情',
@@ -92,8 +88,8 @@ export default class DelegtTouXiangQing extends Component {
 
     return (
       <View style={{ width: width, height: 90, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-        <View style={{ flex: 0.3 }}>
-          <Image style={{ width: 60, height: 60, marginLeft: 15 }}
+        <View style={{ flex: 0.2 }}>
+          <Image style={{ width: 60*KAdaptionWith, height: 60*KAdaptionWith, marginLeft: 15 }}
             source={{uri:this.state.detialArray.value.icon}}
            >
           </Image>
@@ -111,7 +107,7 @@ export default class DelegtTouXiangQing extends Component {
             <CusBaseText style={{ fontSize: Adaption.Font(15, 14), color: 'gray', textAlign: 'left' }}>
               开奖号码:
             </CusBaseText>
-            <CusBaseText style={{ fontSize: Adaption.Font(15, 14), color: 'red', textAlign: 'left', marginLeft: 8 }}>
+            <CusBaseText style={{ fontSize: Adaption.Font(14, 13), color: 'red', textAlign: 'left', marginLeft: 8 }}>
               {phaseLable}
             </CusBaseText>
           </View>
@@ -140,7 +136,7 @@ export default class DelegtTouXiangQing extends Component {
 
     return (
       <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-        <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+        <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
           是否开奖:
     </CusBaseText>
         <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -166,7 +162,7 @@ export default class DelegtTouXiangQing extends Component {
 
     return (
       <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-        <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+        <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
           开奖时间:
    </CusBaseText>
         <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -198,7 +194,7 @@ export default class DelegtTouXiangQing extends Component {
         </View>
 
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             订  单  号:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -207,7 +203,7 @@ export default class DelegtTouXiangQing extends Component {
         </View>
 
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             投注金额:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -216,7 +212,7 @@ export default class DelegtTouXiangQing extends Component {
         </View>
 
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             投注注数:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -234,7 +230,7 @@ export default class DelegtTouXiangQing extends Component {
         </View> */}
 
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             投注赔率:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -243,7 +239,7 @@ export default class DelegtTouXiangQing extends Component {
         </View>
 
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             投注时间:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
@@ -253,7 +249,7 @@ export default class DelegtTouXiangQing extends Component {
         {this.on_shifouKaiJiang()}
         {this.on_KaiJiangshijian()}
         <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
-          <CusBaseText style={{ marginLeft: 49, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
+          <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
             玩法名称:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>

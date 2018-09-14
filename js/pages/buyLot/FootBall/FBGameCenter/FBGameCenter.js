@@ -793,23 +793,37 @@ export default class FBGameCenter extends Component {
         let sltData = this.state.ballsDict[cuntSItemIdx];
         let sltDic = {};
         if (sltData != null && this.props.game_typeID == 3) {  // 综合过关呢 要把选择状态记下 过去要显示出来。
-            sltDic['d_key'] = sltData['playMethod'];
-            // sltDic['teams'] = sltData['isHVXO']; // 独赢hvx； 让球hv；大小h对应大,v对应小； 单双h对应单,v对应双；
-            // sltDic['sectionItemiId'] = sltData['sectionItemiId']; 
 
+            sltDic['d_key'] = sltData['playMethod'];
+            
             // 记录选择的idx
-            if (sltData['allbetSltIdx']) { // 如果有所有玩法里面的sltIdx就直接用它
-                sltDic['sltIdx'] = sltData['allbetSltIdx'];
-            } else if (sltDic['d_key'].includes('1X2')) {
-                sltDic['sltIdx'] = sltData['sltIdx']; // 独赢
-            } else if (sltDic['d_key'].includes('HC')) {
-                sltDic['sltIdx'] = sltData['sltIdx'] == 3 ? 0 : 1; // 让球
-            } else if (sltDic['d_key'].includes('GL')) {
-                sltDic['sltIdx'] = sltData['sltIdx'] == 6 ? 0 : 1;  // 大小
-            } else if (sltDic['d_key'].includes('TGOE')) {
-                sltDic['sltIdx'] = sltData['sltIdx'] == 9 ? 0 : 1;  // 单双
+            if (0) {
+                // 旧的进这里（独赢/让球/大小）
+                if (sltData['allbetSltIdx']) { // 如果有所有玩法里面的sltIdx就直接用它
+                    sltDic['sltIdx'] = sltData['allbetSltIdx'];
+                } else if (sltDic['d_key'].includes('1X2')) {
+                    sltDic['sltIdx'] = sltData['sltIdx']; // 独赢
+                } else if (sltDic['d_key'].includes('HC')) {
+                    sltDic['sltIdx'] = sltData['sltIdx'] == 3 ? 0 : 1; // 让球
+                } else if (sltDic['d_key'].includes('GL')) {
+                    sltDic['sltIdx'] = sltData['sltIdx'] == 6 ? 0 : 1;  // 大小
+                } else if (sltDic['d_key'].includes('TGOE')) {
+                    sltDic['sltIdx'] = sltData['sltIdx'] == 9 ? 0 : 1;  // 单双
+                } else {
+                    sltDic['sltIdx'] = 0;
+                }
+                
             } else {
-                sltDic['sltIdx'] = 0;
+                // 新的进这里（让球/大小）
+                if (sltData['allbetSltIdx']) { // 如果有所有玩法里面的sltIdx就直接用它
+                    sltDic['sltIdx'] = sltData['allbetSltIdx'];
+                } else if (sltDic['d_key'].includes('HC')) {
+                    sltDic['sltIdx'] = sltData['sltIdx']; // 让球
+                } else if (sltDic['d_key'].includes('GL')) {
+                    sltDic['sltIdx'] = sltData['sltIdx'] == 2 ? 0 : 1;  // 大小
+                } else {
+                    sltDic['sltIdx'] = 0;
+                }
             }
         }
 

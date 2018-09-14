@@ -472,7 +472,15 @@ export default class TouZhuRecord extends React.Component {
       }else if (item.item.value.bet_info[0].status == '3') {
         winLabel = '和局';
         winTextColor = 'rgb(0,109,0)';
+      }else if (item.item.value.bet_info[0].status == '5') {
+        winLabel = '危险球判定中';
+        winTextColor = 'gray';
+      }else if (item.item.value.bet_info[0].status == '6') {
+        winLabel = '危险球撤單';
+        winTextColor = 'gray';
       }
+
+
 
        if(item.item.value.bet_info.length>1){
            let zongHeState = '';
@@ -645,13 +653,13 @@ export default class TouZhuRecord extends React.Component {
       <TouchableOpacity activeOpacity={1} onPress={() => this._onAcitveClickCell(item, navigate)} >
         <View style={styles.linearlayout}>
             <View style={styles.relayoutss}>
-                      <CusBaseText style={{flex:0.3,marginLeft:10,color:'#222222',textAlign:'left',fontWeight:'400',fontSize:15}}>
+                      <CusBaseText style={{flex:0.28,marginLeft:10,color:'#222222',textAlign:'left',fontWeight:'400',fontSize:15}}>
                         {item.item.value.game_name}
                       </CusBaseText>
-                      <CusBaseText style={{flex:0.4,color:'#666666',textAlign:'center',fontSize:13,alignItems:'center'}}>
+                      <CusBaseText style={{flex:0.44,color:'#666666',textAlign:'center',fontSize:13,alignItems:'center'}}>
                         第{item.item.value.qishu}期
                       </CusBaseText>
-                      <CusBaseText style={{flex:0.3,color:'red',textAlign:'right',fontSize:13,marginRight:25}}>
+                      <CusBaseText style={{flex:0.28,color:'red',textAlign:'right',fontSize:13,marginRight:25}}>
                         -{item.item.value.price}元
                       </CusBaseText>
           </View>
@@ -663,10 +671,10 @@ export default class TouZhuRecord extends React.Component {
           </View>
 
           <View style={styles.relayout}>
-            <CusBaseText style={{ flex: 1, color: '#999999', textAlign: 'left', fontSize: 13, marginLeft: 10 }}>
+            <CusBaseText style={{ flex: 0.6, color: '#999999', textAlign: 'left', fontSize: 13, marginLeft: 10 }}>
             {item.item.value.tz_time}
             </CusBaseText>
-            <CusBaseText style={{ flex: 1, color: winTextColor, textAlign: 'right', fontSize: 13, marginLeft: 10, marginRight: 25 }}>
+            <CusBaseText style={{ flex: 0.4, color: winTextColor, textAlign: 'right', fontSize: 13, marginLeft: 10, marginRight: 25 }}>
               {winLabel}
             </CusBaseText>
 

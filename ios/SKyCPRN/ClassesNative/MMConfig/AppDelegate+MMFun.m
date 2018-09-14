@@ -40,7 +40,7 @@
   
   [self interfaceOrientation:UIInterfaceOrientationPortrait];
   
-  
+//  [self configureBoardManager];
   [self configService];
   
   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];  // allow

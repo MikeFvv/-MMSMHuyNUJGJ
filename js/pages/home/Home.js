@@ -286,6 +286,7 @@ export default class Home extends Component {
           else {
 
            this.loginOut = false;
+           global.UserLoginObject.TotalMoney = response.data.price;
 
            if((1 & response.data.user_flag)>0){
               Hongbaolihe = 1;
@@ -450,16 +451,11 @@ export default class Home extends Component {
       this._renderReFresh();
       this.loginOut = false;
       this.state.is_GuestShiWan = loginObject.is_Guest;
-     this._fetchPersonalMessageData();
-   
-      
-
-      //防止didmount中解析失败，没有启动定时器
-      {
-        this.refshToken()
-      }
+      this._fetchPersonalMessageData();
 
       this._forceRefreshNav();
+
+      this.refs.LoadingView && this.refs.LoadingView.showSuccess('登录成功!', 2);
 
     });
 
@@ -532,7 +528,7 @@ export default class Home extends Component {
         this.props.navigation.setParams({
           home_userMoney: global.UserLoginObject.TotalMoney,
         });
-      }, 3000);
+      }, 500);
     }
   }
 
