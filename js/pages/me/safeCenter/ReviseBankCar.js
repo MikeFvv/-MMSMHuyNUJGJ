@@ -303,6 +303,12 @@ class ReviseBankCar extends Component {
         // console.log('responseData',responseData);
 
         if (responseData.msg == 0) {
+          global.BankListArray[this.props.navigation.state.params.bankArray.index].value.address = accountBankAdress;
+          global.BankListArray[this.props.navigation.state.params.bankArray.index].value.bank_type = accountBank;
+          global.BankListArray[this.props.navigation.state.params.bankArray.index].value.bank_typename = accountBankName;
+          global.BankListArray[this.props.navigation.state.params.bankArray.index].value.card_num = accountNumber;
+          global.BankListArray[this.props.navigation.state.params.bankArray.index].value.card_sheng = accountProvice;
+         
           this.props.navigation.state.params.callback();
           this.props.navigation.goBack()
         } else {

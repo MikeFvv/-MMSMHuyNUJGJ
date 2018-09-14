@@ -9,24 +9,21 @@ import {
     TextInput,
     Image,
     ScrollView,
-    NativeModules,
     Linking,
     Clipboard,
+    CameraRoll,
 } from 'react-native';
 
 import Regex from '../../../skframework/component/Regex';
 
 class RechargeInfo extends Component {
-
 	static navigationOptions = ({navigation}) => ({
-
         header: (
 			<CustomNavBar
 				centerText = {navigation.state.params ? navigation.state.params.navTitle : null}
 				leftClick={() => navigation.goBack()}
 			/>
         ),
-
     });
 
 	constructor(props) {
@@ -141,11 +138,11 @@ class RechargeInfo extends Component {
 
 	_showStepInstruct = () => {
 	    let stepInstruct = '';
-        if (this.payObject.title == '微信') {
+        if (this.payObject.title.indexOf('微信') != -1) {
             stepInstruct = this.defaultSteps.wx;
-        }else if (this.payObject.title == '支付宝') {
+        }else if (this.payObject.title.indexOf('支付宝') != -1) {
             stepInstruct = this.defaultSteps.ali;
-        }else if (this.payObject.title == 'QQ') {
+        }else if (this.payObject.title.indexOf('QQ') != -1) {
             stepInstruct = this.defaultSteps.qq;
         }
         stepInstruct = stepInstruct.replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&&quot;/g, "").replace(/&#039;/g, "");
@@ -186,13 +183,13 @@ class RechargeInfo extends Component {
     }
 
     _platform = () => {
-        if (this.payObject.title == '微信') {
+        if (this.payObject.title.indexOf('微信') != -1) {
             this.placeholder = '请输入微信昵称';
             return '微信转账';
-        }else if (this.payObject.title == '支付宝') {
+        }else if (this.payObject.title.indexOf('支付宝') != -1) {
             this.placeholder = '请输入支付宝昵称';
             return '支付宝转账';
-        }else if (this.payObject.title == 'QQ') {
+        }else if (this.payObject.title.indexOf('QQ') != -1) {
             this.placeholder = '请输入qq号码';
             return 'QQ钱包转账';
         }
@@ -205,7 +202,7 @@ class RechargeInfo extends Component {
         }else {
             tip = '转账信息';
         }
-        if (this.payObject.title == 'QQ') {
+        if (this.payObject.title.indexOf('QQ') != -1) {
             return this.payObject.title + '钱包' + tip;
         }
         return this.payObject.title + tip;
@@ -221,7 +218,7 @@ class RechargeInfo extends Component {
 
 	_nowPay = () => {
         if (this.payObject.man == 1) {
-            if (this.payObject.title == 'QQ') {
+            if (this.payObject.title.indexOf('QQ') != -1) {
                 if (global_isSpace(this.nikeName) || this.nikeName.trim().length == 0) {
                     this.refs.LoadingView && this.refs.LoadingView.showFaile("请输入qq号码");
                     return;
@@ -249,32 +246,31 @@ class RechargeInfo extends Component {
 			        );
 	}
 
-	//长按保存二维码到相册
 	_saveCodeImg = () => {
-        NativeModules.RNBridgeModule.savePhoto(this.qrcodeURL,(result)=>{
-            if (result.length == 0) { //成功
-                //第三方直接打开
-                if (this.payObject.man == 0) {
-                    this._openAPPURL();
-                }else {
-                    this._postPayData();
-                }
+        var promise = CameraRoll.saveToCameraRoll(this.qrcodeURL);
+        promise.then((result) => {
+            // alert('保存成功！地址如下：\n' + result);
+            //第三方直接打开
+            if (this.payObject.man == 0) {
+                this._openAPPURL();
             }else {
-                Alert.alert(result);
+                this._postPayData();
             }
+        }).catch((error) => {
+            alert('保存失败！\n' + error);
         });
 
 	}
 
 	_openAPPURL = () => {
-		// '微信' 'QQ'
+		// '微信' 'QQ' 支付宝
         let openURL = null;
-        if (this.payObject.title == '微信') {
-            openURL =Android?"tencent.mm": 'weixin://';
-        }else if (this.payObject.title == '支付宝') {
-            openURL = Android?"AlipayGphone":'alipay://';
-        }else if (this.payObject.title == 'QQ') {
-            openURL =Android?"mobileqq": 'mqq://';
+        if (this.payObject.title.indexOf('微信') != -1) {
+            openURL =Android ? "tencent.mm": 'weixin://';
+        }else if (this.payObject.title.indexOf('支付宝') != -1) {
+            openURL = Android ? "AlipayGphone":'alipay://';
+        }else if (this.payObject.title.indexOf('QQ') != -1) {
+            openURL =Android ? "mobileqq": 'mqq://';
         }
         if (openURL == null) {
             this.refs.LoadingView && this.refs.LoadingView.showFaile('无法打开未知的平台');

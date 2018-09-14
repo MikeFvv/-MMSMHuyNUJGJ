@@ -7,7 +7,6 @@
  */
 
 import React, { Component } from 'react';
-import moment from 'moment';
 import {
   View,
   Text,
@@ -36,7 +35,7 @@ var oneIdx_left = 0;  // 左边listview选择的下标
 var towIdx = 0;  //当前选择的是二级玩法菜单下标
 var threeIdx = 0;  //当前选择的三级玩法菜单下标
 
-class NewBuyCenter extends Component {
+export default class NewBuyCenter extends Component {
 
   constructor(props) {
     super(props);
@@ -127,7 +126,6 @@ class NewBuyCenter extends Component {
 
   // 返回是否要刷新render
   shouldComponentUpdate(nextProps, nextState) {
-    let playid = this.state.currentPlayDate ? this.state.currentPlayDate.playid : '';
     let aa = nextProps.wafaDataArr != this.props.wafaDataArr || nextProps.peilvDataArr != this.props.peilvDataArr || nextProps.shopCarZhushuNum != this.props.shopCarZhushuNum; //数据改变
     let bb = nextState.currentPlayDate != this.state.currentPlayDate; // 当前玩法数据改变
     let cc = nextState.clearAllBalls != this.state.clearAllBalls;  // 清空选号
@@ -225,7 +223,9 @@ class NewBuyCenter extends Component {
         }
       } else if (value.tpl == '13' || value.tpl == '14' || value.tpl == '15') {
         // 连码 || 连选-连肖、连尾
-        selectBalls['赔率'] = peilvStr;
+        if (peilvStr.length < 20) {
+          selectBalls['赔率'] = peilvStr; 
+        }
       }
 
       // 自选 统一输入金额的。
@@ -246,8 +246,8 @@ class NewBuyCenter extends Component {
       let tit = Object.keys(selectBalls)[0];
       delete ballDict[tit]; // 删除为空的key
 
-      if (ballDict[`${tit}0`] != null) { // 可能还有一个`${title}0`的，也要删除。
-        delete ballDict[`${tit}0`];
+      if (ballDict[`${tit}^^01`] != null) { // 可能还有一个`${title}^^01`的，也要删除。
+        delete ballDict[`${tit}^^01`];
       }
 
       if (ballDict[`赔率`] != null) { // 可能还有一个赔率的，也要删除。
@@ -283,9 +283,9 @@ class NewBuyCenter extends Component {
         let title = value.leftTitles[b];
         if (keyArr.includes(title)) {
           Object.assign(newBallDic, { [title]: ballDict[title] });
-          if (keyArr.includes(`${title}0`)) {
+          if (keyArr.includes(`${title}^^01`)) {
             // k3二同号 / 大小单双。要多一个
-            Object.assign(newBallDic, { [`${title}0`]: ballDict[`${title}0`] });
+            Object.assign(newBallDic, { [`${title}^^01`]: ballDict[`${title}^^01`] });
           }
         }
       }
@@ -305,7 +305,7 @@ class NewBuyCenter extends Component {
       return [];
     }
     
-    let contentArr = values.content.length > 0 ? values.content.split('+') : [values.playname];
+    let contentArr = values.content.includes('+') ? values.content.split('+') : [values.playname];
     let peilvArr = this._getPeilvWithPlayid(values.playid).split('|'); 
     this.state.BallAsrr = [];
 
@@ -515,16 +515,16 @@ class NewBuyCenter extends Component {
       // pk10冠亚和  
       let aaa1 = ballDict['1冠亚和'];
       let aaa2 = ballDict['2冠亚和'];
-      let bbb1 = ballDict['1冠亚和0'];
-      let bbb2 = ballDict['2冠亚和0'];
-      return {'冠亚和': [...(aaa1 == null ? [] : aaa1), ...(aaa2 == null ? [] : aaa2)], '冠亚和0': [...(bbb1 == null ? [] : bbb1), ...(bbb2 == null ? [] : bbb2)]};
+      let bbb1 = ballDict['1冠亚和^^01'];
+      let bbb2 = ballDict['2冠亚和^^01'];
+      return {'冠亚和': [...(aaa1 == null ? [] : aaa1), ...(aaa2 == null ? [] : aaa2)], '冠亚和^^01': [...(bbb1 == null ? [] : bbb1), ...(bbb2 == null ? [] : bbb2)]};
   }
 
   // 创建BallsK3View的视图   H:90  NoPeilv H:80
   _ballsSquareCreateView(values, balls, isShowTitlt, viewHeight, numColumn, itemHeight) {
     if (balls.length <= 0) { return [] }
 
-    let contentArr = values.content.length > 0 ? values.content.split('+') : [values.playname];
+    let contentArr = values.content.includes('+') ? values.content.split('+') : [values.playname];
     let peilvArr = this._getPeilvWithPlayid(values.playid).split('|');
     this.state.BallAsrr = [];
 
@@ -1143,12 +1143,11 @@ class NewBuyCenter extends Component {
 
     } else if (values.tpl == 6 || values.tpl == 7 || values.tpl == 14) {
       // 特肖、平特一肖 || 合肖 || 二三四五连肖
-      var default_shengxiao = this._shengxiaoIdxBalls(values.tpl == 7 ? true : false);
-      var ballsNumDec = [];
+      var default_shengxiao = GetBallStatus.getLhcShengxiaoBalls(values.tpl == 7 ? true : false);
       for (let b in default_shengxiao) {
         balls.push({ ball: default_shengxiao[b].name, ballNumDec: default_shengxiao[b].balls.join(' ') });
       }
-      return this._ballsSquareCreateView(values, balls, isShowTitlt, values.tpl == 6 ? 700 : 600, 2);
+      return this._ballsSquareCreateView(values, balls, isShowTitlt, values.tpl == 7 ? 600 : 700, 2);
 
     } else if (values.tpl == 8) {
       // 五行
@@ -1166,7 +1165,7 @@ class NewBuyCenter extends Component {
       for (let i = 0; i < name.length; i++) {
         balls.push({ ball: name[i], ballNumDec: ballsNumDec[i] });
       }
-      return this._ballsSquareCreateView(values, balls, isShowTitlt, values.tpl == 15 ? 500 : 600, 2);
+      return this._ballsSquareCreateView(values, balls, isShowTitlt, 600, 2);
 
     } else if (values.tpl == 10) {
       // 七色波
@@ -1249,7 +1248,7 @@ class NewBuyCenter extends Component {
 
     } else if (values.tpl == 7 || values.tpl == 14) {
       // 合肖 || 二三四五连肖
-      var default_shengxiao = this._shengxiaoIdxBalls(values.tpl == 7 ? true : false);
+      var default_shengxiao = GetBallStatus.getLhcShengxiaoBalls(values.tpl == 7 ? true : false);
       for (let b in default_shengxiao) {
         balls.push({ ball: default_shengxiao[b].name, ballNumDec: default_shengxiao[b].balls.join(' ') });
       }
@@ -1275,45 +1274,6 @@ class NewBuyCenter extends Component {
 
     viewHeight = viewHeight > 0 ? viewHeight : Math.ceil(balls.length / numColumn) * 70;
     return this._ballsLhcOptionView(values, balls, viewHeight, numColumn);
-  }
-
-
-  // 生肖下标 的号码
-  _shengxiaoIdxBalls(isHeXiao) {
-
-    var default_shengxiao = {
-      ba_0: { name: '鼠', idx: 0, balls: [] },
-      ba_1: { name: '牛', idx: 1, balls: [] },
-      ba_2: { name: '虎', idx: 2, balls: [] },
-      ba_3: { name: '兔', idx: 3, balls: [] },
-      ba_4: { name: '龙', idx: 4, balls: [] },
-      ba_5: { name: '蛇', idx: 5, balls: [] },
-      ba_6: { name: '马', idx: 6, balls: [] },
-      ba_7: { name: '羊', idx: 7, balls: [] },
-      ba_8: { name: '猴', idx: 8, balls: [] },
-      ba_9: { name: '鸡', idx: 9, balls: [] },
-      ba_10: { name: '狗', idx: 10, balls: [] },
-      ba_11: { name: '猪', idx: 11, balls: [] },
-    };
-
-    let currenYear = moment().format('YYYY'); // 获取到当前时间是哪一年
-    let currenYid = (parseInt(currenYear) - 4) % 12; // 0-11 当年生肖的下标
-    let shidx = global.yearId != '' ? parseInt(global.yearId) : currenYid;
-    for (var k in default_shengxiao) {
-      var start_balls = shidx - default_shengxiao[k].idx + 1;  // 计算生肖位置开始号码
-      if (start_balls < 0) {
-        start_balls = 12 + start_balls;
-      }
-      // 输出生肖对应的号码
-      for (var i = start_balls; i < (isHeXiao ? 49 : 50); i += 12) {
-        if (i === 0) {
-          continue;
-        }
-        var theball = i > 9 ? (i + '') : ('0' + i);
-        default_shengxiao[k].balls.push(theball);
-      }
-    }
-    return default_shengxiao;
   }
 
   // 左边View的item
@@ -1414,8 +1374,6 @@ class NewBuyCenter extends Component {
       
       } else if (playid == '30' || playid == '33') {
         // 三中二/三 || 二中特
-        // peilvArr = [peilvStr];
-        // peilvArr = playid == '30' ? [`${GetBallStatus.peilvHandle(peilvArr[0])}(中二)/${GetBallStatus.peilvHandle(peilvArr[1])}(中三)`] : [`${GetBallStatus.peilvHandle(peilvArr[0])}(中特)/${GetBallStatus.peilvHandle(peilvArr[1])}(中二)`];
         if (this.props.wanfaindex != 0) {
           peilvArr = [peilvStr];
         } else {
@@ -1611,5 +1569,3 @@ class NewBuyCenter extends Component {
   }
 
 }
-
-export default NewBuyCenter;

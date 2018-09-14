@@ -94,7 +94,7 @@ export default class NLhcOptionView extends Component {
 
     sltBallData[this.props.title] = ballArr;
     if (ballNumArr.length > 0) {
-      sltBallData[`${this.props.title}0`] = ballNumArr;
+      sltBallData[`${this.props.title}^^01`] = ballNumArr;
     }
     sltBallData['赔率'] = peilvArr;
     sltBallData['LhcPrice'] = priceArr;

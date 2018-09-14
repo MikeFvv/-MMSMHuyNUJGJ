@@ -161,8 +161,8 @@ export default class RqDxItemView extends Component {
     render() {
 
         let corner = this.props.data.is_corner == 1 ? '角球数' : '';
-        let score = this.props.game_typeID == 0 ? this.props.data.team_score : '滚球';
-        let time = Moment.unix(parseInt(this.props.data.begin_time) / 1000).format('HH:mm');
+        let score = this.props.game_typeID == 0 ? this.props.data.team_score : '';
+        let time = Moment.unix(parseInt(this.props.data.begin_time) / 1000).format('MM/DD HH:mm');
         let rolling = this.props.data.rolling_time;
         rolling = rolling.replace(/1H/, '上半场');
         rolling = rolling.replace(/2H/, '下半场');
@@ -172,8 +172,7 @@ export default class RqDxItemView extends Component {
 
                 <View style={{ height: Adaption.Height(40), flexDirection: 'row', alignItems: 'center' }}>
                     <Text allowFontScaling={false} style={{ flex: 0.12, textAlign: 'center', fontSize: Adaption.Font(17), color: '#ee8447' }}>{score}</Text>
-                    <Text allowFontScaling={false} style={{ flex: 0.25 + (rolling.length > 0 ? 0.13 : 0), textAlign: 'right', fontSize: Adaption.Font(17), color: '#ee8447' }}>{rolling}</Text>
-                    {rolling.length > 0 ? null : <Text allowFontScaling={false} style={{ flex: 0.13, textAlign: 'right', fontSize: Adaption.Font(17), color: '#313131' }}>{time}</Text>}
+                    <Text allowFontScaling={false} style={{ flex: 0.38, textAlign: 'right', fontSize: Adaption.Font(17), color: rolling.length > 0 ? '#ee8447' : '#313131' }}>{rolling.length > 0 ? rolling : time}</Text>
                     <Text allowFontScaling={false} style={{ flex: 0.25, textAlign: 'center', fontSize: Adaption.Font(18), color: '#313131' }}>让球</Text>
                     <Text allowFontScaling={false} style={{ flex: 0.25, textAlign: 'center', fontSize: Adaption.Font(18), color: '#313131' }}>大/小</Text>
                 </View>

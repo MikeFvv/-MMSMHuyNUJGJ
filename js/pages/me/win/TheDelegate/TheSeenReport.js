@@ -301,7 +301,7 @@ export default class TheSeenReport extends React.Component {
     
      } else{
 
-      if (item.item.value.next_count != 0 ) {
+      if (item.item.value.next_count != 0 ) {  //active_count //换取字段的人数
         selectedArr = [item.item.value.username,"查看报表","返回上级","查看下级"];
       }else {
         selectedArr = [item.item.value.username,"查看报表","返回上级"];

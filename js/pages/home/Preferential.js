@@ -32,7 +32,7 @@ export default class Preferential extends Component {
       indexArray:[],
       isFristLoadImageEnd:false, //开始进入加载背景图显示标志by：yangqi
     };
-    this.noData = 0;
+    this.noData = 1;
   }
 
   componentDidMount() {
@@ -126,27 +126,27 @@ export default class Preferential extends Component {
       </TouchableOpacity>
     );
   }
-  //无数据页面
-  _listEmptyComponent() {
-    if(this.noData==0) {
-      return null;
-    }else {
-    return (
-      <CusBaseText style={{ textAlign: 'center', marginTop: height / 2 - 100 }}>暂无活动</CusBaseText>
-    );
-  }
-  }
+  // //无数据页面
+  // _listEmptyComponent() {
+  //   if(this.noData==0) {
+  //     return null;
+  //   }else {
+  //   return (
+  //     <CusBaseText style={{ textAlign: 'center', marginTop: height / 2 - 100 }}>暂无活动</CusBaseText>
+  //   );
+  // }
+  // }
 
   //优惠活动
   _preferentialFlatlist() {
 
     return (
-      this.state.preferentialArray.length==0?<CusBaseText style={{ textAlign: 'center', marginTop: height / 2 - 100 }}>暂无活动</CusBaseText>:
+      this.noData!=0?<CusBaseText style={{ textAlign: 'center', marginTop: height / 2 - 100 }}>暂无活动</CusBaseText>:
       <FlatList
         automaticallyAdjustContentInsets={false}
         alwaysBounceHorizontal={false}
         data={this.state.preferentialArray}
-        ListEmptyComponent={this._listEmptyComponent()} // 没有数据时显示的界面
+      //  ListEmptyComponent={this._listEmptyComponent()} // 没有数据时显示的界面
         renderItem={item => this._renderPreferentialItemView(item)}
       />
     );

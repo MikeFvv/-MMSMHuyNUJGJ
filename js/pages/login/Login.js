@@ -224,13 +224,15 @@ export default class Login extends Component {
                         global.UserLoginObject = loginObject;
 
 
-                        //将数据存到本地, 延迟10秒再赋值，可能可以防止出现登录失败也赋值的问题😂
-                        setTimeout(() => {
+                        // //将数据存到本地, 延迟10秒再赋值，可能可以防止出现登录失败也赋值的问题😂
+                        // setTimeout(() => {
+                        //
+                        //
+                        // }, 10000);
 
-                            global.UserInfo.shareInstance();
-                            global.UserInfo.saveUserInfo(global.UserLoginObject, (result) => {
-                            });
-                        }, 10000);
+                        global.UserInfo.shareInstance();
+                        global.UserInfo.saveUserInfo(global.UserLoginObject, (result) => {
+                        });
 
                         global.GPlayDatas = {}; //重新登录，清空玩法数据, 再存GPlayDatas数据
                         let datas = JSON.stringify(global.GPlayDatas);

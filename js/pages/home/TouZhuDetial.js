@@ -223,8 +223,17 @@ export default class TouZhuDetial extends Component {
       this._fetchCheDanData();
       }
     } else {
-      global.isInBuyLotVC = true;
-      navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
+
+      //如果是从投注页面进入投注详情。则点击再来一注返回投注页。不推出新页面。防止界面没销毁导致期数错乱。
+      if (global.isInBuyLotVC == true){
+          PushNotification.emit('goBackBuyLotFromTouZhuDetailVCNotification', this.state.detialArray.value.gameid);
+          this.props.navigation.goBack(this.props.navigation.state.params.buyLotPushVCKey);
+      }
+      else {
+        //正常进入投注详情页面点击再来一注进入投注页面
+          global.isInBuyLotVC = true;
+          navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
+      }
     }
   }
   //在来一注&撤单

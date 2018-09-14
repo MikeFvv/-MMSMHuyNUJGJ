@@ -34,95 +34,6 @@ export default class The extends Component {
         ),
     });
 
-    //通过tihs属性调用函数
-    _showAlert(title) {
-        Alert.alert(
-            '提示',
-            title,
-            [
-                {
-                    text: '确定', onPress: () => {
-                }
-                },
-            ]
-        )
-    }
-
-    //add by Allen 2017/12/30
-    constructor(props) {
-        super(props);
-        this.jintitanlist = 0;
-
-        this.searchId = this.props.navigation.state.params.searchId ? this.props.navigation.state.params.searchId : '';
-
-        this.jintianData = null;
-
-        let day = '0';
-        if (HuoCalendar.getDate() < 10) {
-            day = '0' + HuoCalendar.getDate()
-        } else {
-            day = HuoCalendar.getDate()
-        }
-        //今天
-        this.homeTime = HuoCalendar.getFullYear() + '-' + (HuoCalendar.getMonth() + 1) + '-' + day;
-        this.endTime = HuoCalendar.getFullYear() + '-' + (HuoCalendar.getMonth() + 1) + '-' + day;
-
-    }
-
-
-    componentDidMount() {
-        if (global.UserLoginObject.Uid != '') {
-            this._fetchPersonalMessageData();
-
-        } else {
-            Alert.alert(
-                '温馨提示',
-                '登录超时,请重新登录',
-                [
-                    {
-                        text: '确定', onPress: () => {
-                    }
-                    },
-                ]
-            )
-        }
-    }
-
-
-    //代理报表数据
-    _fetchPersonalMessageData() {
-
-
-        //请求参数
-        let params = new FormData();
-        params.append("ac", "getDailiStaticData");
-        params.append("uid", global.UserLoginObject.Uid);
-        params.append('token', global.UserLoginObject.Token);
-        params.append("lasttime", '0'); 
-        params.append('sessionkey',global.UserLoginObject.session_key);
-        params.append("search", this.searchId);
-
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-        promise
-            .then(response => {
-
-                if (response.msg == 0) {
-                    this.jintianData = response.data;
-                    // console.log("this.jintianData",this.jintianData);
-                    this.jintitanlist = 1;
-
-                } else {
-
-                }
-
-            })
-            .catch(err => {
-
-            });
-
-    }
-
-
     render() {
         const {navigate} = this.props.navigation;
         return (
@@ -147,8 +58,6 @@ export default class The extends Component {
                     {/*代理报表*/}
                     <TouchableOpacity activeOpacity={1} onPress={() => navigate('TheStatements', {
                         title: '代理报表',
-                        jintianData: this.jintianData,
-                        jintitanlist: this.jintitanlist
                     })} style={styles.touchItem}>
                         <View style={styles.touchItem}>
                             <Image style={styles.iconStyles} source={require('../img/Agency/dailibaobiao.png')}></Image>

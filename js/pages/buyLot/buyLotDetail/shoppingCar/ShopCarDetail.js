@@ -130,7 +130,6 @@ export default class ShopCarDetail extends Component {
     componentDidMount() {
 
         // global.isInShopCarVC = true; //是否在购物车界面
-        global.isInBuyLotVC = false;  //是否在投注界面,防止在这页面摇一摇也会震动
 
         this.props.navigation.setParams({
             clearShopCar: this._clearShopCar,
@@ -172,6 +171,7 @@ export default class ShopCarDetail extends Component {
             PushNotification.emit('ClearShopCarOffNotification');  //清空购物车，屏蔽查看购物车按钮的通知
             PushNotification.emit('HandAutoAddNotification', 0);
             this.props.navigation.goBack();
+            global.isInBuyLotVC = true;
         }
         else {
             Alert.alert(
@@ -185,6 +185,7 @@ export default class ShopCarDetail extends Component {
                         text: '确定', onPress: () => {
                             this._reasetShopCar();
                             PushNotification.emit('HandAutoAddNotification', 0);
+                            global.isInBuyLotVC = true;
                             this.props.navigation.goBack();
                         }
                     },
@@ -236,13 +237,13 @@ export default class ShopCarDetail extends Component {
 
                 <View style={{ paddingLeft: 10, height: 30, alignItems: 'center', flexDirection: 'row' }}>
                     <TouchableOpacity style={{ flex: 0.48 }} activeOpacity={0.5}
-                        onPress={() => {
-                            this.setState({
-                                isShowBallsDetail: true,
-                                currentLookBallsText: item.item.value.xiangqing,
-                                currentLookWanFaTitle: item.item.value.wanfa,
-                            })
-                        }}>
+                                      onPress={() => {
+                                          this.setState({
+                                              isShowBallsDetail: true,
+                                              currentLookBallsText: item.item.value.xiangqing,
+                                              currentLookWanFaTitle: item.item.value.wanfa,
+                                          })
+                                      }}>
                         <CusBaseText numberOfLines={1} style={{ fontSize: Adaption.Font(18, 16) }}>
                             {this._xiangqingBallsTextView(item.item.value.xiangqing)}
                         </CusBaseText>
@@ -341,15 +342,15 @@ export default class ShopCarDetail extends Component {
                             style={{ paddingLeft: 5, fontSize: Adaption.Font(18, 16), color: '#9d9d9d' }}>元</CusBaseText>
                     </View>
                     <TouchableOpacity style={{ flex: 0.12, alignItems: 'center' }} activeOpacity={0.5}
-                        onPress={() => {
-                            let zhuShu = this.state.totalZhuShu - this.state.dataSource[item.index].value.zhushu; //减去对应的注数
-                            this.state.dataSource.splice(item.index, 1);  //移除对应的数据
-                            this._sumTotalPrice(this.state.beiShu, this.state.zhuiQiShu, this.state.dataSource);
-                            this.setState({
-                                dataSource: this.state.dataSource,    //删除某个数据
-                                totalZhuShu: zhuShu,     //重新计算注数
-                            })
-                        }}>
+                                      onPress={() => {
+                                          let zhuShu = this.state.totalZhuShu - this.state.dataSource[item.index].value.zhushu; //减去对应的注数
+                                          this.state.dataSource.splice(item.index, 1);  //移除对应的数据
+                                          this._sumTotalPrice(this.state.beiShu, this.state.zhuiQiShu, this.state.dataSource);
+                                          this.setState({
+                                              dataSource: this.state.dataSource,    //删除某个数据
+                                              totalZhuShu: zhuShu,     //重新计算注数
+                                          })
+                                      }}>
                         <Image style={{ width: 25, height: 25 }} source={require('../../img/ic_shopCarDelete.png')} />
                     </TouchableOpacity>
                 </View>
@@ -401,11 +402,11 @@ export default class ShopCarDetail extends Component {
                     }
                     <CusBaseText style={{ fontSize: Adaption.Font(16, 14), color: '#9d9d9d' }}> 我已阅读并同意
                         <CusIosBaseText style={{ fontSize: Adaption.Font(15, 13), color: '#00a0e9' }}
-                            onPress={() => {
-                                navigation.navigate('ServiceArgreement', { title: GlobalConfig.userData.web_title + '服务协议' })
-                            }}>
+                                        onPress={() => {
+                                            navigation.navigate('ServiceArgreement', { title: GlobalConfig.userData.web_title + '服务协议' })
+                                        }}>
                             《{GlobalConfig.userData.web_title}服务协议》
-                            </CusIosBaseText>
+                        </CusIosBaseText>
                     </CusBaseText>
                 </TouchableOpacity>
             </View>
@@ -460,9 +461,9 @@ export default class ShopCarDetail extends Component {
                     },
                     {
                         text: '保留下一期', onPress: () => {
-                           for (let dataModel of dataSource){
-                               dataModel.value.qishu = global.CurrentQiShu;
-                           }
+                            for (let dataModel of dataSource){
+                                dataModel.value.qishu = global.CurrentQiShu;
+                            }
                         }
                     }
                 ])
@@ -488,7 +489,7 @@ export default class ShopCarDetail extends Component {
                 .then((responseData) => {
 
                     this.refs.LoadingView && this.refs.LoadingView.dissmiss();
-                    
+
                     console.log('投注返回 = ',responseData);
 
                     if (responseData.msg != 0) {
@@ -520,6 +521,7 @@ export default class ShopCarDetail extends Component {
                         PushNotification.emit('ClearShopCarOffNotification');  //清空购物车，屏蔽查看购物车按钮的通知
                         PushNotification.emit('HandAutoAddNotification', 0);
                         PushNotification.emit('TouZhuSuccessNotifcation', touZhuSuccessMessge); //投注成功通知
+                        global.isInBuyLotVC = true;  //投注成功后
                         this.props.navigation.goBack();
 
                     } else if (responseData.msg == 20010) { //余额不足是否前往充值
@@ -530,8 +532,8 @@ export default class ShopCarDetail extends Component {
                             [
                                 {
                                     text: '确定', onPress: () => {
-                                    this.props.navigation.navigate('RechargeCenter')
-                                }
+                                        this.props.navigation.navigate('RechargeCenter')
+                                    }
                                 },
                                 {
                                     text: '取消', onPress: () => { }
@@ -592,7 +594,7 @@ export default class ShopCarDetail extends Component {
     _createLeftNavView() {
         return (
             <TouchableOpacity style={{ marginTop: 0, padding: 20 }} activeOpacity={0.5}
-                onPress={() => this._normalGoBackToBuyLotDetailVC()}>
+                              onPress={() => this._normalGoBackToBuyLotDetailVC()}>
                 <View style={[styles.nav_headerLeft_view, { marginTop: SCREEN_HEIGHT == 812 ? 56 : 34, }]} />
             </TouchableOpacity>
         )
@@ -616,6 +618,7 @@ export default class ShopCarDetail extends Component {
             global.ZhuiQiShu = '1'; //缓存追期数
             PushNotification.emit('ClearShopCarOffNotification'); //判断是否清空购物车
         }
+        global.isInBuyLotVC = true;
 
         this.props.navigation.goBack();
     }
@@ -630,8 +633,8 @@ export default class ShopCarDetail extends Component {
         return (
             <View>
                 <View style={[styles.container, { marginTop: this.state.marginTop }]}
-                    onLayout={this._onLayout}
-                    ref='carView'
+                      onLayout={this._onLayout}
+                      ref='carView'
                 >
                     <View style={{ backgroundColor: COLORS.appColor, height: navHeaderHeight, flexDirection: 'row', justifyContent: 'space-between' }}>
                         {/*左边返回*/}
@@ -703,10 +706,10 @@ export default class ShopCarDetail extends Component {
                                         }
                                     }
                                 }
-
+                                if(true){
                                 if (isDifferentWanFa == false) {
 
-                                    this.props.navigation.navigate('AllenSmartChaseNumberVersion2', {
+                                    this.props.navigation.navigate('AllenSmartChaseNumberVersion3', {
                                         title: '智能追号',
                                         //jiezhiTime: jiezhiTime,
                                         tag: tag,
@@ -720,8 +723,55 @@ export default class ShopCarDetail extends Component {
                                     });
 
                                 } else {
+                                    this.props.navigation.navigate('AllenSmartChaseNumberVersion3', {
+                                        title: '智能追号',
+                                        //jiezhiTime: jiezhiTime,
+                                        tag: tag,
+                                        qishu: qishu,
+                                        datas: this.state.dataSource,
+                                        js_tag: this.state.js_tag,
+                                        currentQiShu: global.CurrentQiShu,
+                                        backKey: this.props.navigation.state.key,
+                                        totalZhuShu: this.state.totalZhuShu,
+                                        totalPrice: this.state.totalPrice / (this.state.zhuiQiShu * this.state.beiShu)
+                                    });
+                                    // Alert.alert('仅支持单一玩法', '您的选号包含多种玩、暂无法进行只能追号', [{ text: '确定', onPress: () => { } }]);
+                                }
+                                }else{
 
-                                    Alert.alert('仅支持单一玩法', '您的选号包含多种玩、暂无法进行只能追号', [{ text: '确定', onPress: () => { } }]);
+
+                                    if (isDifferentWanFa == false) {
+
+                                        this.props.navigation.navigate('AllenSmartChaseNumberVersion2', {
+                                            title: '智能追号',
+                                            //jiezhiTime: jiezhiTime,
+                                            tag: tag,
+                                            qishu: qishu,
+                                            datas: this.state.dataSource,
+                                            js_tag: this.state.js_tag,
+                                            currentQiShu: global.CurrentQiShu,
+                                            backKey: this.props.navigation.state.key,
+                                            totalZhuShu: this.state.totalZhuShu,
+                                            totalPrice: this.state.totalPrice / (this.state.zhuiQiShu * this.state.beiShu)
+                                        });
+
+                                    } else {
+                                        // this.props.navigation.navigate('AllenSmartChaseNumberVersion2', {
+                                        //     title: '智能追号',
+                                        //     //jiezhiTime: jiezhiTime,
+                                        //     tag: tag,
+                                        //     qishu: qishu,
+                                        //     datas: this.state.dataSource,
+                                        //     js_tag: this.state.js_tag,
+                                        //     currentQiShu: global.CurrentQiShu,
+                                        //     backKey: this.props.navigation.state.key,
+                                        //     totalZhuShu: this.state.totalZhuShu,
+                                        //     totalPrice: this.state.totalPrice / (this.state.zhuiQiShu * this.state.beiShu)
+                                        // });
+                                        Alert.alert('仅支持单一玩法', '您的选号包含多种玩、暂无法进行只能追号', [{ text: '确定', onPress: () => { } }]);
+                                    }
+
+
                                 }
                             }
                         }}
@@ -880,9 +930,9 @@ export default class ShopCarDetail extends Component {
                             alignItems: 'center',
                             backgroundColor: 'rgba(0,0,0,0.2)'
                         }}
-                            onPress={() => {
-                                this.setState({ isShowBallsDetail: false })
-                            }}>
+                                          onPress={() => {
+                                              this.setState({ isShowBallsDetail: false })
+                                          }}>
                             <TouchableOpacity activeOpacity={1} ref={(c) => this._Views = c} style={{
                                 width: SCREEN_WIDTH * 0.9,
                                 height: Adaption.Height(200),
@@ -896,9 +946,9 @@ export default class ShopCarDetail extends Component {
                                 </View>
                                 <Image style={{ height: 1, width: SCREEN_WIDTH * 0.8 }} source={require('../../img/ic_dottedLine.png')} />
                                 <Text allowFontScaling={false}
-                                    ref={(c) => this._ballTextView = c}
-                                    style={{ padding: 10, fontSize: Adaption.Font(20, 18) }}
-                                    onLayout={(event) => this._onBallsTextLayout(event)}>
+                                      ref={(c) => this._ballTextView = c}
+                                      style={{ padding: 10, fontSize: Adaption.Font(20, 18) }}
+                                      onLayout={(event) => this._onBallsTextLayout(event)}>
                                     {this._xiangqingBallsTextView(this.state.currentLookBallsText)}
                                 </Text>
 
@@ -916,9 +966,9 @@ export default class ShopCarDetail extends Component {
                                         justifyContent: 'center',
                                         alignItems: 'center'
                                     }}
-                                        onPress={() => {
-                                            this.setState({ isShowBallsDetail: false })
-                                        }}>
+                                                      onPress={() => {
+                                                          this.setState({ isShowBallsDetail: false })
+                                                      }}>
                                         <CusBaseText style={{ fontSize: Adaption.Font(19, 17), color: '#898989' }}>取消</CusBaseText>
                                     </TouchableOpacity>
                                     <View
@@ -933,9 +983,9 @@ export default class ShopCarDetail extends Component {
                                         justifyContent: 'center',
                                         alignItems: 'center'
                                     }}
-                                        onPress={() => {
-                                            this.setState({ isShowBallsDetail: false })
-                                        }}>
+                                                      onPress={() => {
+                                                          this.setState({ isShowBallsDetail: false })
+                                                      }}>
                                         <CusBaseText style={{ fontSize: Adaption.Font(19, 17), color: '#00a0e9' }}>确定</CusBaseText>
                                     </TouchableOpacity>
                                 </View>
@@ -956,48 +1006,48 @@ export default class ShopCarDetail extends Component {
                     // this.setState({textValue1})
                     this.refs.AllenBottomTool.updateTextOne(textValue1);
                 }}
-                    spitout2={(textValue2) => {
-                        // this.setState({textValue1})
-                        this.refs.AllenBottomTool.updateTextTwo(textValue2);
-                    }}
-                    hideKeboardCallBack={(whichOne) => {
-                        this.state.marginTop = 0;
-                        this.refs.AllenBottomTool.hideBottomContent(whichOne);
-                        // this.refs.AllenBottomTool
-                    }}
+                               spitout2={(textValue2) => {
+                                   // this.setState({textValue1})
+                                   this.refs.AllenBottomTool.updateTextTwo(textValue2);
+                               }}
+                               hideKeboardCallBack={(whichOne) => {
+                                   this.state.marginTop = 0;
+                                   this.refs.AllenBottomTool.hideBottomContent(whichOne);
+                                   // this.refs.AllenBottomTool
+                               }}
 
-                    comfirmBet={() => {
-                        if (this.state.dataSource.length <= 0) {
-                            Alert.alert('提示', '您的投注列表空空如也!', [{
-                                text: '确定', onPress: () => {
-                                }
-                            }]);
+                               comfirmBet={() => {
+                                   if (this.state.dataSource.length <= 0) {
+                                       Alert.alert('提示', '您的投注列表空空如也!', [{
+                                           text: '确定', onPress: () => {
+                                           }
+                                       }]);
 
-                        } else if (this.state.isArgree == true) {
+                                   } else if (this.state.isArgree == true) {
 
-                            if (this.state.isLockFengPan == true) { //封盘时不能点击投注
+                                       if (this.state.isLockFengPan == true) { //封盘时不能点击投注
 
-                                this.refs.Toast && this.refs.Toast.show('当前期数已封盘，禁止投注!', 2000);
-                                return;
-                            }
-                            else {
-                                if (this.comformTouZhuWating == false) {
+                                           this.refs.Toast && this.refs.Toast.show('当前期数已封盘，禁止投注!', 2000);
+                                           return;
+                                       }
+                                       else {
+                                           if (this.comformTouZhuWating == false) {
 
-                                    this.comformTouZhuWating = true;
-                                    this._comformRequest();
-                                    setTimeout(() => {
-                                        this.comformTouZhuWating = false
-                                    }, 1000)
-                                }
-                            }
+                                               this.comformTouZhuWating = true;
+                                               this._comformRequest();
+                                               setTimeout(() => {
+                                                   this.comformTouZhuWating = false
+                                               }, 1000)
+                                           }
+                                       }
 
-                        } else {
-                            Alert.alert('提示', '请先阅读并同意服务协议', [{
-                                text: '确定', onPress: () => {
-                                }
-                            }]);
-                        }
-                    }}
+                                   } else {
+                                       Alert.alert('提示', '请先阅读并同意服务协议', [{
+                                           text: '确定', onPress: () => {
+                                           }
+                                       }]);
+                                   }
+                               }}
                 />
                 {/*<AllenKeyboard ref='AllenKeyBoard2' spitout={(textValue2) => {*/}
                 {/*// this.setState({textValue2})*/}

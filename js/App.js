@@ -124,7 +124,12 @@ import FeedbackList from "./pages/me/newMe/FeedbackList";
 import FeedBackListDetial from "./pages/me/newMe/FeedBackListDetial";
 //智能追号
 import SmartChaseNumber from './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/SmartChaseNumber';//智能追号
-import AllenSmartChaseNumberVersion2 from  './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/AllenSmartChaseNumberVersion2'; //智能追号version2
+import AllenSmartChaseNumberVersion2 from './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/AllenSmartChaseNumberVersion2'; //智能追号version2
+import AllenSmartChaseNumberVersion3 from './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/AllenSmartChaseNumberVersion3'; //智能追号version3
+
+import KnowChanPlan3 from './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/KnowChanPlan';//智能追号3.0
+import HighEnergy from './pages/buyLot/buyLotDetail/touzhu2.0/SmartChaseNumber/HighEnergy';//智能追号3.0
+
 
 //自定义tabBar
 import TabJs from './allenPlus/AllenTabBar';
@@ -384,9 +389,14 @@ const MainNav = StackNavigator({
 
     //智能追号
     SmartChaseNumber:{screen:SmartChaseNumber},
+    KnowChanPlan3:{screen:KnowChanPlan3},
+    HighEnergy:{screen:HighEnergy},
 
     //智能追号Version
     AllenSmartChaseNumberVersion2:{screen:AllenSmartChaseNumberVersion2},
+
+    //智能追号Version3版本
+    AllenSmartChaseNumberVersion3:{screen:AllenSmartChaseNumberVersion3},
 
     //自定义彩种
     HomeCustmCaiZhongView:{screen:HomeCustmCaiZhongView},

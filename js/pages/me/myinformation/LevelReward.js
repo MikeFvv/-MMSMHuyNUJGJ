@@ -87,10 +87,17 @@ export default class LevelReward extends Component {
                     <CusBaseText style={{color:COLORS.appColor,fontSize:17}}>{'+'+item.price+' 彩金'}</CusBaseText>
                 </View>
                 <View style={{justifyContent:'center',alignItems:'flex-end',flex:0.33}}>
-                    <CusBaseText style={{color:'rgb(66,66,66)',fontSize:15,textAlign:'center'}}>{times[0]+'\n'+times[1]}</CusBaseText>
+                    <CusBaseText style={{color:'rgb(66,66,66)',fontSize:15,textAlign:'center'}}>{this._showTime(times)}</CusBaseText>
                 </View>
             </View>
         );
+    }
+
+    _showTime = (times) => {
+        if (times[0] && times[1]) {
+            return times[0]+'\n'+times[1];
+        }
+        return times[0];
     }
 
     _renderSeparator = () => {

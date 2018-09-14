@@ -200,8 +200,7 @@ export default class TouZhuZuCaiDanZhuDetial extends Component {
     if (indexIn == 0) {
       this._fetchCheDanData();
     } else {
-      global.isInBuyLotVC = true;
-      navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
+      navigate('FootballGame', { gameId: this.state.detialArray.value.gameid })
     }
   }
   //在来一注&撤单

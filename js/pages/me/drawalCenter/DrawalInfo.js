@@ -96,41 +96,31 @@ export default class DrawalInfo extends Component {
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
-            .then((responseData) => {
-
-                if (responseData.msg == 0) {
-
+            .then((response) => {
+                if (response.msg == 0) {
                     this.refs.LoadingView && this.refs.LoadingView.cancer();
-                    let bankID = `${responseData.data.bink_id}`;
+                    let bankID = `${response.data.bink_id}`;
                     let bankItemObject = null;
-
-                    if (responseData.data.banklist){
-
-                        for (let i = 0 ; i < responseData.data.banklist.length; i++){
-
-                            let bankModel = responseData.data.banklist[i];
-
+                    if (response.data.banklist){
+                        for (let i = 0 ; i < response.data.banklist.length; i++){
+                            let bankModel = response.data.banklist[i];
                             if (bankID == bankModel.id){
                                 bankItemObject = bankModel; //拿到目前默认银行卡的Item
                                 break;
                             }
                         }
                     }
-
                     this.setState({
-                        resultObject: responseData.data,
+                        resultObject: response.data,
                         bankItem: bankItemObject ? bankItemObject : null,
                     });
 
                 } else {
-
                     //余额不足不能进入提款界面
-                    if (responseData.param) {
-                        this.refs.LoadingView && this.refs.LoadingView.showFaile(responseData.param);
+                    if (response.param) {
+                        this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                     }
-
                     setTimeout(() => {
-
                     }, 1000);
                 }
 
@@ -227,7 +217,7 @@ export default class DrawalInfo extends Component {
                                 returnKeyType="done"
                                 underlineColorAndroid='transparent'
                                 style={styles.value}
-                                placeholder={`最少提款金额为${this.state.resultObject ? this.state.resultObject.min_take : 0}元`}
+                                placeholder={`最小提款金额为${this.state.resultObject ? this.state.resultObject.min_take : 0}元`}
                                 keyboardType={global.iOS ? 'number-pad' : 'numeric'}
                                 onChangeText={(text) => this.drawalMoney = text}
                             >
@@ -374,13 +364,13 @@ export default class DrawalInfo extends Component {
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
-            .then((responseData) => {
+            .then((response) => {
 
-                if (responseData.msg == 0) {
+                if (response.msg == 0) {
                     this.refs.LoadingView && this.refs.LoadingView.cancer();
                     this.props.navigation.navigate('DrawalSubmit', { drawalNumber: this.drawalMoney });
                 } else {
-                    this.refs.LoadingView && this.refs.LoadingView.showFaile(responseData.param);
+                    this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                 }
 
             })

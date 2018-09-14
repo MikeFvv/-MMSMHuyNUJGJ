@@ -1113,22 +1113,19 @@ class NewOpenInfoView extends Component {
                         </CusBaseText>
                     </View>
                     <View style = {{flex:0.45,  alignItems:'flex-end', justifyContent:'center'}}>
-                    <TouchableOpacity activeOpacity={0.8} style = {{marginRight:5, justifyContent:'center'}} onPress = {() => {
+                    <TouchableOpacity activeOpacity={1} style = {{marginRight:5, justifyContent:'center'}} onPress = {() => {
 
-                            if (global.UserLoginObject.Uid != '' ){
-
-                                this.setState({isShowUserMoney:!this.state.isShowUserMoney})
-                            }
-                            else {
+                            if (global.UserLoginObject.Uid == '' ){
 
                                 this.props.NoLoginClick ?  this.props.NoLoginClick() : null;
                             }
 
+
                         }}>
                         {global.UserLoginObject.Uid ? <CusBaseText style = {{fontSize:Adaption.Font(15)}}>
-                            余额:<CusBaseText style = {{fontSize:Adaption.Font(15), color:this.state.isShowUserMoney == true ? '#eb3349' : '#00a3e9'}}>
-                                {this.state.isShowUserMoney == true ? global.UserLoginObject.TotalMoney : `[显示]`}
-                            </CusBaseText>{this.state.isShowUserMoney == true ? '元' : ''}
+                            余额:<CusBaseText style = {{fontSize:Adaption.Font(15), color:'#eb3349'}}>
+                                {global.UserLoginObject.TotalMoney}
+                            </CusBaseText>元
                             </CusBaseText> :
                             <CusBaseText style = {{fontSize:Adaption.Font(15)}}>
                                 余额:请<CusBaseText style = {{fontSize:Adaption.Font(15), color:'#00a3e9'}}>

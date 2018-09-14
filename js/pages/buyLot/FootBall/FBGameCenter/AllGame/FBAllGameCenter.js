@@ -348,15 +348,15 @@ export default class FBAllGameCenter extends Component {
                     } else {
                         // 新的进这里（让球/大小）
                         if (ballData[0].sltIdx == 0) {
-                            if (dkey.includes('HC')) {
+                            if (dkey == 'HC') {
                                 sltDic['sltIdx'] = 0;
-                            } else if (dkey.includes('GL')) {
+                            } else if (dkey == 'GL') {
                                 sltDic['sltIdx'] = 2;
                             }
                         } else {
-                            if (dkey.includes('HC')) {
+                            if (dkey == 'HC') {
                                 sltDic['sltIdx'] = 1;
-                            } else if (dkey.includes('GL')) {
+                            } else if (dkey == 'GL') {
                                 sltDic['sltIdx'] = 3;
                             }
                         }   

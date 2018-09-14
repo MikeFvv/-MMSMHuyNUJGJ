@@ -557,7 +557,7 @@ class NewBalls0_9Peilv extends Component {
 
     let ballsdata = { [this.props.title]: selectBallArr };
     if (selectBallNumArr.length > 0) {
-      ballsdata[`${this.props.title}0`] = selectBallNumArr;
+      ballsdata[`${this.props.title}^^01`] = selectBallNumArr;
     }
 
     if (selectPeilvs.length > 0) {

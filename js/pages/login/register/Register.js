@@ -315,7 +315,7 @@ export default class Register extends Component {
     _showInfo(content) {
 
         Alert.alert(
-            '提示',
+            '温馨提示',
             content,
             [
                 {

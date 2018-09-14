@@ -120,8 +120,8 @@ function handleLHCTouZhuBalls(params) {
      let ballsXiangQing = playData.tpl == '12' ? ballArr.join(' ') : ballArr.join(' ');
      let ballNums = ballArr.join('+');;
 
-     if (ballsData[`${title}0`] != null) {
-       ballNums = ballsData[`${title}0`].join('+');
+     if (ballsData[`${title}^^01`] != null) {
+       ballNums = ballsData[`${title}^^01`].join('+');
      }
 
      if (playData.tpl == '12' && playid == '21') {
@@ -176,16 +176,22 @@ function handleLHCTouZhuBalls(params) {
     // 连码 连肖 连尾
     let newBallsArr = lhcZhu_lianxuan_lianma(ballArr, playData.playid);
     let newBallsZW = [];
-    if (ballsData[`${title}0`] != null) {
+    if (ballsData[`${title}^^01`] != null) {
       newBallsZW = newBallsArr;
-      newBallsArr = lhcZhu_lianxuan_lianma(ballsData[`${title}0`], playData.playid);
+      newBallsArr = lhcZhu_lianxuan_lianma(ballsData[`${title}^^01`], playData.playid);
+    }
+
+    let sltPeilvAr = []; // 选择的号码对应的赔率
+    if ((playData.tpl == '14' || playData.tpl == '15') && typeof(ballsData.赔率) == 'object') {
+      // 连肖、连尾的赔率
+      sltPeilvAr = lhcZhu_lianxuan_lianma(ballsData.赔率, playData.playid);
     }
 
     newBallsArr.map((ballA, i) => {
       let ballNum = `${ballA.join('+')}`;
       let xiangqingStr = ballA.join(' ');
 
-      if (ballsData[`${title}0`] != null) {
+      if (ballsData[`${title}^^01`] != null) {
         xiangqingStr = newBallsZW[i].join(' ');
       }
 
@@ -204,6 +210,20 @@ function handleLHCTouZhuBalls(params) {
         price = parseFloat(ballsData['LhcPrice']) / params.zhushu;  // 输入的总金额 除 注数
       }
 
+      let peilvStr = (ballsData.赔率.length == 1 && playData.tpl != '13') ? ballsData.赔率[0] : ballsData.赔率;
+      if ((playData.tpl == '14' || playData.tpl == '15') && typeof(ballsData.赔率) == 'object') {
+        // 连肖、连尾的赔率 取最小的显示。
+        for (let x = 0; x < sltPeilvAr[i].length; x++) {
+          if (x == 0) {
+            peilvStr = sltPeilvAr[i][x];
+          } else {
+            if (parseFloat(peilvStr) > parseFloat(sltPeilvAr[i][x])) {
+              peilvStr = sltPeilvAr[i][x];
+            }
+          }
+        }
+      }
+
       // 定义对象，类似Model
       let shopCarModel = {
           singlePrice: price,  //单价
@@ -211,7 +231,7 @@ function handleLHCTouZhuBalls(params) {
           zhushu: 1,   //注数
           balls: ballNum,
           wanfa: playData.wanfa,  // 玩法
-          peilv: (ballsData.赔率.length == 1 && playData.tpl != '13') ? ballsData.赔率[0] : ballsData.赔率,  // tpl==13连码的赔率返回是字符串 不是数组。
+          peilv: peilvStr,  // tpl==13连码的赔率返回是字符串 不是数组。
           gameid: params.gameid,
           playid: playData.playid,
           xiangqing: xiangqingStr,  // 详情
@@ -229,10 +249,10 @@ function handleLHCTouZhuBalls(params) {
       let lastPeilv = peilvArr[i];
 
       // 从ballsData里面拿到 所选号码对应的下标（数字）。
-      if (ballsData[`${title}0`] == null) {
+      if (ballsData[`${title}^^01`] == null) {
         ballNum = ballArr[i];
       } else {
-        ballNum = ballsData[`${title}0`][i];
+        ballNum = ballsData[`${title}^^01`][i];
       }
 
       let xiangqingStr = ballArr[i];
@@ -320,9 +340,9 @@ function handleTouZhuBalls(params) {
       let lastPeilv = peilvArr != null ? peilvArr[i] : playPeilv; 
       let ballNum = ballsData[`${title}`][i];
 
-      // 如果[`${title}0`] 不为空，则改变ballNum的值。
-      if (ballsData[`${title}0`] != null) {
-        ballNum = ballsData[`${title}0`][i];
+      // 如果[`${title}^^01`] 不为空，则改变ballNum的值。
+      if (ballsData[`${title}^^01`] != null) {
+        ballNum = ballsData[`${title}^^01`][i];
       }
 
       let xiangqing = `${title}(${ballArr[i]})`;
@@ -406,7 +426,7 @@ function handleTouZhuBalls(params) {
 
         let title = titlesArr[i];
         let ballArr = ballsData[title];  // 拿到当前选择的号码
-        let ballNUmArr = ballsData[`${title}0`];  // 对应的下标。
+        let ballNUmArr = ballsData[`${title}^^01`];  // 对应的下标。
 
         for (let j = 0; j < ballArr.length; j++) {
 
@@ -443,9 +463,9 @@ function handleTouZhuBalls(params) {
     let selectBalls = Object.values(ballsData);
     let selectBallsNum = Object.values(ballsData);
 
-    // 编历判断这个title有没有包含0的，有就要干掉它。
+    // 编历判断这个title有没有包含^^01的，有就要干掉它。
     for (let i = 0; i < selectTitles.length; i++) {
-      if (selectTitles[i].includes('0')) {
+      if (selectTitles[i].includes('^^01')) {
           selectTitles.splice(i, 1); // 选择有的title
           selectBalls.splice(i, 1);  // 选择的号码。可能包括中文的（大小单双）
           selectBallsNum.splice(i - 1, 1); // 选择的号码，全是数字的。
@@ -582,7 +602,7 @@ function calcAllPlayGame(parameter) {
 
     // 有些是有中文的， 要干掉它。
     for (let i = 0; i < selectBallsKey.length; i++) {
-      if (selectBallsKey[i].includes('0')) {
+      if (selectBallsKey[i].includes('^^01')) {
           selectBallsKey.splice(i, 1);
           selectBallsArr.splice(i - 1, 1);
       }
@@ -612,10 +632,10 @@ function calcAllPlayGame(parameter) {
     let balls = '';
 
     if (parameter.playData.playname.includes('双面盘') || pcddHH) {
-      // 双面盘。
+      // 双面盘。 所有彩种的双面盘注数直接在这里计算，然后直接返回注数。
       for (let b in selectBallsArr) {
 
-        let preg = /^([\d]|[1-5][\d])$/; // 最大的是pk10的56
+        let preg = /^([\d]|[1-9][\d])$/; // 最大的是pk10的56，幸运农场最大72
 
         for (let c in selectBallsArr[b]) {
           if (preg.test(selectBallsArr[b][c])) {

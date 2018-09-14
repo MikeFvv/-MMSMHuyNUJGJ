@@ -314,7 +314,8 @@ class BindBankCard extends Component {
 
 					let loginStringValue = JSON.stringify(global.UserLoginObject);
 					UserDefalts.setItem('userInfo', loginStringValue, (error) => { });
-
+					global.BankListArray.push({key:global.BankListArray.length,value:{address:this.accountCityAddrees,bank_type:this.state.accountBank,
+						bank_typename:this.accountBankBank,card_num:this.accountNumber,card_sheng:this.accountProvice.trim(),card_shi:"",id:response.data.bank_id,is_default:global.BankListArray.length==0?1:0,}});
 					//点击提款进入
 					if (this.props.navigation.state.params.BindBankCardPreviousAction == 'DrawalCenter') {
 						this.props.navigation.navigate('DrawalInfo');

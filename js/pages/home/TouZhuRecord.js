@@ -120,6 +120,7 @@ export default class TouZhuRecord extends React.Component {
     this.touzhuTypes = "0";//记录类型,0=全部, 1=追号记录,2=中奖, 3=待开奖, 4=撤单，5未中奖
     this.zhuQiuState = "";//0 待开奖,1:已中奖，2:未中奖 3：和局 4，已撤单，5：已结算
     this.lasttime = "0";//0=当天, 1=最近一周, 2=最近一个月, 3=最近三个月, 默认为当天
+    this.touzhuRecordKey = '';
     { (this).keyExtractor = this.keyExtractor.bind(this) }
     { (this).renderCell = this.renderCell.bind(this) }
     this.showRedEnvelopeArray = [{ key: 0, value: '今天' }, { key: 1, value: '昨天' }, { key: 2, value: '本周' }, { key: 3, value: '本月' }, { key: 4, value: '上月' }]
@@ -129,6 +130,8 @@ export default class TouZhuRecord extends React.Component {
     this.setState({ isShowReceiveRedEnvelope: true, })
   }
   componentDidMount() {
+
+     this.touzhuRecordKey = this.props.navigation.state.key;
     //设置初始导航栏的值
     this.props.navigation.setParams({
       navigateRightPress: this._navigateRightPress,
@@ -690,7 +693,7 @@ export default class TouZhuRecord extends React.Component {
   }
   //cell的点击方法
   _onAcitveClickCell = (item, navigate) => {
-    navigate('TouZhuDetial', { callback: () => { this.onHeaderRefresh() }, detialArray: item.item })
+    navigate('TouZhuDetial', { callback: () => { this.onHeaderRefresh() }, detialArray: item.item, buyLotPushVCKey:this.touzhuRecordKey})
   }
   //弹出框
   onRequestClose() {

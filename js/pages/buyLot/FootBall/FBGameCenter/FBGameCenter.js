@@ -680,10 +680,11 @@ export default class FBGameCenter extends Component {
                 }
 
                 // 新的。。。让球 / 大小。 0滚球、1今日... 现在只能给QA进入
-                if (GlobalConfig.lineBaseIPURL().includes('sg04')) {
+                // if (GlobalConfig.lineBaseIPURL().includes('sg04')) {
                     // 40 + 140(格高50) + 40.
                     return(
                         <RqDxItemView data={item.item} style={{ height: Adaption.Height(220) }} 
+                            isReload={this.isReloadDyRqDx}
                             game_typeID={this.props.game_typeID}
                             cuntSItemId={cuntSItemIdx}
                             lastSItemIdArr={sectionItemiIdArr}
@@ -699,7 +700,7 @@ export default class FBGameCenter extends Component {
                         >
                         </RqDxItemView>
                     )
-                }
+                // }
 
                 return (
                     <DyRqDxItemView isReload={this.isReloadDyRqDx} data={item.item} style={{ height: Adaption.Height(260) }}
@@ -784,10 +785,10 @@ export default class FBGameCenter extends Component {
 
     _allGameClick = (item) => {
         // 所有玩法。
-        if (!GlobalConfig.lineBaseIPURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
-            this.refs.Toast && this.refs.Toast.show('暂未开放，敬请期待', 1000);
-            return;
-        }
+        // if (!GlobalConfig.lineBaseIPURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
+        //     this.refs.Toast && this.refs.Toast.show('暂未开放，敬请期待', 1000);
+        //     return;
+        // }
 
         let cuntSItemIdx =`${item.section.sectionID}+${item.index}`; // 当前的SectionID+Item.index
         let sltData = this.state.ballsDict[cuntSItemIdx];

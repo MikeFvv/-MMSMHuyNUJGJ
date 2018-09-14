@@ -245,7 +245,7 @@ export default class TheLowerManager extends React.Component {
             val_ssc=item.item.value.val_ssc;
 
             let selectedArr = []
-            if (item.item.value.next_count !=0) {
+            if (item.item.value.next_count !=0) {  
              selectedArr = [item.item.value.username,"查看返点","查看下级"];
             }else {
             

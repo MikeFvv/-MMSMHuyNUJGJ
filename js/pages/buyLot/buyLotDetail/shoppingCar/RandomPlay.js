@@ -622,14 +622,14 @@ function returnSelectBalls(params) {
       if (isPeilv) {
         // 赔率
         if (isChinese) {
-          dict = {[title] : rdmSltBlArr, [`${title}0`] : rdmSltBlNumArr, '赔率' : rdmSltBlPlArr};
+          dict = {[title] : rdmSltBlArr, [`${title}^^01`] : rdmSltBlNumArr, '赔率' : rdmSltBlPlArr};
         } else {
           dict = {[title] : rdmSltBlArr, '赔率' : rdmSltBlPlArr};
         }
 
       } else if (isChinese) {
         // 数字 // 大小单双 
-        dict = {[title] : rdmSltBlArr, [`${title}0`] : rdmSltBlNumArr};
+        dict = {[title] : rdmSltBlArr, [`${title}^^01`] : rdmSltBlNumArr};
 
       } else {
         dict = {[title] : rdmSltBlArr};
@@ -639,8 +639,8 @@ function returnSelectBalls(params) {
       if (js_tag == 'lhc') {
         dict[title] = rdmSltBlArr;
         
-        if (dict[`${title}0`] != null) {
-          dict[`${title}0`] = rdmSltBlNumArr;
+        if (dict[`${title}^^01`] != null) {
+          dict[`${title}^^01`] = rdmSltBlNumArr;
         }
         
         if (tpl == '7' || tpl == '12') {
@@ -649,7 +649,9 @@ function returnSelectBalls(params) {
           
         } else if (tpl == '13' || tpl == '14' || tpl == '15') {
           // 连码 || 连选-连肖、连尾
-          dict['赔率'] = peilvStr;
+          if (peilvStr.length < 20) {
+            dict['赔率'] = peilvStr;
+          }
         }
       }
 

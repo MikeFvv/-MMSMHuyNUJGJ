@@ -35,7 +35,6 @@ export default class CashTrasaAcount extends Component {
         this.refs.userAcountInput.clear();
     }
 
-
     render(){
 
         return (
@@ -66,26 +65,21 @@ export default class CashTrasaAcount extends Component {
             this.refs.LoadingView && this.refs.LoadingView.showFaile("请输入对方账户");
             return;
         }
-
         let params = new FormData();
         params.append("ac", "TradGetUserInfo");
         params.append("username", this.userAcount.trim());
         params.append("uid", UserLoginObject.Uid);
         params.append("token", UserLoginObject.Token);
         params.append("sessionkey", UserLoginObject.session_key);
-
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
-          .then((responseData) => {
-
-            if (responseData.msg == 0) {
-
-                let result = responseData.data;
+          .then((response) => {
+            if (response.msg == 0) {
+                let result = response.data;
                 result.account = this.userAcount.trim();
                 this.props.navigation.navigate('CashTrasaInfo',{info:result,cleanUserAcount:this._cleanUserAcount});
-
             }else {
-                this.refs.LoadingView && this.refs.LoadingView.showFaile(responseData.param);
+                this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
             }
 
           })

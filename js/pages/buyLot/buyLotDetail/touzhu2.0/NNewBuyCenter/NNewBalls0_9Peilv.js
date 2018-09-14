@@ -27,6 +27,8 @@ let tempArcArr = []; // 避免随机重复的
 let lastBall = -1; // 上次点的item。11x5不能选相同的。
 let lastIdx = -1; // 哪排
 
+let tuoMaSelectIdxArr = []; // 记录变态了 不能选择重复的号码 11x5 ssc的胆拖。点全大小单双时使用。
+
 export default class NNewBalls0_9Peilv extends Component {
   constructor(props) {
     super(props);
@@ -68,6 +70,16 @@ export default class NNewBalls0_9Peilv extends Component {
           }
         }
       }
+    }
+
+    if (!nextProps.isBallsChange && tuoMaSelectIdxArr.length > 0 && nextProps.idx == 0) {
+      for (let b = 0; b < this.state.selectBallIdxArr.length; b++) {
+        if (tuoMaSelectIdxArr.includes(this.state.selectBallIdxArr[b])) {
+          this.state.selectBallIdxArr.splice(b, 1);
+          b--;
+        }
+      }
+      tuoMaSelectIdxArr = []; // 值已经被使用了，就重置了
     }
   }
 
@@ -538,7 +550,7 @@ export default class NNewBalls0_9Peilv extends Component {
           // 总数是单数的变态，防止11x5选5个大号也显示大
           if (this.props.balls.length / 2.0 % 1 != 0 && btnSltIdx != -1) {
             if (selectBallIdxArr.length <= Math.floor(this.props.balls.length / 2)) {
-              btnSltIdx = -1; 
+              btnSltIdx = -1;
             }
           }
 
@@ -555,7 +567,7 @@ export default class NNewBalls0_9Peilv extends Component {
 
         if (btnSltIdx == -1) {
           if (parseInt(this.props.balls[selectBallIdxArr[0]].ball) % 2 == 1) {
-            
+
             for (let x = 0; x < selectBallIdxArr.length; x++) {
               if (parseInt(this.props.balls[selectBallIdxArr[x]].ball) % 2 == 1) {
                 btnSltIdx = 3;
@@ -564,9 +576,9 @@ export default class NNewBalls0_9Peilv extends Component {
                 break;
               }
             }
-  
+
           } else {
-  
+
             for (let x = 0; x < selectBallIdxArr.length; x++) {
               if (parseInt(this.props.balls[selectBallIdxArr[x]].ball) % 2 == 0) {
                 btnSltIdx = 4;
@@ -581,13 +593,13 @@ export default class NNewBalls0_9Peilv extends Component {
 
             if (parseInt(this.props.balls[0].ball) % 2 == 1 && parseInt(this.props.balls[selectBallIdxArr[0]].ball) % 2 == 1) {
               if (selectBallIdxArr.length <= Math.floor(this.props.balls.length / 2)) {
-                btnSltIdx = -1; 
+                btnSltIdx = -1;
               }
             }
 
             if (parseInt(this.props.balls[0].ball) % 2 == 0 && parseInt(this.props.balls[selectBallIdxArr[0]].ball) % 2 == 0) {
               if (selectBallIdxArr.length <= Math.floor(this.props.balls.length / 2)) {
-                btnSltIdx = -1; 
+                btnSltIdx = -1;
               }
             }
           }
@@ -600,7 +612,7 @@ export default class NNewBalls0_9Peilv extends Component {
     for (let bt = 0; bt < this.state.sltBtnState.length; bt++) {
       if (btnSltIdx == bt) {
         this.state.sltBtnState[bt] = true;
-      } else { 
+      } else {
         this.state.sltBtnState[bt] = false;
       }
     }
@@ -639,7 +651,7 @@ export default class NNewBalls0_9Peilv extends Component {
 
     let ballsdata = { [this.props.title]: selectBallArr };
     if (selectBallNumArr.length > 0) {
-      ballsdata[`${this.props.title}0`] = selectBallNumArr;
+      ballsdata[`${this.props.title}^^01`] = selectBallNumArr;
     }
 
     if (selectPeilvs.length > 0) {
@@ -653,13 +665,10 @@ export default class NNewBalls0_9Peilv extends Component {
 
     let ballWidth = Adaption.Width(43.5);  // 号码球的大小
     let numColumn = this.props.numColumn ? this.props.numColumn : 5;
-    let remains = this.props.balls.length % numColumn; // 余数
-    let row = (Number.parseInt || parseInt)(this.props.balls.length / numColumn) + (remains > 0 ? 1 : 0); // 取整数 有余数再+1
 
-    let peilvHeight = item.item.peilv ? Adaption.Width(18) + 5 : 0; // 赔率显示的高，（比赔率fontSize 大1）。
-    let W = this.props.style.width * (this.props.numColumn == 2 ? 0.5 : this.props.numColumn == 3 ? 0.8 : 0.9);
+    let W = this.props.style.width * 0.9;
     let spaceW = (W - (ballWidth * numColumn)) / numColumn;   //（item的宽 - 4个圆的宽）除4个间隔
-    let spaceH = (this.props.style.height - Adaption.Width(50) - ((ballWidth + peilvHeight) * row)) / (row + 1); //（item的高 - 2个圆的高）除3个间隔。
+    let spaceH = Adaption.Width(15);
 
     let itemIsSelect = this.state.selectBallIdxArr.includes(item.index); // 是不是选择状态的
 
@@ -687,7 +696,7 @@ export default class NNewBalls0_9Peilv extends Component {
         </TouchableOpacity>
 
         {item.item.peilv ?
-          <View style={{ height: peilvHeight - 5, marginTop: 5 }}>
+          <View style={{ height: Adaption.Width(18), marginTop: 5 }}>
             <Text allowFontScaling={false} style={{ textAlign: 'center', fontSize: Adaption.Font(16.5), color: '#757575' }}>{GetBallStatus.peilvHandle(item.item.peilv)}</Text>
           </View>
           : null
@@ -746,6 +755,10 @@ export default class NNewBalls0_9Peilv extends Component {
               ballIdxArr = [];
             }
 
+            if (this.props.js_tag == '11x5' && this.props.tpl == 3) {
+              tuoMaSelectIdxArr = ballIdxArr;
+            }
+
             this.setState({
               selectBallIdxArr: ballIdxArr,
             })
@@ -753,7 +766,7 @@ export default class NNewBalls0_9Peilv extends Component {
 
           }}
         >
-          <Text style={{ color: isSelect ? '#fff' : '#6a6a6a', fontSize: Adaption.Font(17, 14) }}>{titArr[i]}</Text>
+          <Text allowFontScaling={false} style={{ color: isSelect ? '#fff' : '#6a6a6a', fontSize: Adaption.Font(17, 14) }}>{titArr[i]}</Text>
         </TouchableOpacity>
       )
     }
@@ -761,6 +774,14 @@ export default class NNewBalls0_9Peilv extends Component {
   }
 
   render() {
+
+    let _11x5 = this.props.js_tag == '11x5' && this.props.tpl == 3 && this.props.idx == 0; // 11x5所有胆码
+    let _ssc = this.props.js_tag == 'ssc' && (this.props.tpl == 4 || this.props.tpl == 6); // ssc所有组选包胆 || 特殊号
+    let _lhc = this.props.js_tag == 'lhc' && (this.props.tpl == 12 || this.props.tpl == 13);  // lhc自选不中 / 连码
+    var isShowQdxdsView = true; // 是否显示全大小单双清的view
+    if (_11x5 || _ssc || _lhc) {
+      isShowQdxdsView = false;
+    }
 
     return (
       <View style={this.props.style}>
@@ -771,13 +792,23 @@ export default class NNewBalls0_9Peilv extends Component {
           >
             <Text allowFontScaling={false} style={{ backgroundColor: 'rgba(0,0,0,0)', color: '#707070', fontSize: Adaption.Font(18, 15) }}>{this.props.title}</Text>
           </ImageBackground>
-          <View style={{ width: this.props.style.width * 0.7, height: 40, marginLeft: Adaption.Width(10), backgroundColor: '#dcdcdc', borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
-            {this._createButtonView()}
-          </View>
+
+          {isShowQdxdsView ?
+            <View style={{ width: this.props.style.width * 0.7, height: Adaption.Width(40), marginLeft: Adaption.Width(10), backgroundColor: '#dcdcdc', borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}>
+              {this._createButtonView()}
+            </View>
+            : null
+          }
+
+          {_lhc && this.props.singlePeilv
+            ? <Text allowFontScaling={false} style={{ marginLeft: Adaption.Width(20), color: '#707070', fontSize: Adaption.Font(17, 14) }}>{`赔率（${this.props.singlePeilv}）`}</Text>
+            : null
+          }
+
         </View>
 
 
-        <FlatList style={{ width: this.props.style.width * (this.props.numColumn == 2 ? 0.5 : this.props.numColumn == 3 ? 0.8 : 0.9), marginLeft: this.props.style.width * (this.props.numColumn == 2 ? 0.25 : this.props.numColumn == 3 ? 0.1 : 0.05) }}
+        <FlatList style={{ marginBottom: Adaption.Width(15), width: this.props.style.width * 0.9, marginLeft: this.props.style.width * 0.05 }}
           automaticallyAdjustContentInsets={false}
           alwaysBounceHorizontal={false}
           data={this.props.balls}

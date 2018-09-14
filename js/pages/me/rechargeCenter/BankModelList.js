@@ -46,13 +46,12 @@ export default class BankModelList extends Component {
         this.loginObject = global.UserLoginObject;
         if (this.loginObject) {
             this._getPayDataByType();
-            this._onRershRMB();
+            this._onRershRMB(false);
         }
     }
 
     //刷新金额
-    _onRershRMB() {
-
+    _onRershRMB(action) {
         let params = new FormData();
         params.append("ac", "flushPrice");
         params.append("uid", this.loginObject.Uid);
@@ -61,18 +60,17 @@ export default class BankModelList extends Component {
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
             .then(response => {
-
                 if (response.msg == 0) {
-
                     this.setState({
                         totalMoney: response.data.price,
                     });
-
+                    if (action) {
+                        this.refs.LoadingView && this.refs.LoadingView.showSuccess('刷新金额成功!');
+                    }
                     this.loginObject.TotalMoney = response.data.price;
                     let loginStringValue = JSON.stringify(this.loginObject);
                     UserDefalts.setItem('userInfo', loginStringValue, (error) => { });
                 }
-
             })
             .catch(err => { });
     }
@@ -126,8 +124,7 @@ export default class BankModelList extends Component {
                         <TouchableOpacity
                             activeOpacity={1}
                             onPress={() => {
-                                // this._onRershRMB()
-                                this.refs.LoadingView && this.refs.LoadingView.showSuccess('刷新金额成功!');
+                                this._onRershRMB(true)
                             }}
                         >
                             <Image

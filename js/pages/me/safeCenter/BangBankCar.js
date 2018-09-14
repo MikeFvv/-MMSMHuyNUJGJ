@@ -33,23 +33,6 @@ export default class BangBankCar extends Component {
               leftClick={() => {navigation.state.params.callback(),navigation.goBack()} }
           />
       ),
-
-     // title:'银行卡',
-     //  headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-     // headerTitleStyle:{color:'white',alignSelf:'center'},
-     //  //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-     //  headerRight: (
-     //      <View style={GlobalStyles.nav_blank_view} />
-     //  ),
-     // headerLeft:(
-     //     <TouchableOpacity
-     //        activeOpacity={1}
-     //        style={GlobalStyles.nav_headerLeft_touch}
-     //        onPress={()=>{navigation.state.params.callback(),navigation.goBack()}}>
-     //        <View style={GlobalStyles.nav_headerLeft_view}/>
-     //     </TouchableOpacity>
-     // ),
-
   });
 
   constructor(props) {
@@ -58,7 +41,7 @@ export default class BangBankCar extends Component {
       isLoading: true, //网络请求状态
       error: false,
       errorInfo: "",
-      bankArray:[], //银行数据
+      bankArray:global.BankListArray, //银行数据
       isShowReceiveRedEnvelope:false,
       showRedEnvelopeArray:[],
       isDeleteBank:false,
@@ -67,56 +50,9 @@ export default class BangBankCar extends Component {
   }
 
   componentDidMount() {
-    //接受登录的通知
-    this.subscription = PushNotification.addListener('refshBankList', () => {
-      this._fetchBangBankData();
-    });
-    this._fetchBangBankData();
+   
   }
-  //移除通知
-    componentWillUnmount(){
 
-      if (typeof (this.subscription) == 'object') {
-          this.subscription && this.subscription.remove();
-      }
-    }
-  //获取银行数据
-  _fetchBangBankData() {
-
-        //请求参数
-        let params = new FormData();
-        params.append("ac", "getUserBankCard");
-        params.append("uid", global.UserLoginObject.Uid);
-        params.append("token", global.UserLoginObject.Token);
-        params.append("sessionkey", global.UserLoginObject.session_key);
-
-        var promise = BaseNetwork.sendNetworkRequest(params);
-
-        promise
-          .then(response => {
-          if (response.msg==0) {
-            let datalist = response.data;
-            let dataBlog = [];
-            let i = 0;
-            //用set去赋值
-
-            datalist.map(dict => {
-              dataBlog.push({ key: i, value: dict });
-              i++;
-            });
-            //用set去赋值
-
-            this.setState({bankArray: dataBlog});
-
-            datalist = null;
-            dataBlog = null;
-          }else {
-          NewWorkAlert(response.param);
-          }
-
-          })
-          .catch(err => { });
-  }
 
   //请求数据的圈圈
   renderLoadingView() {
@@ -143,7 +79,7 @@ export default class BangBankCar extends Component {
   }
   _addBankCar(navigate){
         navigate( 
-       'BindBankCard',{callback: () => {this._fetchBangBankData()}});
+       'BindBankCard',{callback: () => {this.setState({bankArr:global.BankListArray});}});
         return;
   }
   _listBankHeaderComponent(){
@@ -359,7 +295,15 @@ onClickGoToBank(item){
 
          if (response.msg == 0 ) {
              this.refs.LoadingView && this.refs.LoadingView.cancer()
-             this._fetchBangBankData();
+             
+            //  this._fetchBangBankData();
+            for (var j = 0; j < global.BankListArray.length; j++) {
+                if(global.BankListArray[j].value.is_default == 1) {
+                  global.BankListArray[j].value.is_default = 0;
+                }  
+            }
+            global.BankListArray[arr.index].value.is_default = 1; 
+            this.setState({bankArr:global.BankListArray});
            Alert.alert(
                '提示',
                '设置成功',
@@ -396,7 +340,7 @@ onClickGoToBank(item){
         this.setState({
             isShowReceiveRedEnvelope: false,
         })
-      navigate('ReviseBankCar',{callback:()=>{this._fetchBangBankData()},bankArray:array})
+      navigate('ReviseBankCar',{callback:()=>{this.setState({bankArray:global.BankListArray});},bankArray:array})
       }else if (ind == 2) {
         if (array.item.value.is_default==0) {
           this.setState({
@@ -446,7 +390,8 @@ onClickGoToBank(item){
 
          if (response.msg == 0 ) {
            this.refs.LoadingView && this.refs.LoadingView.cancer()
-             this._fetchBangBankData();
+             global.BankListArray.splice(deleArray.index,1);
+             this.setState({bankArray:global.BankListArray});
            Alert.alert(
                '提示',
                '解除绑定成功',

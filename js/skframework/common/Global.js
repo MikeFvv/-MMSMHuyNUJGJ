@@ -24,7 +24,8 @@ import AllenDragAndReplaceView from '../../allenPlus/AllenDragAndReplace';
 import Regex from '../component/Regex'
 
 let { height, width } = Dimensions.get('window');
-
+const X_WIDTH = 375;
+const X_HEIGHT = 812;
 
 global.RouterIndex = null;
 
@@ -43,7 +44,7 @@ global.GLOBALisRNParameters = true;
 global.SwitchRoute = 1;
 
 // 版本号    版本号的格式：v<主版本号>.<副版本号>.<发布号>
-global.VersionNum = 'v2.55.0';
+global.VersionNum = 'v2.56.1';
 // --------------------
 
 // 业主请求URL 每个App的请求域名(每个App都不一样) 会返回不同的域名及状态
@@ -227,6 +228,7 @@ global.Fuliqiandao = 0;
 global.QianDaoWeiHu = 0;
 global.AnQuanZhongXin = 0;
 global.ShouYeYinDao = 0;
+global.BankListArray = [];//银行卡列表数组
 
 
 
@@ -308,3 +310,12 @@ global.random = true;
 
 //是否显示用户等级头衔
 global.RiseEvent = 0;
+
+//是不是iphoneX  使用global.isIphoneX()
+global.isIphoneX = () => {
+    return (
+        Platform.OS === 'ios' &&
+        ((height === X_HEIGHT && width === X_WIDTH) ||
+            (height === X_WIDTH && width === X_HEIGHT))
+    );
+};

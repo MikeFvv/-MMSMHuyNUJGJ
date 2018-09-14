@@ -17,12 +17,36 @@ export default class NSelectGamePlay extends Component {
 
     constructor(props) {
         super(props);
+
+        let isShowWanfaMenu = true;
+        let isShowOneMenu = true;
+        let isShowTwoMenu = true;
+        if (props.js_tag == 'lhc') {
+            isShowWanfaMenu = false;
+            
+        } else if (props.js_tag == 'qxc') {
+            isShowTwoMenu = false;
+
+        } else if (props.js_tag == 'xync') {
+            isShowWanfaMenu = false;
+            isShowTwoMenu = false;
+
+        } else if (props.js_tag == 'xypk') {
+            isShowWanfaMenu = false;
+        }
+
+        if (props.wanfaIdx == 1 && props.js_tag != 'xync' && props.js_tag != 'xypk') {
+            isShowOneMenu = false;
+        }
+
         this.state = {
             wanfaIdx: props.wanfaIdx,  // 前面那个是1，后台那个是0。官方为0，双面为1
             slectOneIdx: props.slectOneIdx,  // 一级菜单
             slectTwoIdx: props.slectTwoIdx,  // 二级菜单
             slectThreeIdx: props.slectThreeIdx,// 三级菜单
-            isShowOneMenu: props.wanfaIdx == 1 ? false : true,
+            isShowWanfaMenu: isShowWanfaMenu,  // 是否显示 官方双面那按钮
+            isShowOneMenu: isShowOneMenu,  // 是否显示 官方双面 下面那排view(现在一般是双面的不显示)
+            isShowTwoMenu: isShowTwoMenu,  // 是否显示 最下面那排view
             currentGamePlayData: props.allGamePlayData[props.wanfaIdx],
         }
     }
@@ -47,7 +71,7 @@ export default class NSelectGamePlay extends Component {
         }
     }
 
-    // 下标，前面那个是1，后台那个是0。
+    // 下标，前面那个是1，后面那个是0。
     render() {
 
         return (
@@ -68,56 +92,59 @@ export default class NSelectGamePlay extends Component {
                     onPress={() => {
                         this.props.close ? this.props.close() : null;
                     }}>
-                    <TouchableOpacity activeOpacity={1} style={{ width: SCREEN_WIDTH, height: Adaption.Width(70), backgroundColor: '#fff', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                        <TouchableOpacity activeOpacity={1}
-                            style={{
-                                backgroundColor: this.state.wanfaIdx == 1 ? '#e33939' : 'white',
-                                borderRadius: 5,
-                                borderWidth: this.state.wanfaIdx == 1 ? 0 : 1,
-                                borderColor: 'lightgray',
-                                width: Adaption.Width(120),
-                                height: Adaption.Width(40),
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginRight: Adaption.Width(30),
-                            }}
-                            onPress={() => {
-                                if (this.state.wanfaIdx == 1) {
-                                    this.props.close ? this.props.close() : null;
-                                } else {
-                                    this.props.onPressWanfaIdx ? this.props.onPressWanfaIdx(1) : null;
-                                }
-                            }}>
-                            <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.state.wanfaIdx == 1 ? 'white' : 'black' }}>{this.props.titleData[0]}</CusBaseText>
+                    {this.state.isShowWanfaMenu
+                        ? <TouchableOpacity activeOpacity={1} style={{ width: SCREEN_WIDTH, height: Adaption.Width(70), backgroundColor: '#fff', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                            <TouchableOpacity activeOpacity={1}
+                                style={{
+                                    backgroundColor: this.state.wanfaIdx == 1 ? '#e33939' : 'white',
+                                    borderRadius: 5,
+                                    borderWidth: this.state.wanfaIdx == 1 ? 0 : 1,
+                                    borderColor: 'lightgray',
+                                    width: Adaption.Width(120),
+                                    height: Adaption.Width(40),
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginRight: Adaption.Width(30),
+                                }}
+                                onPress={() => {
+                                    if (this.state.wanfaIdx == 1) {
+                                        this.props.close ? this.props.close() : null;
+                                    } else {
+                                        this.props.onPressWanfaIdx ? this.props.onPressWanfaIdx(1) : null;
+                                    }
+                                }}>
+                                <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.state.wanfaIdx == 1 ? 'white' : 'black' }}>{this.props.titleData[0]}</CusBaseText>
+                            </TouchableOpacity>
+                            <TouchableOpacity activeOpacity={1}
+                                style={{
+                                    backgroundColor: this.state.wanfaIdx == 0 ? '#e33939' : 'white',
+                                    borderRadius: 5,
+                                    borderWidth: this.state.wanfaIdx == 0 ? 0 : 1,
+                                    borderColor: 'lightgray',
+                                    width: Adaption.Width(120),
+                                    height: Adaption.Width(40),
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                onPress={() => {
+                                    this.setState({
+                                        wanfaIdx: 0,
+                                        isShowOneMenu: true,
+                                        currentGamePlayData: this.props.allGamePlayData[0],
+                                    })
+                                    this.props.playClick ? this.props.playClick(this.props.allGamePlayData[0][this.state.slectOneIdx].submenu[this.state.slectTwoIdx].playlist[this.state.slectThreeIdx], this.state.slectOneIdx, this.state.slectTwoIdx, this.state.slectThreeIdx, true) : null;
+                                }}>
+                                <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.state.wanfaIdx == 0 ? 'white' : 'black' }}>{this.props.titleData[1]}</CusBaseText>
+                            </TouchableOpacity>
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={1}
-                            style={{
-                                backgroundColor: this.state.wanfaIdx == 0 ? '#e33939' : 'white',
-                                borderRadius: 5,
-                                borderWidth: this.state.wanfaIdx == 0 ? 0 : 1,
-                                borderColor: 'lightgray',
-                                width: Adaption.Width(120),
-                                height: Adaption.Width(40),
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
-                            onPress={() => {
-                                this.setState({
-                                    wanfaIdx: 0,
-                                    isShowOneMenu: true,
-                                    currentGamePlayData: this.props.allGamePlayData[0],
-                                })
-                                this.props.playClick ? this.props.playClick(this.props.allGamePlayData[0][this.state.slectOneIdx].submenu[this.state.slectTwoIdx].playlist[this.state.slectThreeIdx], this.state.slectOneIdx, this.state.slectTwoIdx, this.state.slectThreeIdx, true) : null;
-                            }}>
-                            <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.state.wanfaIdx == 0 ? 'white' : 'black' }}>{this.props.titleData[1]}</CusBaseText>
-                        </TouchableOpacity>
-                    </TouchableOpacity>
+                        : null
+                    }
 
                     {this.state.isShowOneMenu
                         ? <TouchableOpacity activeOpacity={1} style={{ backgroundColor: '#fff', flexDirection: 'row', flexWrap: 'wrap' }}>{this._createOneMenuView(this.state.currentGamePlayData)}</TouchableOpacity>
                         : null
                     }
-                    {this.state.isShowOneMenu
+                    {this.state.isShowOneMenu && this.state.isShowTwoMenu
                         ? <TouchableOpacity activeOpacity={1} style={{ backgroundColor: '#f5f5f5' }}>
                             {this._createTwoMenuView(this.state.currentGamePlayData[this.state.slectOneIdx]['submenu'])}
                         </TouchableOpacity>
@@ -135,13 +162,20 @@ export default class NSelectGamePlay extends Component {
             viewArr.push(
                 <TouchableOpacity key={a} activeOpacity={0.5}
                     onPress={() => {
-                        this.setState({
-                            slectOneIdx: a,
-                            slectTwoIdx: 0,
-                            slectThreeIdx: 0,
-                        })
-                        // 默认返回当前点击的一级菜单里面的第一条数据，第五个参数true是不需要隐藏这个model。
-                        this.props.playClick ? this.props.playClick(this.state.currentGamePlayData[a].submenu[0].playlist[0], a, 0, 0, true) : null;
+
+                        if (!this.state.isShowTwoMenu) {
+                            // 不显示twoMenu的，点击直接回调了。
+                            this.props.playClick ? this.props.playClick(this.state.currentGamePlayData[a].submenu[0].playlist[0], a, 0, 0) : null;
+
+                        } else {
+                            this.setState({
+                                slectOneIdx: a,
+                                slectTwoIdx: 0,
+                                slectThreeIdx: 0,
+                            })
+                            // 默认返回当前点击的一级菜单里面的第一条数据，第五个参数true是不需要隐藏这个model。
+                            this.props.playClick ? this.props.playClick(this.state.currentGamePlayData[a].submenu[0].playlist[0], a, 0, 0, true) : null;
+                        }
                     }}
                     style={{
                         justifyContent: 'center',
@@ -151,13 +185,13 @@ export default class NSelectGamePlay extends Component {
                         borderWidth: this.state.slectOneIdx == a ? 0 : 1,
                         borderRadius: 5,
                         height: Adaption.Width(37),
-                        width: (SCREEN_WIDTH - 5 * space) / 4,
+                        width: (SCREEN_WIDTH - 5 * space) / (value.length < 4 ? value.length : 4),
                         marginLeft: space,
                         marginTop: space,
                         marginBottom: a == value.length - 1 ? Adaption.Width(20) : 0,
                     }}
                 >
-                    <Text style={{ color: this.state.slectOneIdx == a ? '#fff' : '#5f5f5f', fontSize: Adaption.Font(18, 14) }}>{value[a].name}</Text>
+                    <Text allowFontScaling={false} style={{ color: this.state.slectOneIdx == a ? '#fff' : '#5f5f5f', fontSize: value[a].name.length > 5 ? Adaption.Font(16, 12) : Adaption.Font(18, 14) }}>{value[a].name}</Text>
                 </TouchableOpacity>
             )
         }

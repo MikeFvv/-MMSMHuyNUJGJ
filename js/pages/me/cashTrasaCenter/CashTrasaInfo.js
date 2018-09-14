@@ -16,14 +16,12 @@ import Regex from '../../../skframework/component/Regex';
 class CashTrasaInfo extends Component {
 
 	static navigationOptions = ({ navigation }) => ({
-
         header: (
 			<CustomNavBar
 				centerText = {'现金交易'}
 				leftClick={() =>  navigation.goBack() }
 			/>
         ),
-
 	});
 
 	constructor(props) {
@@ -33,7 +31,6 @@ class CashTrasaInfo extends Component {
 		this.pwd = '';
 		this.relName = '';
 		this.trasaMoney = '';
-
 		this.state = {headerIcon:'',}
 	}
 
@@ -82,8 +79,8 @@ class CashTrasaInfo extends Component {
 							style={[styles.bigFont, styles.money]}
 							keyboardType='numeric'
 							onChangeText={(text) => this.trasaMoney = text}
-							placeholder='请输入转账金额'
-						/>
+                            placeholder={'最小转账金额为'+this.info.min_price+'元'}
+                        />
 					</View>
 				</View>
 				<View style={styles.verifi}>
@@ -164,11 +161,9 @@ class CashTrasaInfo extends Component {
 			.then((responseData) => {
 				this.refs.LoadingView && this.refs.LoadingView.cancer();
 				if (responseData.msg == 0) {
-
 					let result = responseData.data;
 					result.account = this.info.account;
 					this.props.navigation.navigate('CashTrasaSubmit', { info: result,cleanUserAcount:this.cleanUserAcount});
-
 				} else {
 					this.refs.LoadingView && this.refs.LoadingView.showFaile(responseData.param);
 				}

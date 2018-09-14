@@ -103,6 +103,7 @@ export default class Safetycenter extends Component {
             .then(response => {
                 if (response.msg == 0) {
                     let datalist = response.data;
+                    global.BankListArray = [];
                     //用set去赋值
                     if (datalist == undefined || datalist.length == 0) {
                         this.setState({isBank: true})
@@ -118,6 +119,7 @@ export default class Safetycenter extends Component {
                             i++;
                         });
                         //用set去赋值
+                        global.BankListArray = dataBlog;
 
                         this.setState({backArray: dataBlog});
 
@@ -137,7 +139,7 @@ export default class Safetycenter extends Component {
     onClickGoToBank(navigate) {
         navigate('BangBankCar', {
             callback: () => {
-                this._fetchBankData()
+                this.setState({backArray:global.BankListArray});
             }
         })
 
@@ -400,7 +402,7 @@ export default class Safetycenter extends Component {
                     <TouchableOpacity activeOpacity={0.65} underlayColor={'#F3F3F3'}
                                       onPress={() => navigate('BangBankCar', {
                                           callback: () => {
-                                              this._fetchBankData()
+                                            this.setState({backArray:global.BankListArray});
                                           }
                                       })} style={styles.touchItem}>
                         <View style={styles.touchItem}>
