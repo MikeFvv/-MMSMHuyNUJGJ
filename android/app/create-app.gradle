@@ -1,0 +1,146 @@
+import groovy.json.JsonOutput
+import groovy.io.FileType
+
+def createFileName = "release_app"
+
+def temAppFileName = 'createAppFile.json'
+def apkJsonInfoName = 'apkJsonInfo.json'
+
+// 开始job
+println("开始job")
+def modelPath = new File(getRootDir().getAbsolutePath() + "/" + getName()).absolutePath
+def packInfoPath = new File(modelPath + "/packInfo").absolutePath
+def iamgePngPath = new File("${packInfoPath}/imagePng").absolutePath // 图片资源的位置
+
+// 临时文件 判断是否存在
+def tempRoot = new File(packInfoPath + "/temp")
+if (!tempRoot.exists()) {
+    tempRoot.mkdirs()
+}
+def temFile = new File(tempRoot, temAppFileName)
+if (temFile.exists()) temFile.delete() // 删除旧文件
+if (!temFile.exists()) temFile.createNewFile() // 删除旧文件
+
+// 需要产生的 目标文件
+def sourceFile = new File(packInfoPath, createFileName)
+if (!sourceFile.exists()) return
+def sourceLines = sourceFile.readLines()
+if (sourceLines.empty) return
+
+def resultJsonList = []
+
+sourceLines.each { line -> // 一行信息
+//    println("$line")
+    def outMap = [:]
+    if (line != null && line != "" && !line.startsWith("//")) {// 过滤无效的注解 和 空行
+        def spitLines = line.split(" ")
+        def map = [:]
+        // dafasbk3=快三=100=1.0.0=com.bxvip.app.dafasbk3
+        def appInfo = spitLines[0].split("=")
+        def flavorName = appInfo[0]
+
+        map.put("code", appInfo[2])
+        map.put("name", appInfo[3])
+        map.put("applicationId", appInfo[4])
+        //dafa=sbk3
+        map.put("website", spitLines[1].split("=")[0])
+        map.put("number", spitLines[1].split("=")[1])
+
+        // apkEnv=1 apkUpdateType=1 apkDesc=1.有新版本更新
+        map.put("env", spitLines[2].split("=")[1])
+        map.put("type", spitLines[3].split("=")[1])
+        map.put("desc", spitLines[4].split("=")[1])
+
+        //websiteFile << "${appInfo[1]}(${spitLines[1].split("=")[0]}=${spitLines[1].split("=")[1]})\n"
+
+        /**********************copy file start************************/
+        if(IS_CHANGE_RES=="true") {
+            try {
+                if (spitLines[7].split("=")[1] == "1") {
+                    // 正式版本模式
+                    def flavorImagePath = "$iamgePngPath/$flavorName/res"
+                    def flavorImageRootFile = new File(flavorImagePath)
+                    if (!flavorImageRootFile.exists()) flavorImageRootFile.mkdirs()
+
+                    def goalFile = new File("$modelPath/src/$flavorName")
+                    goalFile.eachFileRecurse(FileType.FILES) { file ->
+                        if (!goalFile.absolutePath.contains("values")) { // 过滤 values 文件夹
+                            file.deleteOnExit()
+                        }
+                    }
+                    // 获取下面的文件夹内容
+                    flavorImageRootFile.eachFileRecurse(FileType.FILES) { file ->
+                      
+                        def copyFilePath = file.absolutePath.replace("$iamgePngPath", "").replace(file.name, "")
+                        // logo start 图
+                        def createFileRoot = new File("$modelPath/src$copyFilePath")
+                        if (!createFileRoot.exists()) createFileRoot.mkdirs()
+                        def createFile = new File("$createFileRoot/$file.name")
+                        def input = file.newInputStream()
+                        def output = createFile.newOutputStream()
+                        output << input
+                        input.close()
+                        output.close()
+                        BufferedInputStream inBuff = null;
+                        BufferedOutputStream outBuff = null;
+                        try {
+                            // 新建文件输入流并对它进行缓冲
+                            inBuff = new BufferedInputStream(new FileInputStream(file.absolutePath));
+                            // 新建文件输出流并对它进行缓冲
+                            outBuff = new BufferedOutputStream(new FileOutputStream("$createFileRoot/$file.name"));
+                            // 缓冲数组
+                            byte[] b = new byte[1024 * 5];
+                            int len;
+                            while ((len = inBuff.read(b)) != -1) {
+                                outBuff.write(b, 0, len);
+                            }
+                            // 刷新此缓冲的输出流
+                            outBuff.flush();
+                        } catch (Exception e) {
+                            println e
+                            e.printStackTrace()
+                        } finally {
+                            // 关闭流
+                            if (inBuff != null)
+                                inBuff.close()
+                            if (outBuff != null)
+                                outBuff.close()
+                        }
+                    }
+                    //}
+                }
+            } catch (Exception e) {
+//            e.printStackTrace()
+                println "****************error****************${e.printStackTrace()}"
+            }
+        }
+        /**********************copy file start************************/
+
+        /***********************assets start json************************/
+        def filePath = new File(modelPath + '/src/' + "${flavorName}" + '/assets/')
+        if (!filePath.exists()) filePath.mkdirs() // 创建目录
+        def jsonFile = new File(filePath, apkJsonInfoName)
+        if (!jsonFile.exists()) jsonFile.createNewFile()
+        jsonFile.write(JsonOutput.toJson(map))
+
+        def ignoreFile = new File(rootDir.absolutePath + '/app/.gitignore')
+        def ignoreFileLines = ignoreFile.readLines()
+        def strLine = '/src/' + "${flavorName}"
+        def strIng = ""
+        if (!ignoreFileLines.contains(strLine + strIng)) ignoreFile.append("\n" + strLine + strIng)
+        /***********************assets end json************************/
+        map.put("flavor", appInfo[0])
+        map.put("appName", appInfo[1])
+        map.put("jgkey", spitLines[5])
+        map.put("codePushKey", spitLines[6])
+
+        resultJsonList.add(map)
+
+    }
+    outMap.put("outApkFolder", createFileName)
+    outMap.put("flavorInfoLists", resultJsonList)
+    temFile.write(JsonOutput.toJson(outMap))
+}
+
+println("job end....")
+

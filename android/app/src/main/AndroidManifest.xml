@@ -1,0 +1,73 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.skycprn"
+    android:versionCode="1"
+    android:versionName="1.0.0">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+
+    <uses-sdk
+        android:minSdkVersion="20"
+        android:targetSdkVersion="25" />
+<!-- android:icon="${app_icon}"  @mipmap/logo-->
+    <application
+      android:name=".MainApplication"
+      android:allowBackup="true"
+      android:label="@string/app_name"
+      android:icon="@mipmap/logo"
+      android:theme="@style/SplashTheme">
+      <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustPan|adjustResize|stateVisible"
+      >
+          <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
+              <category android:name="android.intent.category.LAUNCHER" />
+          </intent-filter>
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+              <data android:scheme="dfy"
+                  android:host="reactnative.vip"
+                  android:pathPrefix="/data" />
+          </intent-filter>
+
+      </activity>
+      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <activity android:name="com.skycprn.android.ui.NativeActivity"
+            android:launchMode="singleTop"></activity>
+
+        <meta-data android:name="JPUSH_CHANNEL" android:value="${APP_CHANNEL}"/>
+        <meta-data android:name="JPUSH_APPKEY" android:value="${JPUSH_APPKEY}"/>
+
+        <!--文件管理器-->
+        <!-- 必须配置 provider， 注意： android:authorities="${applicationId}.provider" 不要直接copy，设置为你的包名.provider -->
+        <!--RealPathUtil.class类中final String authority =  new StringBuilder(packageName).append(".provider").toString();
+        后缀使用的是".provider",android:authorities="${JPUSH_PKGNAME}.provider"应和它相对应-->
+        <provider
+                android:name="android.support.v4.content.FileProvider"
+                android:authorities="${JPUSH_PKGNAME}.provider"
+                android:exported="false"
+                tools:replace="android:authorities"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths" />
+
+        </provider>
+    </application>
+
+</manifest>

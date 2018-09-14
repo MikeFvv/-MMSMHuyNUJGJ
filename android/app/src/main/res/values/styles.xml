@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="AnimPopup" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_alpha_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_alpha_out</item>
+    </style>
+
+
+    <!-- 防止欢迎页白屏或者黑屏，设置图片 -->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/start</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
+        <item name="windowNoTitle">true</item>
+        <!--<item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowDisablePreview">true</item>-->
+    </style>
+
+</resources>

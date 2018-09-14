@@ -1,0 +1,38 @@
+// 注释标志<//>
+// warning!!!!!!  注意不要随意的修改 这个文件的格式
+// env 1.正式模式 2.debug模式
+// type 1 强制升级 2.推荐更新
+//desc 升级的描述
+// 04fc54a605f5d8230a52cfff 极光的appid
+// modle 1 正式 ，模式2是文件copy
+// haocaiaa 需要copy的文件家夹名字
+
+qtcaitest=七天彩test=141=1.4.1=com.bxvip.app.qtcai_test qtcai=qtc003 env=1 type=1 desc=1.有新版本更新 04fc54a605f5d8230a52cfff DzUT79xorcQs4-nSZq1jnnrwrPypb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+haocaitest=好彩test=266=2.6.6=com.bxvip.app.haocai_test bxvip=bxvip env=1 type=1 desc=1.有新版本更新 ca733c0a9dbea30598af62d9 UX3EqPbHKkUd1Otf7wjFL8JltjHkb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+haocaiaa=好彩=141=1.4.1=com.bxvip.app.haocaiaa haocai=0567aa env=1 type=1 desc=1.有新版本更新 18d5098b1baa9aa2c77ef255 lyaJdVF2fjiBaTlRHSYsVJre27AIb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+haocaiff=好彩-旗舰版=141=1.4.1=com.bxvip.app.haocaiff haocai=0567ff env=1 type=1 desc=1.有新版本更新 54b489d46a98f1573705a87d BvjYFdFbPPcUpcoNZz6O0OKhXhERb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+haocaidaili=好彩彩票=141=1.4.1=com.bxvip.app.haocaidaili haocai=hcdaili env=1 type=1 desc=1.有新版本更新 0137822aa5a79cf15ad3d1e3 awky2JXGKnML-JT7bS-9wzrrQ_Nub23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+qtcaicad1=掌上购彩=141=1.4.1=com.bxvip.app.qtcaicad1 qtcai=qtcad1 env=1 type=1 desc=1.有新版本更新 d7836c561589977e5679102e 7-Fm_GVTdXoraTQtGHzQwqOvoQMXb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+qtcaicad2=掌上购彩=141=1.4.1=com.bxvip.app.qtcaicad2 qtcai=qtcad2 env=1 type=1 desc=1.有新版本更新 02d33cefbc1d2ee3a0c149c1 FLMgZRxgCH28M4uD_hibHdgAq0GBb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+qtcaicad3=快三=141=1.4.1=com.bxvip.app.qtcaicad3 qtcai=qtcad2 env=1 type=1 desc=1.有新版本更新 02d33cefbc1d2ee3a0c149c1 FLMgZRxgCH28M4uD_hibHdgAq0GBb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+dafa1=大发彩票=141=1.4.1=com.bxvip.app.dafa01 dafa=dafa01 env=1 type=1 desc=1.有新版本更新 d817a651305c2acf633479c9 oZvh-RJ2wX5hnYTQXST9n0C710jxb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+dafa2=大发彩票=141=1.4.1=com.bxvip.app.dafa02 dafa=dafa02 env=1 type=1 desc=1.有新版本更新 ab004b10591dc90c400f0efc r9YBCQIRJAS0cMPlB996z-3HJYJgb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+369cai1=369彩票=141=1.4.1=com.bxvip.app.bxvip369cai01 369cai=369caizy env=1 type=1 desc=1.有新版本更新 a206e23a763c0f4328198484 LhdloEUydJdYPDJEBBpks7GTymIdb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+369cai2=369彩票=141=1.4.1=com.bxvip.app.bxvip369cai02 369cai=369caigw env=1 type=1 desc=1.有新版本更新 fcbf2a4b47370e7e4b86773d VA4C0rNswhsVa1KtjZsjcV-gbEDZb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+567cai1=567彩票=141=1.4.1=com.bxvip.app.bx567cai1 567cai=567zy env=1 type=1 desc=1.有新版本更新 107db35c7aa84b0d40aba199 1wFE7YXIWj-bL-xSI4y21YhZJM22b23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+567cai2=567彩票=141=1.4.1=com.bxvip.app.bx567cai2 567cai=567gw env=1 type=1 desc=1.有新版本更新 4567fdc3b7e00938966927ae oSuoPd8wGe0y0FYa0zChGfCqL15Ob23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+
+188cai1=188彩票=141=1.4.1=com.bxvip.app.bx188cai1 188cai=188caigw env=1 type=1 desc=1.有新版本更新 5786c5bf6985d8cca99d94c4 3ArreV-AfqNHcTsN2JMuzaVbE57Eb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+188cai2=188彩票=141=1.4.1=com.bxvip.app.bx188cai2 188cai=188caizy env=1 type=1 desc=1.有新版本更新 da3dc9d7c41c70fb7e9f3e32 t3r753Y5vzywDeGWli5q1npQMTlvb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+
+cpbang1=彩票榜=141=1.4.1=com.bxvip.app.cpbang01 cpbang=cpbzy env=1 type=1 desc=1.有新版本更新 529ff2bb4705143751e7c6c2 aj4W-pDMfXn56BRLNSfUonYONNbCb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+cpbang2=彩票榜=141=1.4.1=com.bxvip.app.cpbang02 cpbang=cpbgw env=1 type=1 desc=1.有新版本更新 d201570d9691150bdf7259fe l0RXyBNMZLNMXznZrB1EY1dYiEEmb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+
+qcaizy=Q彩=141=1.4.1=com.bxvip.app.qcaizy qcai=qcaizy env=1 type=1 desc=1.有新版本更新 299580923696b81c3c76ba90 qPGJK5xPo_som2Gc7dCk-Nxy3xz-b23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+qcaigw=Q彩=141=1.4.1=com.bxvip.app.qcaigw qcai=qcaigw env=1 type=1 desc=1.有新版本更新 fbd899122158cde46bfdc69c nkyz0ZMPE36_5iBSGyLMCRI44aTXb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+
+yifacaizy=易发彩票=141=1.4.1=com.bxvip.app.yifacaizy 1256cai=1256caizy env=1 type=1 desc=1.有新版本更新 a98662f3ab91193d17623a37 mHyX95hxBQo4SISnkarvTMRKauj8b23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+yifacaigw=易发彩票=141=1.4.1=com.bxvip.app.yifacaigw 1256cai=1256caigw env=1 type=1 desc=1.有新版本更新 72ebef48cbd985780ff1bb5b VlYikOfc9mK1WoX8b7gewJqb1gxRb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+
+dafa2zy=大发=141=1.4.1=com.bxvip.app.dafa2zy dafa2=dafa2zy env=1 type=1 desc=1.有新版本更新 8efe2b6527802b5a7a108433 QpZ4n_L4zjDTOY4_QjVFuJpc_5o0b23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1
+dafa2gw=大发=141=1.4.1=com.bxvip.app.dafa2gw dafa2=dafa2gw env=1 type=1 desc=1.有新版本更新 4f5169f06762a9b804ea071e BskHzye2vjwRSyfj6c94msflLHaYb23e46f6-ee97-471b-bf30-1887cd4a39e8 modle=1

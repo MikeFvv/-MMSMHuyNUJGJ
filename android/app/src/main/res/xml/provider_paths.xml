@@ -1,0 +1,10 @@
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--7.0存储访问-->
+    <!--Context.getFilesDir()-->
+    <!--<files-path path="near/pictures/" name="nearimages"/>-->
+    <!--Environment.getExternalStorageDirectory().-->
+    <external-path name="camera_photos" path="."/>
+    <!--getCacheDir()-->
+    <!--<cache-path path="near/pictures/" name="nearimages"/>-->
+    <root-path name="root_path" path="."/>
+</paths>

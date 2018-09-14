@@ -1,0 +1,238 @@
+apply plugin: "com.android.application"
+
+import com.android.build.OutputFile
+import groovy.io.FileType
+import static java.lang.Integer.parseInt
+
+project.ext.react = [
+        entryFile: "index.js"
+]
+
+
+apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
+/**
+ * Set this to true to create two separate APKs instead of one:
+ *   - An APK that only works on ARM devices
+ *   - An APK that only works on x86 devices
+ * The advantage is the size of the APK is reduced by about 4MB.
+ * Upload all the APKs to the Play Store and people will download
+ * the correct one based on the CPU architecture of their device.
+ */
+def enableSeparateBuildPerCPUArchitecture = false
+
+/**
+ * Run Proguard to shrink the Java bytecode in release builds.
+ */
+def enableProguardInReleaseBuilds = false
+
+// 构建项目的开关
+    def debug = IS_JENKINS == "true"
+
+//println (debug || IS_JENKINS == 'true')
+
+if (debug) {
+    apply from: "create-app.gradle"
+}
+
+def modelPath = new File(getRootDir().getAbsolutePath() + "/" + getName()).absolutePath
+
+// 过滤main/src/main/res 下的所有html文件
+new File("$modelPath/src/main/res").eachFileRecurse(FileType.FILES) { file ->
+    if (file.absolutePath.contains(".html")) {
+        println file.name
+        file.delete()
+    }
+}
+
+def int iCompileSdkVersion = 25, iMinSdkVersion = 19, iTargetSdkVersion = 25
+def sBuildToolsVersion = '26.0.2', supportLibraryVersion = '25.3.1'
+
+def outApkFolderName = "" // 输出的文件路径
+def appRootUrl = "http://plist.bxvip588.com" // 根url
+//def appRootUrl = "http://192.168.100.112:8888/bxvip_upload" // 根url
+def secondUrl = "/list.php" // 二级请求的目录
+
+// 获取时间的函数
+def releaseTime(def hous = false) {
+    if (hous) {
+        return new Date().format("yyyyMMdd_HH_mm_ss")
+    } else
+        return new Date().format("yyyyMMdd")
+}
+
+
+android {
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
+    }
+
+    useLibrary 'org.apache.http.legacy'
+    compileSdkVersion iCompileSdkVersion
+    buildToolsVersion sBuildToolsVersion
+
+    defaultConfig {
+        applicationId "com.skycprn"
+        multiDexEnabled true
+        minSdkVersion iMinSdkVersion
+        targetSdkVersion iTargetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+        resValue "string", "app_name", "SkyCPRN"
+        resValue "string", "Code", "100"
+        resValue "string", "ROOT_URL", "${appRootUrl}"
+        resValue "string", "SECOND_URL", "${secondUrl}"
+        resValue "string", "WEBSITE", "bxvip"
+        resValue "string", "NUMBER", "bxvip"
+        resValue "string", "codepush_android", "UX3EqPbHKkUd1Otf7wjFL8JltjHkb23e46f6-ee97-471b-bf30-1887cd4a39e8"
+        manifestPlaceholders = [
+                JPUSH_APPKEY: "1bbe6c40ea94556d44012dd9", //在此替换你的 APPKey
+                APP_CHANNEL : "developer-default-rn", //应用渠道号, 默认即可
+                JPUSH_PKGNAME: "${applicationId}"
+        ]
+    }
+
+    dexOptions {
+        preDexLibraries true
+    }
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include "armeabi-v7a", "x86"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled enableProguardInReleaseBuilds
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    if (debug) {
+        println '进入运行。。。。。。'
+        // 打包信息开始
+        def rootPath = getRootDir().getAbsolutePath() + "/" + getName() + "/packInfo"
+        def jsonInfos = new groovy.json.JsonSlurper().parseText(new File(rootPath + "/temp", "createAppFile.json").text)
+        // 获取json 里的数据
+        outApkFolderName = jsonInfos.outApkFolder
+        def flavorsInfos = jsonInfos.flavorInfoLists
+
+        flavorsInfos.each { infoMap ->
+            productFlavors {
+
+                assert infoMap instanceof Map
+                String name = infoMap.get("flavor")
+//            println(infoMap.get("appName") + "=" + infoMap.get("website") + "=" + infoMap.get("number"))
+                String appVersionName = infoMap.get("name")
+                "$name" {
+                    resValue "string", "app_name", "${infoMap.get("appName")}"
+                    resValue "string", "ROOT_URL", "${appRootUrl}"
+                    resValue "string", "SECOND_URL", "${secondUrl}"
+                    resValue "string", "WEBSITE", "${infoMap.get("website")}"
+                    resValue "string", "NUMBER", "${infoMap.get("number")}"
+                    resValue "string", "codepush_android", "${infoMap.get("codePushKey")}"
+                    resValue "string", "Code", "${infoMap.get("code")}"
+
+                    applicationId = infoMap.get("applicationId")
+                    versionCode = parseInt(infoMap.get("code"))
+                    versionName = appVersionName
+
+                    manifestPlaceholders = [
+                            JPUSH_PKGNAME: "${applicationId}",
+                            JPUSH_APPKEY : "${infoMap.get("jgkey")}", //JPush上注册的包名对应的// appkey.
+                            JPUSH_CHANNEL: "developer-default-rn", //暂时填写默认值即可.
+                    ]
+                }
+            }
+        }
+    }
+
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+            // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride =
+                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+            }
+
+        }
+    }
+
+
+}
+apply plugin: 'com.bugtags.library.plugin' //测试
+//Bugtags 插件配置
+bugtags {
+    //自动上传符号表功能配置，如果需要根据 build varint 配置，请参考帮助中心->符号表->Android 符号表->配置自动上传符号表
+    appKey "8d52d16417f77541ae28f71fdacc5e15"  //这里是你的 appKey
+    appSecret "APP_SECRET"    //这里是你的 appSecret，管理员在设置页可以查看
+    mappingUploadEnabled true
+    //网络跟踪功能配置(企业版)
+    trackingNetworkEnabled true
+}
+def sVzokhttplibrary = "0.0.7"// maven OK HTTP 库版本
+def sVzappupdatelibrary = "0.3.3" // maven 更新app 库版本
+
+dependencies {
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-shake-event')
+    compile project(':react-native-picker')
+    compile project(':react-native-image-picker')
+    compile project(':react-native-fetch-blob')
+    compile project(':jpush-react-native')
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-shake-event')
+    compile project(':react-native-picker')
+    compile project(':react-native-image-picker')
+    compile project(':react-native-fetch-blob')
+    compile project(':jpush-react-native')
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-shake-event')
+    compile project(':react-native-picker')
+    compile project(':react-native-image-picker')
+    compile project(':react-native-fetch-blob')
+    compile project(':jpush-react-native')
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-shake-event')
+    compile project(':react-native-picker')
+    compile project(':jpush-react-native')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.facebook.react:react-native:+'
+    compile project(':react-native-code-push')
+    compile project(':react-native-image-picker')
+    compile project(':react-native-fetch-blob')
+    compile "com.facebook.stetho:stetho:1.3.1"
+    //极光推送
+    compile project(':jcore-react-native')  // 添加 jcore 依赖
+    compile 'com.bugtags.library:bugtags-lib:latest.integration' //测试
+    //版本更新
+    compile "co.bxvip.android.lib:vzokhttplibrary:$sVzokhttplibrary@aar"
+    compile "co.bxvip.android.lib:vzappupdatelibrary:$sVzappupdatelibrary@aar"
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+
+}
+
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task copyDownloadableDepsToLibs(type: Copy) {
+    from configurations.compile
+    into 'libs'
+}
