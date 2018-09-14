@@ -54,7 +54,8 @@ export default class RqDxItemView extends Component {
         let ccc = nextProps.cuntSItemId == nextProps.lastLastSItemIdx; // 上上次选择的，展开选择后 隐藏再展开 选不同区的号时 有用。
         let ddd = nextProps.data != this.props.data; // 数据源不相同时
         let eee = nextProps.isAllBetCallback == true;  // 从所有玩法 或 综合购物车 回来的
-        if (aaa || bbb || ccc || ddd || eee) {
+        let fff = nextProps.selectPanKou != this.props.selectPanKou;  //盘口改变时要刷新界面。赔率改变了
+        if (aaa || bbb || ccc || ddd || eee || fff) {
             return true;
         } else {
             return false;
@@ -84,10 +85,37 @@ export default class RqDxItemView extends Component {
         let dataModel = {};
         if (d_key == 'HC') {
             let data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['H']], ...[this.props.data.bet_data[d_key]['V']]] : [];
-            dataModel = data[idx];
+            dataModel = data[idx] ? data[idx][0] : null;
         } else if (d_key == 'GL') {
             let data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['OV']], ...[this.props.data.bet_data[d_key]['UN']]] : [];
-            dataModel = data[idx - 2];
+            dataModel = data[idx - 2] ? data[idx - 2][0] : null;
+        }
+
+        let peilv = '';
+
+        //角球盘口可能不存在HC.
+        if (dataModel){
+
+            //综合过关和冠军是没有盘口切换的
+            if (this.props.tabIdx == 0){
+
+                switch (this.props.selectPanKou){
+                    case '香港盘':
+                        peilv = dataModel.HK;
+                        break;
+                    case '马来盘':
+                        peilv = dataModel.MY;
+                        break;
+                    case '印尼盘':
+                        peilv = dataModel.IND;
+                        break;
+                    case '欧洲盘':
+                        peilv = dataModel.DEC;
+                }
+            }
+            else {
+                peilv = dataModel.p;
+            }
         }
 
         return (
@@ -132,7 +160,7 @@ export default class RqDxItemView extends Component {
                     ? <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             {dataModel.k.indexOf('-') == 0 ? <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{`${dataModel.k}`.substr(1, `${dataModel.k}`.length - 1)}</Text> : null}
-                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{dataModel.p}</Text>
+                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{peilv}</Text>
                         </View>
                         {dataModel.t != null && dataModel.t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={dataModel.t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
                     </View>
@@ -143,7 +171,7 @@ export default class RqDxItemView extends Component {
                             <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{idx - 2 == 0 ? '大' : '小'}</Text>
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginLeft: Adaption.Width(3) }}>
                                 <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{dataModel.k}</Text>
-                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{dataModel.p}</Text>
+                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{peilv}</Text>
                             </View>
                             {dataModel.t != null && dataModel.t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={dataModel.t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
                         </View>
@@ -202,14 +230,14 @@ export default class RqDxItemView extends Component {
 
                 </View>
 
-                <TouchableOpacity activeOpacity={0.8} style={{ height: Adaption.Height(40), flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
-                    onPress={() => {
-                        this.props.allPlayClick ? this.props.allPlayClick() : null;
-                    }}
+                {this.props.tabIdx != 1 ?  <TouchableOpacity activeOpacity={0.8} style={{ height: Adaption.Height(40), flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+                                                             onPress={() => {
+                                                                 this.props.allPlayClick ? this.props.allPlayClick() : null;
+                                                             }}
                 >
-                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(18), color: '#7e6b5a' }}>所有玩法</Text>
+                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(18), color: '#7e6b5a' }}>{`所有玩法(${this.props.data.all_bet_cnt})`}</Text>
                     <Image resizeMode={'contain'} style={{ left: 5, width: Adaption.Width(13), height: Adaption.Width(13) }} source={require('../../img/AllGame.png')} />
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
 
             </View>
         )

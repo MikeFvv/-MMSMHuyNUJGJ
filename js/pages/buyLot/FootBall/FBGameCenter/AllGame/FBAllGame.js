@@ -21,7 +21,7 @@ export default class FBAllGame extends Component {
       <CustomNavBar
         leftClick={() => {
           if (navigation.state.params.game_type == 3) {
-            navigation.state.params.callback(callbackAllSltDic, navigation.state.params.backupSltDic.sectionItemiId);
+            navigation.state.params.callback(callbackAllSltDic, navigation.state.params.backupSltDic ? navigation.state.params.backupSltDic.sectionItemiId : null);
           }
           navigation.goBack();
         }}
@@ -86,10 +86,13 @@ export default class FBAllGame extends Component {
         superSltDic={this.props.navigation.state.params.sltDic}
         superAllSltDic={this.props.navigation.state.params.allSltDic}
         superBackupSltDic={this.props.navigation.state.params.backupSltDic}
-        tabIdx={tabIndex}
+        tabIdx={this.props.navigation.state.params.tabIdx}
+        play_group={this.props.navigation.state.params.play_group}
         tabLabel={title}
         nowGameData={this.props.navigation.state.params.nowGameData}
+        leagueData={this.props.navigation.state.params.leagueData}
         navigate={this.props.navigation.navigate} // 传入导航
+        selectPanKou={this.props.navigation.state.params.selecctPanKou}
         zongheBackData={(allSltDic, sltDic) => {
           callbackAllSltDic = allSltDic;
           this.props.navigation.state.params.sltDic = sltDic; // 得改变。
@@ -104,35 +107,36 @@ export default class FBAllGame extends Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
-
-        <ScrollableTabView
-          automaticallyAdjustContentInsets={false}
-          alwaysBounceHorizontal={false}
-          style={{ height: SCREEN_HEIGHT - 90 }}
-          onScroll={(postion) => {
-            if (postion % 1 == 0) {
-              this.setState({});
-            }
-          }}
-          renderTabBar={() =>
-            <ScrollableTabBar
-              backgroundColor={'#fff'}
-              activeTextColor={COLORS.appColor}
-              underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}
-              textStyle={{ fontSize: 17 }}
-            >
-            </ScrollableTabBar>
-          }>
-
           {this._gameCenterView(0, '所有盘口')}
-          {this._gameCenterView(1, '让球 & 大小盘口')}
-          {this._gameCenterView(2, '上半场盘口')}
-          {this._gameCenterView(3, '比分盘口')}
-          {this._gameCenterView(4, '主盘口')}
-          {this._gameCenterView(5, '进球盘口')}
-          {this._gameCenterView(6, '其他盘口')}
 
-        </ScrollableTabView>
+        {/*<ScrollableTabView*/}
+          {/*automaticallyAdjustContentInsets={false}*/}
+          {/*alwaysBounceHorizontal={false}*/}
+          {/*style={{ height: SCREEN_HEIGHT - 90 }}*/}
+          {/*onScroll={(postion) => {*/}
+            {/*if (postion % 1 == 0) {*/}
+              {/*this.setState({});*/}
+            {/*}*/}
+          {/*}}*/}
+          {/*renderTabBar={() =>*/}
+            {/*<ScrollableTabBar*/}
+              {/*backgroundColor={'#fff'}*/}
+              {/*activeTextColor={COLORS.appColor}*/}
+              {/*underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}*/}
+              {/*textStyle={{ fontSize: 17 }}*/}
+            {/*>*/}
+            {/*</ScrollableTabBar>*/}
+          {/*}>*/}
+
+          {/*{this._gameCenterView(0, '所有盘口')}*/}
+          {/*{this._gameCenterView(1, '让球 & 大小盘口')}*/}
+          {/*{this._gameCenterView(2, '上半场盘口')}*/}
+          {/*{this._gameCenterView(3, '比分盘口')}*/}
+          {/*{this._gameCenterView(4, '主盘口')}*/}
+          {/*{this._gameCenterView(5, '进球盘口')}*/}
+          {/*{this._gameCenterView(6, '其他盘口')}*/}
+
+        {/*</ScrollableTabView>*/}
 
       </View>
     );

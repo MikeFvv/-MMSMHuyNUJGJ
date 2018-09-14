@@ -29,7 +29,7 @@ export default class FBGameBottom extends Component {
         this.max_stake = props.nowGameData.max_stake;
 
         this.animatedValue = new Animated.Value(1);
-        let outputLenth = SCREEN_HEIGHT - 204 - (SCREEN_HEIGHT == 812 ? 54 : 0);
+        let outputLenth = SCREEN_HEIGHT - 154 - (SCREEN_HEIGHT == 812 ? 54 : 0);
         this.top = this.animatedValue.interpolate({ inputRange: [0, 1], outputRange: [outputLenth, SCREEN_HEIGHT] });
     }
 
@@ -110,7 +110,21 @@ export default class FBGameBottom extends Component {
              */
             let peilv = 0;
             if (sltData.d_key == 'HC' || sltData.d_key == 'GL' || sltData.d_key == 'HHC' || sltData.d_key == 'HGL') {
-                peilv = parseFloat(sltData.p);
+
+                switch (this.props.selectPanKou){
+                    case '香港盘':
+                        peilv = parseFloat(sltData.HK, 10);  //香港盘盈利等于赔率 X 本金
+                        break;
+                    case '马来盘':
+                        peilv = 1.00;  //马来盘盈利等于本金
+                        break;
+                    case '印尼盘':
+                        peilv = 1.00;   //印尼盘盈利等于本金
+                        break;
+                    case '欧洲盘':
+                        peilv = parseFloat(sltData.DEC, 10) - 1;  //欧洲盘盈利等于赔率 - 1
+                }
+
             } else {
                 peilv = parseFloat(sltData.p) - 1;
             }

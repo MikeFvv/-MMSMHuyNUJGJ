@@ -197,7 +197,7 @@
       isFirst = @"0";
     }
     
-    NSDictionary *props = @{@"router": @(ROUTER), @"mmStatus": @(self.mmStatus), @"mmUrl": self.mmUrl, @"mmisFirst": isFirst, @"mmRainbow": self.mmRainbow};
+    NSDictionary *props = @{@"OrientationLink": @"1",@"router": @(ROUTER), @"mmStatus": @(self.mmStatus), @"mmUrl": self.mmUrl, @"mmisFirst": isFirst, @"mmRainbow": self.mmRainbow};
     RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                         moduleName:@"SKyCPRN"
                                                  initialProperties:props

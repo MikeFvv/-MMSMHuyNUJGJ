@@ -17,9 +17,10 @@ import Toast, {DURATION} from 'react-native-easy-toast'  //土司视图
 
 import FBGameCenter from './FBGameCenter/FBGameCenter';  // 玩法选号中心
 import ScorceSlectAlert from './footballTool/ScorceSlectAlert';  //更多选择框
-import ScorceDropView from './footballTool/ScorceDropDownView';  //足彩下拉框
 import ScorceBottom from './footballTool/ScorceBottomView';   //足彩底部控件
 import ScorceZHBottom from './footballTool/ScorceSpecailBottomView'; //足彩综合过关底部控件
+import ScorcePanKou from './footballTool/PankouSelectView';  //足彩盘口选择视图
+
 
 
 export default class FootballGame extends Component {
@@ -31,28 +32,41 @@ export default class FootballGame extends Component {
             <CustomNavBar
                 leftClick={() => {navigation.state.params.backAction ? navigation.state.params.backAction() : null; navigation.goBack()}}
                 centerView={
-                    <TouchableOpacity activeOpacity={1} onPress={navigation.state.params ? navigation.state.params.navTitlePress : null}>
-                        <View style={{
-                            marginLeft:40,
-                            width: SCREEN_WIDTH - 180,
-                            height: 44,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                            marginTop: SCREEN_HEIGHT == 812 ? 44 : 20,
-                        }}>
-                            <CusBaseText style={{ fontSize: 18, color: 'white', }}>{navigation.state.params.navfirstTitle}</CusBaseText>
-                            <Image style={{ width: 15, height: 15, }} source={require("../../theLot/img/xuansan.png")}/>
-                        </View>
-                    </TouchableOpacity>
+                    <View style = {{ width: SCREEN_WIDTH - 120, height: 44, flexDirection: 'row', marginTop: SCREEN_HEIGHT == 812 ? 40 : 20,}}>
+                        <TouchableOpacity
+                            style = {{width:(SCREEN_WIDTH-120)/3, height:44, alignItems:'center', justifyContent:'center'}}
+                            activeOpacity={0.8}
+                            onPress={() => {
+                                  navigation.state.params ? navigation.state.params.navRolling(navigation) : null
+                            }}>
+                            <CusBaseText style = {{color: navigation.state.params.currentChooseTypeIndex == 0 ? '#fdf000' : '#fff', fontSize:Adaption.Font(20,17)}}>
+                                滚球
+                            </CusBaseText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style = {{width:(SCREEN_WIDTH-120)/3, height:44, alignItems:'center', justifyContent:'center'}}
+                            activeOpacity={0.8}
+                            onPress={() => {
+                                navigation.state.params ? navigation.state.params.navToday(navigation) : null
+                            }}>
+                            <CusBaseText style = {{color:navigation.state.params.currentChooseTypeIndex == 1 ? '#fdf000' : '#fff', fontSize:Adaption.Font(20,17)}}>
+                                今日
+                            </CusBaseText>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style = {{width:(SCREEN_WIDTH-120)/3, height:44, alignItems:'center', justifyContent:'center'}}
+                            activeOpacity={0.8}
+                            onPress={() => {
+                                navigation.state.params ? navigation.state.params.navEarly(navigation) : null
+                            }}>
+                            <CusBaseText style = {{color:navigation.state.params.currentChooseTypeIndex == 2 ? '#fdf000' : '#fff', fontSize:Adaption.Font(20,17)}}>
+                                早盘
+                            </CusBaseText>
+                        </TouchableOpacity>
+                    </View>
                 }
                 rightView={
                     <View style = {{flexDirection:'row', alignItems:'center', marginTop:SCREEN_HEIGHT == 812 ? 44 : 20}}>
-                        <TouchableOpacity style = {{width:40, height:44, alignItems:'center', justifyContent:'center'}} activeOpacity={1} onPress = {() => {navigation.state.params ? navigation.state.params.navTimePress(navigation) : null}}>
-                            <CusBaseText style = {{color:'#fff', fontSize:Adaption.Font(18,15)}}>
-                                {navigation.state.params.navCountDownText ? navigation.state.params.navCountDownText : '0'}
-                            </CusBaseText>
-                        </TouchableOpacity>
                         <TouchableOpacity
                             activeOpacity={1}
                             onPress={() => {
@@ -73,8 +87,7 @@ export default class FootballGame extends Component {
         super(props);
 
         this.state = {
-            gameTypeIdx: 1,  //当前默认选择的玩法下标是今日赛事
-            topTabIdx:0,  //当前滚动的界面的下标
+            topTabIdx:0,  //当前滚动的界面的下标,默认0为让球,1为综合过关,2为冠军
             sortDataIdx: 0,  //0 按时间排序， 1按联盟排序， 默认按联盟排序
             selctBallsDict: {},  // 选择的号码
             leagueIdArr: [], // 联盟ID数据
@@ -82,8 +95,10 @@ export default class FootballGame extends Component {
             isShowVerbView:false,  //是否显示维护界面
             verbTimeStr:'',  //维护的时间
             allDataClick:false, //是否从所有玩法回来，综合过关需要刷新页面
+            selectPanKou:'香港盘',  //默认选择的盘口为香港盘
         };
 
+        props.navigation.state.params.currentChooseTypeIndex = 0;// 默认值是滚球
         this.timer1 = null; //倒计时定时器
         this.wating = false; //防止多次快速点击
         this.xiaZhuClickWating = false;  //防止快速点击下注按钮
@@ -93,18 +108,43 @@ export default class FootballGame extends Component {
 
         this.props.navigation.setParams({
             navRightPress: this._rightBtnPress,
-            navTitlePress: this._navTitleBtnPress,
-            navfirstTitle: '今日赛事',
+            // navTitlePress: this._navTitleBtnPress,
             navCountDownText: 180,
-            navTimePress: this._navTimeOnPress,
+            navRolling:this._navRollingBtnClick,//滚球点击
+            navToday:this._navTodayBtnClick,//今日点击
+            navEarly:this._navEarlyBtnClick,//早盘点击
+            currentChooseTypeIndex:0  //当前选择的类型，默认为今日
         });
 
-        this._countDownTime();
 
         this.subscription = PushNotification.addListener('FBShopCarXiaZhuSuccessNotification', ()=>{
             this.refs.Toast && this.refs.Toast.show('下注成功!', 3000);
         });
 
+        this._fetchTypeData();
+    }
+
+
+    //请求足彩列表的类型数据
+    _fetchTypeData(){
+
+        let params = new FormData();
+        params.append('ac', 'getSportMatchList');
+        params.append('game_type', 5);
+        params.append('sport_id',  this.state.footBallID);
+
+        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+        promise
+            .then((responseData) => {
+
+                if (responseData.msg == 50003){
+
+                    this.setState({isShowVerbView:true, verbTimeStr:responseData.data.maintenance_time});
+                }
+            })
+            .catch((err) => {
+
+            })
     }
 
     //移除通知
@@ -124,71 +164,39 @@ export default class FootballGame extends Component {
     }
 
 
-    //返回是否要刷新render
-    shouldComponentUpdate(nextProps, nextState) {
-
-        //当state的值改变时刷新界面
-        if (nextState.gameTypeIdx != this.state.gameTypeIdx ||
-            nextState.topTabIdx != this.state.topTabIdx ||
-            nextState.sortDataIdx != this.state.sortDataIdx ||
-            nextState.selctBallsDict != this.state.selctBallsDict ||
-            nextState.isShowVerbView != this.state.isShowVerbView ||
-            (this.state.allDataClick == true && this.state.gameTypeIdx == 3)){
-
-            return true;
-        }
-        else {
-            return false;
-        }
+    //滚球按钮点击的方法
+    _navRollingBtnClick = (navigation) => {
+        navigation.setParams({currentChooseTypeIndex:0});
+        this.setState({
+            gameTypeIdx: 0,
+            selctBallsDict: {},
+            topTabIdx: 0, // 重置
+            leagueIdArr: [], // 重置
+        })
     }
 
-    //导航栏刷新时间点击方法
-    _navTimeOnPress = (navigation) => {
-
-        if (this.wating == false) {
-
-            this.wating = true;
-
-            setTimeout(() => {this.wating = false}, 1000)
-
-            navigation.setParams({
-                navCountDownText: this.state.gameTypeIdx == 0 ? 30 : 180,
-            });
-
-            //倒计时结束或者重新请求时
-            PushNotification.emit('RefreshFootBallViewDataNotificaiton', this.state.sortDataIdx, this.state.leagueIdArr, this.state.topTabIdx, false);
-        }
+    //今日按钮点击的方法
+    _navTodayBtnClick = (navigation) => {
+        navigation.setParams({currentChooseTypeIndex:1});
+        this.setState({
+            gameTypeIdx: 1,
+            selctBallsDict: {},
+            topTabIdx: 0, // 重置
+            leagueIdArr: [], // 重置
+        })
     }
 
-    //倒计时刷新开奖数据
-    _countDownTime(){
-
-        if (this.timer1) {
-            return;
-        }
-
-        this.timer1 = setInterval(() => {
-
-            if (this.props.navigation.state.params.navCountDownText < 1){
-                this.props.navigation.state.params.navCountDownText = this.state.gameTypeIdx == 0 ? 30 : 180;
-                PushNotification.emit('RefreshFootBallViewDataNotificaiton', this.state.sortDataIdx, this.state.leagueIdArr, this.state.topTabIdx, false);
-            }
-            else {
-
-                this.props.navigation.state.params.navCountDownText -= 1;
-            }
-
-            this.props.navigation.setParams({
-                navCountDownText: this.props.navigation.state.params.navCountDownText,
-            });
-        }, 1000)
+    //早盘按钮点击方法
+    _navEarlyBtnClick = (navigation) => {
+        navigation.setParams({currentChooseTypeIndex:2});
+        this.setState({
+            gameTypeIdx: 2,
+            selctBallsDict: {},
+            topTabIdx: 0, // 重置
+            leagueIdArr: [], // 重置
+        })
     }
 
-    //中间标题点击
-    _navTitleBtnPress = () => {
-
-        this.refs.ScorceDropDownView && this.refs.ScorceDropDownView.show();//足彩下拉选择控件
-    }
 
     //右边按钮点击
     _rightBtnPress = () => {
@@ -206,24 +214,13 @@ export default class FootballGame extends Component {
     _scorceSlectAlertIndex(index) {
         const { navigate } = this.props.navigation;
         if (index == 0) {
-            this.setState({sortDataIdx:1}); //按联盟排序
-            PushNotification.emit('RefreshFootBallViewDataNotificaiton', 1, this.state.leagueIdArr, this.state.topTabIdx, true);
-            //重新排序后重置倒计时时间
-            this.props.navigation.setParams({
-                navCountDownText: this.state.gameTypeIdx == 0 ? 30 : 180,
-            });
 
-        } else if (index == 1) {
-            this.setState({sortDataIdx:0}); //按时间排序
-            PushNotification.emit('RefreshFootBallViewDataNotificaiton', 0, this.state.leagueIdArr, this.state.topTabIdx, true);
-            this.props.navigation.setParams({
-                navCountDownText: this.state.gameTypeIdx == 0 ? 30 : 180,
-            });
 
-        } else if (index == 2) {
+
+        }  else if (index == 1) {
             navigate('Screening',{sportID:this.state.footBallID, game_type: this.state.gameTypeIdx, play_group: this.state.topTabIdx > 1 ? this.state.topTabIdx - 1 : this.state.topTabIdx, gaBack:this._callback.bind(this)});
 
-        } else if (index == 3) {
+        } else if (index == 2) {
             if (global.UserLoginObject.Token == '') {
                 setTimeout(() => {
                     Alert.alert('提示', '您还未登录,请先去登录',
@@ -237,11 +234,14 @@ export default class FootballGame extends Component {
                 navigate('TouZhuRecord', {wanfa: 0, sportID:this.state.footBallID});
             }
 
-        }  else if (index == 4) {
+        } else if (index == 3) {
             navigate('GameRulesHome');
 
-        }  else if (index == 5) {
-            navigate('FootballResult', {sportID:this.state.footBallID});
+        } else if (index == 4) {
+            navigate('FootballResult', {sportID: this.state.footBallID});
+        }
+        else if (index == 5){
+            navigate('PeilvCaculate');
         }
     }
 
@@ -262,8 +262,10 @@ export default class FootballGame extends Component {
         params.append('token', global.UserLoginObject.Token);
         params.append('uid', global.UserLoginObject.Uid);
         params.append('sessionkey', global.UserLoginObject.session_key);
-        params.append('game_type', this.state.gameTypeIdx);
+        params.append('game_type',  this.props.navigation.state.params.currentChooseTypeIndex); //topIdx 0 默认滚球,1今日，2早盘
+        params.append("play_group", this.state.topTabIdx == 1 ? 4 : this.state.topTabIdx == 2 ? 5 : this.state.topTabIdx); //playgroup 0让球，4综合过关,5冠军
         params.append('payment_methods', 0);  //默认余额支付
+        params.append('bet_odds', this.state.selectPanKou == '香港盘' ? 0 : 1);  //下注时选的盘口
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
@@ -276,6 +278,7 @@ export default class FootballGame extends Component {
                 }
 
                 if (responseData.msg == 0 && responseData.data){
+                    global.UserLoginObject.TotalMoney = responseData.data.price;
                     this.refs.Toast && this.refs.Toast.show('下注成功!', 2000);
                     PushNotification.emit('ClearFootBallGameViewBallNotification', true);//发出通知清空界面 
                     this.setState({selctBallsDict:null})
@@ -309,11 +312,12 @@ export default class FootballGame extends Component {
             })
     }
 
-    _gameCenterView(tabIndex, groupID, title) {
+    _gameCenterView(tabIndex, gametypeID, title) {
         return (
-            <FBGameCenter key={tabIndex} tabIdx={tabIndex} play_group={groupID} game_typeID={this.state.gameTypeIdx} orderIndex={this.state.sortDataIdx} tabLabel={title} sportID = {this.state.footBallID}
+            <FBGameCenter key={tabIndex} tabIdx={tabIndex} play_group={tabIndex} game_typeID={gametypeID} orderIndex={this.state.sortDataIdx} tabLabel={title} sportID = {this.state.footBallID}
                           maintenance={this.state.isShowVerbView}
                           maintenanceTime={this.state.verbTimeStr}
+                          currentPanKou={this.state.selectPanKou}
                           navigate={this.props.navigation.navigate} // 传入导航
                           downPullRefresh={() => {
                               this.props.navigation.setParams({
@@ -346,106 +350,59 @@ export default class FootballGame extends Component {
         return (
             <View style={{ flex: 1 }}>
 
-                {this.state.gameTypeIdx == 3 || this.state.gameTypeIdx == 4
-                    ? <ScrollableTabView
-                        key={this.state.gameTypeIdx}
-                        automaticallyAdjustContentInsets={false}
-                        alwaysBounceHorizontal={false}
-                        style={{ height: SCREEN_HEIGHT - 90 }}
-                        onScroll={(postion) => {}}
-                        renderTabBar={() =>
-                            <ScrollableTabBar
-                                backgroundColor={'#fff'}
-                                activeTextColor={COLORS.appColor}
-                                underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}
-                                textStyle={{ fontSize: 17 }}
-                            />
-                        }>
+                {this.props.navigation.state.params.currentChooseTypeIndex != 0 ? <ScrollableTabView
+                    key={this.props.navigation.state.params.currentChooseTypeIndex}
+                    automaticallyAdjustContentInsets={false}
+                    alwaysBounceHorizontal={false}
+                    style={{ height: SCREEN_HEIGHT - 90, marginTop:50 }}
+                    onScroll={(postion) => {
 
-                        {this._gameCenterView(0, 0, this.state.gameTypeIdx == 4 ? '冠军' : '独赢/让球/大小')}
+                        if (postion % 1 == 0) {
+                            if (postion != this.state.topTabIdx) {
 
-                    </ScrollableTabView>
-                    : this.state.gameTypeIdx == 0
-                        ? <ScrollableTabView
-                            key={this.state.gameTypeIdx}
-                            automaticallyAdjustContentInsets={false}
-                            alwaysBounceHorizontal={false}
-                            style={{ height: SCREEN_HEIGHT - 90 }}
-                            onScroll={(postion) => {
+                                this.state.topTabIdx = postion;
+                                this.state.leagueIdArr = []; // 重置
+                                this.setState({
+                                    selctBallsDict: {},
+                                })
+                            }
+                        }
+                    }}
+                    renderTabBar={() =>
+                        <ScrollableTabBar
+                            backgroundColor={'#fff'}
+                            activeTextColor={COLORS.appColor}
+                            underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}
+                            textStyle={{ fontSize: 17 }}
+                        >
+                        </ScrollableTabBar>
+                    }>
+                    {/* groupID： 0让球大小， 1综合过关， 2冠军 */}
+                    {this._gameCenterView(0, this.props.navigation.state.params.currentChooseTypeIndex, '让球/大小')}
+                    {this._gameCenterView(1, this.props.navigation.state.params.currentChooseTypeIndex, '综合过关')}
+                    {this._gameCenterView(2, this.props.navigation.state.params.currentChooseTypeIndex, '冠军')}
 
-                                //是否滑动完成
-                                if (postion % 1 == 0) {
-                                    if (postion != this.state.topTabIdx) {
+                </ScrollableTabView> : <View
+                    style={{ height:isIphoneX ? SCREEN_HEIGHT - 260 : SCREEN_HEIGHT - 200, marginTop:50 }}>
+                    {/* groupID： 0让球大小， 1综合过关， 2冠军 */}
+                    {this._gameCenterView(0, 0, '让球/大小')}
 
-                                        this.state.topTabIdx = postion;
-                                        this.state.leagueIdArr = []; // 重置
-                                        this.setState({
-                                            selctBallsDict: {},
-                                        })
+                </View>}
 
-                                        this.props.navigation.setParams({
-                                            navCountDownText: 30,
-                                        })
-                                    }
-                                }
-                            }}
-                            renderTabBar={() =>
-                                <ScrollableTabBar
-                                    backgroundColor={'#fff'}
-                                    activeTextColor={COLORS.appColor}
-                                    underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}
-                                    textStyle={{ fontSize: 17 }}
-                                >
-                                </ScrollableTabBar>
-                            }>
-                            {this._gameCenterView(0, 0, '独赢/让球/大小')}
-                            {this._gameCenterView(1, 1, '波胆（全）')}
-
-                        </ScrollableTabView>
-                        : <ScrollableTabView
-                            key={this.state.gameTypeIdx}
-                            automaticallyAdjustContentInsets={false}
-                            alwaysBounceHorizontal={false}
-                            style={{ height: SCREEN_HEIGHT - 90 }}
-                            onScroll={(postion) => {
-
-                                if (postion % 1 == 0) {
-                                    if (postion != this.state.topTabIdx) {
-
-                                        this.state.topTabIdx = postion;
-                                        this.state.leagueIdArr = []; // 重置
-                                        this.setState({
-                                            selctBallsDict: {},
-                                        })
-
-                                        this.props.navigation.setParams({
-                                            navCountDownText: 180,
-                                        })
-                                    }
-                                }
-                            }}
-                            renderTabBar={() =>
-                                <ScrollableTabBar
-                                    backgroundColor={'#fff'}
-                                    activeTextColor={COLORS.appColor}
-                                    underlineStyle={{ backgroundColor: COLORS.appColor, height: 3 }}
-                                    textStyle={{ fontSize: 17 }}
-                                >
-                                </ScrollableTabBar>
-                            }>
-                            {/* groupID： 0独赢， 1波胆， 2半场/全场，3总入球 */}
-                            {this._gameCenterView(0, 0, '独赢/让球/大小')}
-                            {this._gameCenterView(1, 1, '波胆（全）')}
-                            {this._gameCenterView(2, 1, '波胆（半）')}
-                            {this._gameCenterView(3, 2, '半场/全场')}
-                            {this._gameCenterView(4, 3, '总入球')}
-
-                        </ScrollableTabView>
-                }
+                {/*头部视图固定*/}
+                <View style = {{position:'absolute'}}>
+                    <ScorcePanKou
+                        gameTypeID={this.props.navigation.state.params.currentChooseTypeIndex}
+                        PankouPicker={(pankouItem)=>{
+                            //盘口选择的回调
+                            this.setState({selectPanKou:pankouItem.item});
+                        }}
+                    />
+                </View>
 
                 {/* 综合过关底部 */}
                 {this.state.isShowVerbView == true ? null
-                    : this.state.gameTypeIdx == 3 ? <ScorceZHBottom style={{ height: 50, marginBottom: isIphoneX ? 34 : 0 }}
+                    :   this.state.topTabIdx == 1 ? <ScorceZHBottom style={{ height: 50, marginBottom: isIphoneX ? 34 : 0 }}
                         NextStepOnPress={(pushDict) => {
 
                             if (global.UserLoginObject.Uid != '') {
@@ -454,7 +411,8 @@ export default class FootballGame extends Component {
                                     this.props.navigation.navigate('FBShopCar', {
                                         navCountDownText: 10,
                                         dataDict: pushDict,
-                                        gameType: this.state.gameTypeIdx,
+                                        gameType: this.state.gameTypeIdx,  //
+                                        playgroup: this.state.topTabIdx,  //play_group  //让球，综合过关，冠军
                                     });
                                 } else {
                                     this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
@@ -503,9 +461,9 @@ export default class FootballGame extends Component {
                             }}
                             normalPickDataDict={this.state.selctBallsDict}
                             zongHePickDataDict={null}
-                            currentGameType={this.state.gameTypeIdx}
                             currentTabIndex={this.state.topTabIdx}
-                            sportID={this.state.footBallID} />
+                            sportID={this.state.footBallID}
+                            currentPanKou={this.state.selectPanKou}/>
                 }
 
 
@@ -515,33 +473,6 @@ export default class FootballGame extends Component {
                     CellClick={(index) => {
                         this.setState({selctBallsDict:{}});
                         this._scorceSlectAlertIndex(index);
-                    }}
-                />
-
-                {/* 头部下拉 */}
-                <ScorceDropView
-                    ref='ScorceDropDownView'
-                    selectIndex={this.state.gameTypeIdx}
-                    sportID = {this.state.footBallID}
-                    isSystemVerb = {(isVerb, verbTimeStr) => {
-                        this.setState({isShowVerbView:isVerb, verbTimeStr:verbTimeStr})}
-                    }
-                    itemTitleSelect={(item) => {
-
-                        //切换不同的玩法类型时刷新底部的工具栏
-
-                        this.props.navigation.setParams({
-                            navfirstTitle: item.item.title,
-                            navCountDownText:item.index == 0 ? 30 : 180, //滚球30秒刷新，其他180秒刷新
-                        });
-
-                        //item.index  0 滚球, 1今日赛事， 2 早盘， 3 综合过关， 4 冠军
-                        this.setState({
-                            gameTypeIdx: item.index,
-                            selctBallsDict: {},
-                            topTabIdx: 0, // 重置
-                            leagueIdArr: [], // 重置
-                        })
                     }}
                 />
                 <Toast ref="Toast" position='center'/>

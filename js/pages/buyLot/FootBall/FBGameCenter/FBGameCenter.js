@@ -15,12 +15,14 @@ import {
 } from 'react-native';
 
 import Toast, {DURATION} from 'react-native-easy-toast';
-import DyRqDxItemView from './ItemViews/DyRqDxItemView'; // 独赢 让球 大小 
+import DyRqDxItemView from './ItemViews/DyRqDxItemView'; // 独赢 让球 大小
 import BodanItemView from './ItemViews/BodanItemView';  // 波胆
-import BQChangItemView from './ItemViews/BQChangItemView'; // 半/全场  
+import BQChangItemView from './ItemViews/BQChangItemView'; // 半/全场
 import ZRQiuItemView from './ItemViews/ZRQiuItemView';   // 总入球
 import GuanJunItemview from './ItemViews/GuanJunItemview'; // 冠军
 import RqDxItemView from './ItemViews/RqDxItemView'; // 让球 / 大小
+import ScrocePickList from '../footballTool/ScorcePickListView'; //下拉视图
+import PanKouChangeTool from '../footballTool/ScorcePanKouPeilvChange'; //盘口转换的工具
 
 let lastTabIdx = -1;
 
@@ -41,16 +43,18 @@ export default class FBGameCenter extends Component {
             orderIndex: this.props.orderIndex, //排序ID，默认按时间排序
             leagueIds: [], // 联盟IDs
             sport_Id:props.sportID ? props.sportID : 2001, //体彩sportId
+            lastTabIdx:props.tabIdx, //记住当前的下标
+            currentPickerPanKou:'香港盘', //默认选择的盘口为香港盘
+            datePickerList:[],  //日期下拉框数组
+            currentDate:'',  //默认请求的全部日期。综合过关需要传
         };
 
-        this.isShowItemIds = [];  // 刷新数据时 记录展开的league_id
         this.lastLastSItemIdx = '-1+-1';
         this.isUpPullLoadFinish = true;  // 上拉加载是否成功。 防止第一次请求的数据没填充满界面 而触发上拉加载的方法 请求n次第一次成功的时间戳
         this.nextTime = 0;  // 上拉加载 请求用的start_time时间
-        this.nextTime2 = 0;  // 备作 当前不是在第一页时，刷新多页用
-        this.backupData = [];
         this.isReloadDyRqDx = false; // 按联盟 时间 筛选 排序时 重载独赢视图
         this.carBackClearSItemId = []; // 购物车点添加返回的，记录在那边删除的sitemid
+        this.currentClickIndex = null;  //当前点击的Item下标
         lastTabIdx = props.tabIdx;
     }
 
@@ -59,31 +63,26 @@ export default class FBGameCenter extends Component {
         // 切换tabbar时 要清空已选数据 和联盟ids 请求新数据
         if (lastTabIdx != nextProps.tabIdx) {
             lastTabIdx = nextProps.tabIdx;
+            this.currentClickIndex = null;  //重置状态
+            this.state.currentDate = '';  //重置选择的日期
+            this.state.lastTabIdx = lastTabIdx;
             this.state.leagueIds = []; // 切换了清空联盟ids
-            this.nextTime = 0;  // 重置
-            this.nextTime2 = 0; 
-            this._getShowItemIds(); // 切换也走一次吧， 存住展开的section的标识
-
-            /*
-            // 默认是展开时，才要重置这个偏移量，现在是不展开，所以这个先预留着。
-            if (this.state.sectionData.length > 0) {
-                // 滚动偏移重置为0
-                this.refs.FBSectionList && this.refs.FBSectionList._wrapperListRef._listRef.scrollToOffset({
-                    offset: 0,
-                    animated: true,
-                });
-            }
-            */
 
             this.setState({
                 ballsDict: {}, // 清空已选数据。
             })
-            this._getSportGameList(true, false);// 请求数据 
+            this._getSportGameList(true, false);// 请求数据
+        }
+
+        if (nextProps.currentPanKou != this.state.currentPickerPanKou){
+            this.setState({
+                currentPickerPanKou:nextProps.currentPanKou,
+            })
         }
     }
 
     componentDidMount() {
-        
+
         this._getSportGameList(true);// 请求数据
 
         //体彩界面倒计时结束或者点击重置倒计时
@@ -94,28 +93,28 @@ export default class FBGameCenter extends Component {
             if (tabIndex == this.props.tabIdx) {
 
                 // 用于按联盟或时间排序时 重载
-                if (isReloadUI) {
-                    this.state.ballsDict = {}; // 清空。
-                    this.isShowItemIds = []; // 先置空
-                    this.isReloadDyRqDx = true; 
+                // if (isReloadUI) {
+                this.state.ballsDict = {}; // 清空。
+                this.isShowItemIds = []; // 先置空
+                this.isReloadDyRqDx = true;
 
-                    /*
-                    // 默认是展开时，才要重置这个偏移量，现在是不展开，所以这个先预留着。
-                    if (this.state.sectionData.length > 0) {
-                        this.refs.FBSectionList && this.refs.FBSectionList._wrapperListRef._listRef.scrollToOffset({
-                            offset: 0,
-                            animated: true,
-                        });
-                    }
-                    */
-
-                    this._getSportGameList(true);
-                    
-                } else {
-                    this.nextTime2 = 0; // 刷新时重置
-                    this._getShowItemIds();   // 切换tab 走一次 存住展开的section的标识
-                    this._getSportGameList(true, true);
+                /*
+                // 默认是展开时，才要重置这个偏移量，现在是不展开，所以这个先预留着。
+                if (this.state.sectionData.length > 0) {
+                    this.refs.FBSectionList && this.refs.FBSectionList._wrapperListRef._listRef.scrollToOffset({
+                        offset: 0,
+                        animated: true,
+                    });
                 }
+                */
+
+                this._getSportGameList(true);
+
+                // } else {
+                //     this.nextTime2 = 0; // 刷新时重置
+                //     //this._getShowItemIds();   // 切换tab 走一次 存住展开的section的标识
+                //     this._getSportGameList(true, true);
+                // }
 
                 this.setState({
                     isloading: true, // 显示加载框
@@ -127,9 +126,9 @@ export default class FBGameCenter extends Component {
         this.subscription2 = PushNotification.addListener('ClearFootBallGameViewBallNotification', (noShopCar) => {
             if (noShopCar == true) {
                 // 不是购物车里面发出的通知，不重载。
-                this.isReloadDyRqDx = false; 
+                this.isReloadDyRqDx = false;
             } else {
-                this.isReloadDyRqDx = true; 
+                this.isReloadDyRqDx = true;
             }
             this.setState({
                 ballsDict: {}, // 清空已选数据。
@@ -148,7 +147,19 @@ export default class FBGameCenter extends Component {
                 ballsDict: this.state.ballsDict, // 重新赋值；
             })
         });
-        
+
+        //倒计时组件刷新重新请求的通知
+        this.subscription4 = PushNotification.addListener('FBGameCenterTimeLinFreshAPINotification', ()=> {
+            // this.currentClickIndex = null;  //重新刷新UI
+
+            if (this.currentClickIndex == null){
+                this._getSportGameList(true);
+            }
+            else {
+                this._getLeagueIDListData(this.state.sectionData[this.currentClickIndex]);
+            }
+        })
+
     }
 
     //移除组件
@@ -165,37 +176,33 @@ export default class FBGameCenter extends Component {
         if (typeof(this.subscription3) == 'object') {
             this.subscription3 && this.subscription3.remove();
         }
-    }
 
-    _getShowItemIds() {
-        // 刷新前 获取是展开的section的标识 league_id，数据请求成功后使用。
-        this.isShowItemIds = []; // 先置空
-        for (let a = 0; a < this.state.sectionData.length; a++) {
-            let leagueDic = this.state.sectionData[a];
-            if (leagueDic.isHide == false) { // 把不隐藏 就是展开的联赛ID记下，刷新数据是要把他展开。
-                this.isShowItemIds.push(leagueDic.league_id); 
-            }
+        if (typeof(this.subscription4) == 'object') {
+            this.subscription4 && this.subscription4.remove();
+        }
+
+        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
+        this.setState = (state,callback) => {
+            return;
         }
     }
+
 
     // 运彩请求 tabIdx={下标} play_group={群组ID} game_typeID={玩法}
     // isRefresh, isLoadMorePage 都成立 先判断isLoadMorePage。
     _getSportGameList(isRefresh, isLoadMorePage) {
+
+
         let params = new FormData();
-        params.append("ac", "getSportMobileGameList");
-        params.append("sport_id", this.state.sport_Id); //体育类型id
-        params.append("game_type", this.props.game_typeID); // 0滚球、1今日、2早盘、3综合、4冠军
-        params.append("play_group", this.props.game_typeID == 4 ? '' : this.props.play_group);  // 0独赢， 1波胆， 2半场/全场，3总入球 冠军不传入playgroups
-        params.append("league_id", this.state.leagueIds.length > 0 ? this.state.leagueIds.join(',') : '');  // 联盟id，逗号隔开
-        if (this.props.game_typeID == 0) {
-            params.append("start_time", 0);
-            params.append("end_time", isLoadMorePage ? this.nextTime2 : isRefresh ? 0 : this.nextTime ? this.nextTime : 0);  // 滚球用 结束时间
-        } else {
-            params.append("start_time", isLoadMorePage ? this.nextTime2 : isRefresh ? 0 : this.nextTime ? this.nextTime : 0);  // 开始时间
-            params.append("end_time", 0);
-        }
-        params.append("date", "");
+
+        params.append('ac', 'getSportLeagueList2');
+        params.append("league_id", this.state.leagueIds.length > 0 ? this.state.leagueIds.join(',') : '');
+        params.append("game_type",  this.props.game_typeID);
+        params.append("sport_id", this.state.sport_Id);
+        params.append("play_group", this.props.play_group == 1 ? 4 : this.props.play_group == 2 ? 5 : this.props.play_group);
         params.append("order", this.state.orderIndex);
+        params.append('date', '');
+
 
         console.log('运彩请求 params == ', isLoadMorePage, params);
 
@@ -204,109 +211,48 @@ export default class FBGameCenter extends Component {
             .then((responseData) => {
 
                 let result = [];
-                
+                let dateList = this.state.datePickerList;
+
                 if (responseData.msg == 0) {
+
                     result = responseData.data.result ? responseData.data.result : [];
 
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].sectionID = isLoadMorePage && this.nextTime2 == 0 ? i : isLoadMorePage && this.nextTime2 > 0 ? this.state.sectionData.length + i : isRefresh ? i : this.state.sectionData.length + i;
-                        if (this.isShowItemIds.includes(result[i].league_id)) {
-                            result[i].isHide = false;  // 包含有就展开吧。如果有相同的league_id就出事了，不管了 就这样了；
-                        } else {
-                            result[i].isHide = true; // 默认都是隐藏
-                        }
-                        result[i].data = result[i].schedule;  // sectionList 好像一定要用data这个字段
-                        delete result[i].schedule;
-
-
-                        if (this.props.play_group == 0) { // 独赢
-
-                            let equalCount = 0;
-                            for (let j = 0; j < result[i].data.length; j++) {
-                                let schedule_id = result[i].data[j]['schedule_id'];
-                                let next_schedule_id = result[i].data[j+1] ? result[i].data[j+1]['schedule_id'] : '00000';
-                        
-                                if (schedule_id == next_schedule_id) {
-                                    if (equalCount == 0) {
-                                        result[i].data[j]['equal'] = equalCount;  // 0
-                                        equalCount += 1;
-                                    }
-                        
-                                    result[i].data[j+1]['equal'] = equalCount;  // 1...
-                                    equalCount += 1;
-                                    
-                                } else {
-                                    equalCount = 0;
-                                }
-                            }
-                        }
+                    //初始化时没有赋值的话,日期数组
+                    if (dateList.length == 0){
+                        dateList = [...['全部日期'], ...responseData.data.date ? responseData.data.date : []];
+                        this.setState({datePickerList:dateList});
                     }
+
+                    if (result.length != 0){
+
+                        for (let i = 0; i < result.length; i++){
+
+                            if (this.currentClickIndex == i) {
+                                result[i].isHide = false;  // 包含有就展开吧。如果有相同的league_id就出事了，不管了 就这样了；
+                            } else {
+                                result[i].isHide = true; // 默认都是隐藏
+                            }
+
+                            result[i].sectionID = i;  //判断展开的标识
+                            result[i].data = [];  // sectionList 好像一定要用data这个字段
+                        }
+
+                    }
+
                 } else {
                     this.refs.Toast && this.refs.Toast.show(responseData.param, 2000);
                 }
-                
-                if (isLoadMorePage && result.length > 0) {
-                    
-                    if (responseData.data != null) {
 
-                        if (this.nextTime2 <= 0) {
-                            this.backupData = this.state.sectionData;
-                            this.state.sectionData = [];
-                        }
+                this.setState({
+                    isloading: false,
+                    sectionData: result,
+                    isRefreshing: false,
+                    isHaveData: this.state.sectionData.length > 0 ? true : false,
+                });
 
-                        this.state.sectionData = [...this.state.sectionData, ...result];
-                        this.nextTime2 = responseData.data.next_time;
-                        console.log('nextTime2 == ', this.nextTime2);
-
-                        if (this.nextTime2 >= this.nextTime || result.length <= 0) {
-                            console.log('LoadMorePage == ', this.state.sectionData);
-                            
-                            if (this.props.play_group == 0) {
-                                this.state.sectionData = this._handleDyPeilvUDE(this.state.sectionData);
-                            }
-
-                            this.setState({
-                                isloading: false,
-                                sectionData: this.state.sectionData,
-                                isRefreshing: false,
-                            })
-                        } else {
-                            this._getSportGameList(true, true);
-                        }
-                    }
-
-                } else {
-                    
-                    if (result.length <= 0 && this.state.sectionData.length > 0) {
-                        // 本次请求为空，并且已请有数据，是加载完了
-                        this.state.isLoadFinish = true;
-                    } else {
-                        this.state.isLoadFinish = false;
-                        this.nextTime = responseData.data ? responseData.data.next_time : 0;
-                        console.log('nextTime == ', this.nextTime);
-                    }
-
-                    if (!isRefresh) {
-                        // 上拉加载的 数据要合并。 并且不是加载完毕时
-                        result = [...this.state.sectionData, ...result];
-                    }
-
-                    this.isReloadDyRqDx = false; 
-                    this.isUpPullLoadFinish = true;
-
-                    console.log('运彩请求 result == ', result);
-                    this.setState({
-                        isloading: false,
-                        sectionData: result,
-                        isRefreshing: false,
-                        isLoadMore: false,
-                        isHaveData: result.length > 0 ? true : false,
-                        footStateText: this.state.isLoadFinish && result.length > 0 ? '数据已全部加载完' : result.length > 0 ? '上拉加载更多' : '',
-                    });
-                }
             })
             .catch((err) => {
-                this.isReloadDyRqDx = false; 
+                this.isReloadDyRqDx = false;
                 this.setState({
                     isloading: false,
                     isRefreshing: false,
@@ -317,310 +263,183 @@ export default class FBGameCenter extends Component {
             })
     }
 
+    //获取某个联赛的比赛盘口
+    _getLeagueIDListData(section){
 
-    _handleDyPeilvUDE(currentData) {
-        // 涨u  跌d  平e
-        console.log('backupData == ', this.backupData);
+        this.refs.LoadingView && this.refs.LoadingView.showLoading('正在加载数据...');
 
-        let isFindOut = false; // 查到相同的 所有旧数据循环都跳出。
+        let params = new FormData();
+        params.append('ac', 'getSportMobileGameList2');
+        params.append('league_id', section.section ? section.section.league_id : section.league_id);
+        params.append("game_type",  this.props.game_typeID);
+        params.append("sport_id", this.state.sport_Id);
+        params.append("play_group", this.props.play_group == 1 ? 4 : this.props.play_group == 2 ? 5 : this.props.play_group);
+        params.append("order", this.state.orderIndex);
 
-        for (let a = 0; a < currentData.length; a++) {
-            let dict_a = currentData[a];
+        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+        promise
+            .then((responseData) => {
 
-            for (let b = 0; b < dict_a.data.length; b++) {
-                let dict_b = dict_a.data[b];
-                let schedule_id_b = dict_b.schedule_id;
-                let bet_data_b = dict_b.bet_data;
-                isFindOut = false;
+                this.refs.LoadingView && this.refs.LoadingView.dissmiss();
 
-                for (let a1 = 0; a1 < this.backupData.length; a1++) {
-                    let dict_a1 = this.backupData[a1];
+                if (responseData.msg == 0){
 
-                    for (let b1 = 0; b1 < dict_a1.data.length; b1++) {
-                        let dict_b1 = dict_a1.data[b1];
-                        let schedule_id_b1 = dict_b1.schedule_id;
-                        let bet_data_b1 = dict_b1.bet_data;
+                    if (responseData.data.result && responseData.data.result.length != 0){
 
-                        if (schedule_id_b == schedule_id_b1) {
-                            
-                            isFindOut = true;
+                        //点击Item展开时的参数多一层
+                        if (section.section){
 
-                            let b_1X2 = bet_data_b['1X2'];
-                            let b1_1X2 = bet_data_b1['1X2'];
-                            if (b_1X2 && b_1X2.length == 3 && b1_1X2 && b1_1X2.length == 3) {
+                            section.section.data = this._changeSectiondData(responseData.data.result[0].schedule);
 
-                                for (let c1 = 0; c1 < b_1X2.length; c1++) {
-                                
-                                    if (b_1X2[c1]['p'] && b1_1X2[c1]['p']) {
-                                        if (parseFloat(b_1X2[c1]['p']) > parseFloat(b1_1X2[c1]['p'])) {
-                                            b_1X2[c1]['t'] = 'u';  // 涨
-                                        } else if (parseFloat(b_1X2[c1]['p']) < parseFloat(b1_1X2[c1]['p'])) {
-                                            b_1X2[c1]['t'] = 'd';  // 跌
-                                        } else {
-                                            b_1X2[c1]['t'] = 'e';  // 平
-                                        } 
-                                    }
-                                }
-                                currentData[a].data[b].bet_data['1X2'] = b_1X2;
-                            } 
-
-                            let b_H1X2 = bet_data_b['H1X2'];
-                            let b1_H1X2 = bet_data_b1['H1X2'];
-                            if (b_H1X2 && b_H1X2.length == 3 && b1_H1X2 && b1_H1X2.length == 3) {
-
-                                for (let c1 = 0; c1 < b_H1X2.length; c1++) {
-                                
-                                    if (b_H1X2[c1]['p'] && b1_H1X2[c1]['p']) {
-                                        if (parseFloat(b_H1X2[c1]['p']) > parseFloat(b1_H1X2[c1]['p'])) {
-                                            b_H1X2[c1]['t'] = 'u';  // 涨
-                                        } else if (parseFloat(b_H1X2[c1]['p']) < parseFloat(b1_H1X2[c1]['p'])) {
-                                            b_H1X2[c1]['t'] = 'd';  // 跌
-                                        } else {
-                                            b_H1X2[c1]['t'] = 'e';  // 平
-                                        } 
-                                    }
-                                }
-                                currentData[a].data[b].bet_data['H1X2'] = b_H1X2;
-                            } 
-
-                            let b_HC = bet_data_b['HC'];
-                            let b1_HC = bet_data_b1['HC'];
-                            if (b_HC && b1_HC) {
-                                if (b_HC['H'] && b1_HC['H']) {
-
-                                    if (parseFloat(b_HC['H']['p']) > parseFloat(b1_HC['H']['p'])) {
-                                        b_HC['H']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HC['H']['p']) < parseFloat(b1_HC['H']['p'])) {
-                                        b_HC['H']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HC['H']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HC'] = b_HC;
-                                }
-                                
-                                if (b_HC['V'] && b1_HC['V']) {
-
-                                    if (parseFloat(b_HC['V']['p']) > parseFloat(b1_HC['V']['p'])) {
-                                        b_HC['V']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HC['V']['p']) < parseFloat(b1_HC['V']['p'])) {
-                                        b_HC['V']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HC['V']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HC'] = b_HC;
-                                }
-                            }
-
-                            let b_HHC = bet_data_b['HHC'];
-                            let b1_HHC = bet_data_b1['HHC'];
-                            if (b_HHC && b1_HHC) {
-                                if (b_HHC['H'] && b1_HHC['H']) {
-
-                                    if (parseFloat(b_HHC['H']['p']) > parseFloat(b1_HHC['H']['p'])) {
-                                        b_HHC['H']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HHC['H']['p']) < parseFloat(b1_HHC['H']['p'])) {
-                                        b_HHC['H']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HHC['H']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HHC'] = b_HHC;
-                                }
-
-                                if (b_HHC['V'] && b1_HHC['V']) {
-
-                                    if (parseFloat(b_HHC['V']['p']) > parseFloat(b1_HHC['V']['p'])) {
-                                        b_HHC['V']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HHC['V']['p']) < parseFloat(b1_HHC['V']['p'])) {
-                                        b_HHC['V']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HHC['V']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HHC'] = b_HHC;
-                                }
-                            }
-
-                            let b_GL = bet_data_b['GL'];
-                            let b1_GL = bet_data_b1['GL'];
-                            if (b_GL && b1_GL) {
-                                if (b_GL['OV'] && b1_GL['OV']) {
-
-                                    if (parseFloat(b_GL['OV']['p']) > parseFloat(b1_GL['OV']['p'])) {
-                                        b_GL['OV']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_GL['OV']['p']) < parseFloat(b1_GL['OV']['p'])) {
-                                        b_GL['OV']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_GL['OV']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['GL'] = b_GL;
-                                }
-                                
-                                if (b_GL['UN'] && b1_GL['UN']) {
-
-                                    if (parseFloat(b_GL['UN']['p']) > parseFloat(b1_GL['UN']['p'])) {
-                                        b_GL['UN']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_GL['UN']['p']) < parseFloat(b1_GL['UN']['p'])) {
-                                        b_GL['UN']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_GL['UN']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['GL'] = b_GL;
-                                }
-                            }
-
-                            let b_HGL = bet_data_b['HGL'];
-                            let b1_HGL = bet_data_b1['HGL'];
-                            if (b_HGL && b1_HGL) {
-                                if (b_HGL['OV'] && b1_HGL['OV']) {
-
-                                    if (parseFloat(b_HGL['OV']['p']) > parseFloat(b1_HGL['OV']['p'])) {
-                                        b_HGL['OV']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HGL['OV']['p']) < parseFloat(b1_HGL['OV']['p'])) {
-                                        b_HGL['OV']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HGL['OV']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HGL'] = b_HGL;
-                                }
-                                
-                                if (b_HGL['UN'] && b1_HGL['UN']) {
-
-                                    if (parseFloat(b_HGL['UN']['p']) > parseFloat(b1_HGL['UN']['p'])) {
-                                        b_HGL['UN']['t'] = 'u';  // 涨
-                                    } else if (parseFloat(b_HGL['UN']['p']) < parseFloat(b1_HGL['UN']['p'])) {
-                                        b_HGL['UN']['t'] = 'd';  // 跌
-                                    } else {
-                                        b_HGL['UN']['t'] = 'e';  // 平
-                                    }
-                                    currentData[a].data[b].bet_data['HGL'] = b_HGL;
-                                }
-                            }
-
-
-                            let b_TGOE = bet_data_b['TGOE'];
-                            let b1_TGOE = bet_data_b1['TGOE'];
-                            if (b_TGOE && b_TGOE.length == 2 && b1_TGOE && b1_TGOE.length == 2) {
-
-                                for (let c2 = 0; c2 < b_TGOE.length; c2++) {
-                                
-                                    if (b_TGOE[c2]['p'] && b1_TGOE[c2]['p']) {
-                                        if (parseFloat(b_TGOE[c2]['p']) > parseFloat(b1_TGOE[c2]['p'])) {
-                                            b_TGOE[c2]['t'] = 'u';  // 涨
-                                        } else if (parseFloat(b_TGOE[c2]['p']) < parseFloat(b1_TGOE[c2]['p'])) {
-                                            b_TGOE[c2]['t'] = 'd';  // 跌
-                                        } else {
-                                            b_TGOE[c2]['t'] = 'e';  // 平
-                                        } 
-                                    }
-                                }
-                                currentData[a].data[b].bet_data['TGOE'] = b_TGOE;
-                            } 
-
-                            let b_HTGOE = bet_data_b['HTGOE'];
-                            let b1_HTGOE = bet_data_b1['HTGOE'];
-                            if (b_HTGOE && b_HTGOE.length == 2 && b1_HTGOE && b1_HTGOE.length == 2) {
-
-                                for (let c2 = 0; c2 < b_HTGOE.length; c2++) {
-                                
-                                    if (b_HTGOE[c2]['p'] && b1_HTGOE[c2]['p']) {
-                                        if (parseFloat(b_HTGOE[c2]['p']) > parseFloat(b1_HTGOE[c2]['p'])) {
-                                            b_HTGOE[c2]['t'] = 'u';  // 涨
-                                        } else if (parseFloat(b_HTGOE[c2]['p']) < parseFloat(b1_HTGOE[c2]['p'])) {
-                                            b_HTGOE[c2]['t'] = 'd';  // 跌
-                                        } else {
-                                            b_HTGOE[c2]['t'] = 'e';  // 平
-                                        } 
-                                    }
-                                }
-                                currentData[a].data[b].bet_data['HTGOE'] = b_HTGOE;
-                            } 
-
-                            this.backupData[a1].data.splice(b1, 1); // 删除已经比对过的数据。可避免下次拿到重复的schedule_id
-                            break;
                         }
-                        
+                        else {
+
+                            //倒计时刷新的参数
+                            section.data =  this._changeSectiondData(responseData.data.result[0].schedule);
+                        }
+                    }
+                    else {
+
+                        section.section ? section.section.data = [] : section.data = [];
+                        section.section ? section.section.isHide = true : section.isHide = true;  //如果请求不到数据则还是折叠状态
+                        this.currentClickIndex = null;  //改为null
+                        setTimeout(()=> {this.refs.Toast && this.refs.Toast.show('当前联赛的盘口数据为空!', 3000);}, 1000)
                     }
 
-                    if (isFindOut) {
-                        break;
-                    }
+                    this.setState({
+                        sectionData: this.state.sectionData,
+                    })
+
+                }
+
+            })
+
+            .catch((error) => {
+
+            })
+
+    }
+
+    //增加HC,GL下相应盘口的字段HK:香港盘,IND:印尼盘,DEC:欧洲盘,MY:马来盘
+    _changeSectiondData(data){
+
+        if (data.length != 0){
+
+            for (let i = 0; i < data.length; i++){
+
+                let sportModel = data[i].bet_data; //取到bet_data这一层数据
+                let hcData = sportModel.HC ?  sportModel.HC : null;
+                let glData = sportModel.GL ? sportModel.GL : null;
+
+                if (hcData){
+
+                    let hchModel = hcData.H[0];
+                    let hcvModel = hcData.V[0];
+
+                    hchModel.HK = hchModel.p; //让分HC主香港盘的赔率
+                    hchModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '印尼盘');//让分HC主印尼盘的赔率
+                    hchModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '马来盘');//让分HC主马来盘的赔率
+                    hchModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '欧洲盘');//让分HC主欧洲盘的赔率
+
+                    hcvModel.HK = hcvModel.p; //让分HC客香港盘的赔率
+                    hcvModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '印尼盘');//让分HC客印尼盘的赔率
+                    hcvModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '马来盘');//让分HC客马来盘的赔率
+                    hcvModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '欧洲盘');//让分HC客欧洲盘的赔率
+
+                }
+
+                if (glData){
+
+                    let glovModel = glData.OV[0];
+                    let glunModel = glData.UN[0];
+
+                    glovModel.HK = glovModel.p; //大小GL主香港盘的赔率
+                    glovModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '印尼盘');//大小GL主印尼盘的赔率
+                    glovModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '马来盘');//大小GL马来盘的赔率
+                    glovModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '欧洲盘');//大小GL主欧洲盘的赔率
+
+                    glunModel.HK = glunModel.p; //大小GL客香港盘的赔率
+                    glunModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '印尼盘');//大小GL客印尼盘的赔率
+                    glunModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '马来盘');//大小GL客马来盘的赔率
+                    glunModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '欧洲盘');//大小GL客欧洲盘的赔率
                 }
             }
         }
 
-        console.log('currentData t值改变后 ==== == ', currentData);
-        return currentData;
+        return data;
     }
-
-    // 下拉刷新
-    _onRefresh() {
-        this.setState({ isRefreshing: true }); 
-        this.state.isLoadFinish = false;
-        this.nextTime2 = 0; // 刷新时重置
-        this._getShowItemIds(); // 走一次 存住展开的section的标识
-        this._getSportGameList(true, true);
-        this.props.downPullRefresh ? this.props.downPullRefresh() : null; // 回调改变倒计时
-    }
-
-    // 上拉加载更多
-    _onEndReached(info) {
-
-        if (this.state.sectionData.length <= 0 || this.state.isLoadFinish) {
-            return;
-        }
-
-        // 要等上个请求完 才能继续请求这次的上拉请求。
-        if (this.isUpPullLoadFinish) {
-            this.setState({ 
-                isLoadMore: true,
-                footStateText: '正在加载更多数据',
-            }); 
-
-            this.isUpPullLoadFinish = false;  // 请求成功 给this.nextTime赋后 重置为true
-            this._getSportGameList(false);
-         }
-    }
-
 
     // 每个section之间的分隔组件
     _sectionSeparatorComponent() {
-        return <View style={{ height: 1, width: SCREEN_WIDTH, backgroundColor: '#fff' }}></View>
-    }
-
-    // 尾部视图
-    _listFooterComponent() {
-        return (
-            <View style={{height: 40, width: SCREEN_WIDTH, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                {this.state.isLoadMore ? <ActivityIndicator animating={this.state.isLoadMore} size="small"></ActivityIndicator> : null}
-                <Text allowFontScaling={false} style={{fontSize: Adaption.Font(18), marginLeft: 10, color: '#707070'}}>{this.state.footStateText}</Text>
-            </View>
-        )
+        return <View style={{ height: 1, width: SCREEN_WIDTH, backgroundColor: '#fff' }} />
     }
 
     // 分组头部
     _renderSectionHeader(section) {
-        return (
-            <TouchableOpacity activeOpacity={0.5} style={{ height: Adaption.Height(45), width: SCREEN_WIDTH, backgroundColor: '#f6f6f6', alignItems: 'center', flexDirection: 'row' }}
-                onPress={() => {
-                    if (this.state.sectionData && this.state.sectionData[section.section.sectionID] != null) {
-                        this.state.sectionData[section.section.sectionID].isHide = !this.state.sectionData[section.section.sectionID].isHide;
-                        this.setState({
-                            sectionData: this.state.sectionData,
-                        })
-                    }
-                }}>
-                <View style={{ flex: 0.93, marginLeft: 10 }}>
-                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(18, 16), fontWeight: '500' }}>{section.section.league_name}</Text>
-                </View>
-                <View style={{ flex: 0.07 }}>
-                    <Image style={{ width: 13, height: 13 }}
-                        source={section.section.isHide ? require('../img/arrowDown.png') : require('../img/arrowUp.png')}
-                    ></Image>
-                </View>
-            </TouchableOpacity>
-        )
+
+        if (section.section.sectionID == this.currentClickIndex || this.currentClickIndex == null) {
+
+            return (
+                <View style={{height: this.currentClickIndex == null ? Adaption.Height(55) : Adaption.Height(45), backgroundColor: '#fff', width: SCREEN_WIDTH}}>
+                    <TouchableOpacity activeOpacity={0.5} style={{
+                        borderColor:'#d1d2d3',
+                        borderWidth:this.currentClickIndex == null ?  .8 : 1,
+                        borderRadius:this.currentClickIndex == null ?  5 : 0,
+                        height: Adaption.Height(45),
+                        marginLeft: this.currentClickIndex == null ? 10 : 0,
+                        width: this.currentClickIndex == null ? SCREEN_WIDTH - 20 : SCREEN_WIDTH,
+                        backgroundColor: '#f5f6f7',
+                        alignItems: 'center',
+                        flexDirection: 'row'
+                    }}
+                          onPress={() => {
+
+                              if (this.state.sectionData && this.state.sectionData[section.section.sectionID] != null) {
+                                  this.state.sectionData[section.section.sectionID].isHide = !this.state.sectionData[section.section.sectionID].isHide;
+
+                                  if (this.state.sectionData[section.section.sectionID].isHide == false){
+                                      this.currentClickIndex = section.section.sectionID;
+                                      this._getLeagueIDListData(section);
+
+                                  }
+                                  else {
+                                      this.currentClickIndex = null;
+                                      this.setState({
+                                          sectionData: this.state.sectionData,
+                                      })
+                                  }
+                              }
+                          }}>
+                        <View style={{flex: 0.90}}>
+                            <Text allowFontScaling={false} style={{
+                                marginLeft: 10,
+                                fontSize: Adaption.Font(18, 16),
+                                fontWeight: '500'
+                            }}>{section.section.league_name}</Text>
+                        </View>
+                        {this.currentClickIndex == null ? <View style={{
+                            flex: 0.15,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#ebebec',
+                            height: Adaption.Height(45)
+                        }}>
+                            <Text allowFontScaling={false} style={{color: '#000', fontWeight: '500', fontSize: Adaption.Font(19, 17)}}>
+                                {section.section.game_cnt}
+                            </Text>
+                        </View> : <View style = {{flex:0.10, alignItems:'flex-end'}}>
+                            <Image style = {{height:15, width:15, marginRight:10}} source={require('../img/arrowUp.png')}/>
+                        </View>}
+                    </TouchableOpacity>
+                </View>)
+        }
+        else {
+            return null;
+        }
+
     }
 
-    _renderItemView(item) {
+    _renderItemView = (item) =>{
         // 如果是隐藏 返回null
         if (item.section.isHide) {
             return null;
@@ -632,7 +451,7 @@ export default class FBGameCenter extends Component {
             let lastIdx = Object.values(this.state.ballsDict)[0] ? Object.values(this.state.ballsDict)[0].sltIdx : -1; // 上次选择的下标
 
             {/* 0独赢， 1波胆， 2半场/全场，3总入球 */}
-            if (this.props.tabLabel == '冠军') {
+            if (this.props.play_group == 2) {
                 // 冠军
                 let chpData = item.item.bet_data['CHP'];
                 if (chpData == null) {
@@ -642,19 +461,19 @@ export default class FBGameCenter extends Component {
                 let row = Math.ceil(chpData.length / 2.0);  // 行
                 return (
                     <GuanJunItemview data={item.item} style={{ height: Adaption.Height(40 + row * 50) }}
-                        cuntSItemId={cuntSItemIdx}
-                        lastSItemId={lastSItemIdx}
-                        lastLastSItemIdx={this.lastLastSItemIdx}
-                        lastIdx={lastIdx}
-                        ballsClick={(ballsDic) => {
-                            this._handleBallsDict(ballsDic, item);
-                        }}
+                                     cuntSItemId={cuntSItemIdx}
+                                     lastSItemId={lastSItemIdx}
+                                     lastLastSItemIdx={this.lastLastSItemIdx}
+                                     lastIdx={lastIdx}
+                                     ballsClick={(ballsDic) => {
+                                         this._handleBallsDict(ballsDic, item);
+                                     }}
                     >
                     </GuanJunItemview>
                 )
 
-            } else if (this.props.play_group == 0) {
-                // 独赢 让球 大小 
+            } else if (this.props.play_group == 0 || this.props.play_group == 1) {
+                // 独赢 让球 大小
                 let values = Object.values(this.state.ballsDict);
                 let sectionItemiIdArr = [], sltIdxArr = [], isFulltimeArr = [];
                 for (let a = 0; a < values.length; a++) {
@@ -679,102 +498,26 @@ export default class FBGameCenter extends Component {
                     }
                 }
 
-                // 新的。。。让球 / 大小。 0滚球、1今日... 现在只能给QA进入
-                // if (GlobalConfig.lineBaseIPURL().includes('sg04')) {
-                    // 40 + 140(格高50) + 40.
-                    return(
-                        <RqDxItemView data={item.item} style={{ height: Adaption.Height(220) }} 
-                            isReload={this.isReloadDyRqDx}
-                            game_typeID={this.props.game_typeID}
-                            cuntSItemId={cuntSItemIdx}
-                            lastSItemIdArr={sectionItemiIdArr}
-                            lastIdxArr={sltIdxArr}
-                            isAllBetCallback={callback}
-                            lastLastSItemIdx={this.lastLastSItemIdx}
-                            allPlayClick={() => {
-                                this._allGameClick(item);
-                            }}
-                            ballsClick={(ballsDic) => {
-                                this._handleBallsDict(ballsDic, item);
-                            }}
-                        >
-                        </RqDxItemView>
-                    )
-                // }
-
-                return (
-                    <DyRqDxItemView isReload={this.isReloadDyRqDx} data={item.item} style={{ height: Adaption.Height(260) }}
-                        game_typeID={this.props.game_typeID}  // 0滚球、1今日、2早盘、3综合、4冠军
-                        lastFullTimeArr={isFulltimeArr}  // 上次选择的是全场/半场
-                        cuntSItemId={cuntSItemIdx}
-                        lastSItemIdArr={sectionItemiIdArr}
-                        lastIdxArr={sltIdxArr}
-                        isAllBetCallback={callback}
-                        lastLastSItemIdx={this.lastLastSItemIdx}
-                        allPlayClick={() => {
-                            this._allGameClick(item);
-                        }}
-                        ballsClick={(ballsDic) => {
-                            this._handleBallsDict(ballsDic, item);
-                        }}
+                // 40 + 140(格高50) + 40.
+                return(
+                    <RqDxItemView data={item.item} style={{ height: Adaption.Height(220) }}
+                                  isReload={this.isReloadDyRqDx}
+                                  game_typeID={this.props.game_typeID}
+                                  tabIdx={this.state.lastTabIdx}
+                                  cuntSItemId={cuntSItemIdx}
+                                  lastSItemIdArr={sectionItemiIdArr}
+                                  lastIdxArr={sltIdxArr}
+                                  isAllBetCallback={callback}
+                                  selectPanKou={this.state.currentPickerPanKou}
+                                  lastLastSItemIdx={this.lastLastSItemIdx}
+                                  allPlayClick={() => {
+                                      this._allGameClick(item);
+                                  }}
+                                  ballsClick={(ballsDic) => {
+                                      this._handleBallsDict(ballsDic, item);
+                                  }}
                     >
-                    </DyRqDxItemView>
-                )
-
-            } else if (this.props.play_group == 1) {
-                // 波胆
-                let itemData = item.item.bet_data[this.props.tabIdx == 2 ? 'HTCS' : 'TCS'];
-                if (itemData == null) {
-                    return null;
-                }
-                return (
-                    <BodanItemView data={item.item} style={{ height: Adaption.Height(310) }}
-                        isHalf={this.props.tabIdx == 2 ? true : false} // 是不是半场
-                        cuntSItemId={cuntSItemIdx}
-                        lastSItemId={lastSItemIdx}
-                        lastLastSItemIdx={this.lastLastSItemIdx}
-                        lastIdx={lastIdx}
-                        ballsClick={(ballsDic) => {
-                            this._handleBallsDict(ballsDic, item);
-                        }}
-                    >
-                    </BodanItemView> 
-                );
-
-            } else if (this.props.play_group == 2) {
-                // 半/全场 
-                return (
-                    <BQChangItemView data={item.item} style={{ height: Adaption.Height(160) }}
-                        cuntSItemId={cuntSItemIdx}
-                        lastSItemId={lastSItemIdx}
-                        lastLastSItemIdx={this.lastLastSItemIdx}
-                        lastIdx={lastIdx}
-                        allPlayClick={() => {
-                            this._allGameClick(item);
-                        }}
-                        ballsClick={(ballsDic) => {
-                            this._handleBallsDict(ballsDic, item);
-                        }}
-                    >
-                    </BQChangItemView>
-                )
-
-            } else if (this.props.play_group == 3) {
-                // 总入球
-                return (
-                    <ZRQiuItemView data={item.item} style={{ height: Adaption.Height(160) }}
-                        cuntSItemId={cuntSItemIdx}
-                        lastSItemId={lastSItemIdx}
-                        lastLastSItemIdx={this.lastLastSItemIdx}
-                        lastIdx={lastIdx}
-                        allPlayClick={() => {
-                           this._allGameClick(item);
-                        }}
-                        ballsClick={(ballsDic) => {
-                            this._handleBallsDict(ballsDic, item);
-                        }}
-                    >
-                    </ZRQiuItemView>
+                    </RqDxItemView>
                 )
 
             } else {
@@ -785,10 +528,6 @@ export default class FBGameCenter extends Component {
 
     _allGameClick = (item) => {
         // 所有玩法。
-        // if (!GlobalConfig.lineBaseIPURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
-        //     this.refs.Toast && this.refs.Toast.show('暂未开放，敬请期待', 1000);
-        //     return;
-        // }
 
         let cuntSItemIdx =`${item.section.sectionID}+${item.index}`; // 当前的SectionID+Item.index
         let sltData = this.state.ballsDict[cuntSItemIdx];
@@ -796,7 +535,7 @@ export default class FBGameCenter extends Component {
         if (sltData != null && this.props.game_typeID == 3) {  // 综合过关呢 要把选择状态记下 过去要显示出来。
 
             sltDic['d_key'] = sltData['playMethod'];
-            
+
             // 记录选择的idx
             if (0) {
                 // 旧的进这里（独赢/让球/大小）
@@ -813,7 +552,7 @@ export default class FBGameCenter extends Component {
                 } else {
                     sltDic['sltIdx'] = 0;
                 }
-                
+
             } else {
                 // 新的进这里（让球/大小）
                 if (sltData['allbetSltIdx']) { // 如果有所有玩法里面的sltIdx就直接用它
@@ -829,21 +568,25 @@ export default class FBGameCenter extends Component {
         }
 
         let backupSltDic = {};
-        if (this.props.game_typeID == 3) {
-            // 把这个盘口的基本数据传进去 供有选择号码后使用。 然后剩下的事情 就在FBGamePassBottom里面搞了。
-            backupSltDic = { 
-                data: item.item, sectionItemiId: cuntSItemIdx, 
-                league_id: this.state.sectionData[item.section.sectionID].league_id,
-                league_name: this.state.sectionData[item.section.sectionID].league_name,
-                playMethod: '', isFullTime: true, isHVXO: '', k: '', p: '', sltIdx: -1, // 这几个都是不确定的，选择号码才能确定。
-            };
-        }
+        // if (this.props.game_typeID == 3) {
+        //     // 把这个盘口的基本数据传进去 供有选择号码后使用。 然后剩下的事情 就在FBGamePassBottom里面搞了。
+        //     backupSltDic = {
+        //         data: item.item, sectionItemiId: cuntSItemIdx,
+        //         league_id: this.state.sectionData[item.section.sectionID].league_id,
+        //         league_name: this.state.sectionData[item.section.sectionID].league_name,
+        //         playMethod: '', isFullTime: true, isHVXO: '', k: '', p: '', sltIdx: -1, // 这几个都是不确定的，选择号码才能确定。
+        //     };
+        // }
 
         this.props.navigate('FBAllGame', {
-            sport_id: this.state.sport_Id, nowGameData: item.item, game_type: this.props.game_typeID, 
-            sltDic: sltDic, 
-            allSltDic: this.props.game_typeID == 3 ? this.state.ballsDict : null,
-            backupSltDic: this.props.game_typeID == 3 ? backupSltDic : null,
+            sport_id: this.state.sport_Id, nowGameData: item.item, game_type: this.props.game_typeID,
+            sltDic: sltDic,
+            allSltDic: this.props.tabIdx == 1 ? this.state.ballsDict : null, //综合过关
+            backupSltDic: this.props.tabIdx == 1 ? backupSltDic : null,
+            leagueData:item.section.league_name,
+            tabIdx:this.props.tabIdx,
+            play_group:this.props.play_group,
+            selecctPanKou:this.state.currentPickerPanKou,
             callback: (data, callbackSItemId) => {
                 console.log('回调 === ', callbackSItemId, data);
                 this.callbackSItemId = callbackSItemId;  // 从所有玩法回调回去的，独赢界面要按照传进去的lastidx的值去改变选择状态。
@@ -853,7 +596,7 @@ export default class FBGameCenter extends Component {
                     ballsDict: data,
                 })
             },
-        }); 
+        });
     }
 
     _handleBallsDict(ballsDic, item) {
@@ -869,13 +612,13 @@ export default class FBGameCenter extends Component {
             ballsDic[key]['league_name'] = this.state.sectionData[item.section.sectionID].league_name;
         }
 
-        if (this.props.game_typeID == 3) {
+        if (this.props.tabIdx == 1) {
             // 综合过关
             if (key == null) {
                 key = `${item.section.sectionID}+${item.index}`;
             }
             delete this.state.ballsDict[key]; // 不直接assign，因为他会保留前面存的那个值。
-            Object.assign(ballsDic, this.state.ballsDict); 
+            Object.assign(ballsDic, this.state.ballsDict);
         }
 
         console.log('ballsDic == ', ballsDic);
@@ -895,16 +638,16 @@ export default class FBGameCenter extends Component {
                 </View>
             );
         } else {
-           return <View></View> 
+            return <View />
         }
     }
 
     render() {
 
-        if (this.props.maintenance && this.state.sectionData.length <= 0 && this.state.isloading == false && this.state.isHaveData == false) {
+        if (this.props.maintenance && this.state.sectionData.length <= 0 && this.state.isloading == false) {
             return (
-                <View style = {{flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}>
-                    <Image style = {{marginTop: Adaption.Width(-50), width: Adaption.Width(250), height: Adaption.Width(200), resizeMode: 'contain'}} source={require('../img/ic_sportVerbSystem.png')} />
+                <View style = {{width:SCREEN_WIDTH, height:SCREEN_HEIGHT - 110, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image style = {{width: Adaption.Width(250), height: Adaption.Width(200), resizeMode: 'contain'}} source={require('../img/ic_sportVerbSystem.png')} />
                     <CusBaseText style = {{margin: Adaption.Width(20), marginTop: Adaption.Width(50), fontSize:Adaption.Font(20, 16), color: '#4d4e4f', lineHeight: Adaption.Width(30)}}>
                         {`抱歉！系统正在维护，暂停下注！如有什么疑问请联系客服！\n预计维护时间：`}
                         <CusBaseText style = {{color:'#fd730a', lineHeight: Adaption.Width(35)}}>{this.props.maintenanceTime}</CusBaseText>
@@ -912,35 +655,66 @@ export default class FBGameCenter extends Component {
                 </View>
             )
         }
-        
+
 
         return (
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
-                <SectionList style={{}}
-                    ref='FBSectionList'
-                    SectionSeparatorComponent={() => this._sectionSeparatorComponent()} // section的顶底部视图
-                    ListFooterComponent={() => this._listFooterComponent()} // 尾部视图
-                    renderSectionHeader={(section) => this._renderSectionHeader(section)} // section头部的视图
-                    renderItem={(item) => this._renderItemView(item)}
-                    sections={this.state.sectionData}
-                    keyExtractor={(item,index)=>{return String(index)}} 
-                    refreshing={this.state.isRefreshing}  // 是否处于刷新状态。
-                    onRefresh={() => this._onRefresh()}  
-                    onEndReachedThreshold={-0.2}   // 距离底部多远触发onEndReached，范围0.0-1.0
-                    onEndReached={(info) => this._onEndReached(info)}
-                    ListEmptyComponent={() => this._listEmptyComponent()}
-                >
-                </SectionList>
 
                 {this.state.isloading
-                    ? <ActivityIndicator animating={true} size="large" color={COLORS.appColor}
-                        style={{
-                            position: 'absolute',
-                            left: SCREEN_WIDTH / 2 - 18,
-                            top: Adaption.Height(200),
-                        }}/>
-                    : null
+                    ? <ActivityIndicator animating={true} size="large" color={'#000'}
+                                         style={{
+                                             position: 'absolute',
+                                             left: SCREEN_WIDTH / 2 - 18,
+                                             top: Adaption.Height(200),
+                                         }}/>
+                    : <SectionList style={{marginTop:this.props.tabIdx == 2 || this.currentClickIndex != null ? 0 : 70}}
+                                   ref='FBSectionList'
+                                   SectionSeparatorComponent={() => this._sectionSeparatorComponent()} // section的顶底部视图
+                                   renderSectionHeader={(section) => this._renderSectionHeader(section)} // section头部的视图
+                                   renderItem={(item) => this._renderItemView(item)}
+                                   sections={this.state.sectionData}
+                                   keyExtractor={(item,index)=>{return String(index)}}
+                                   refreshing={this.state.isRefreshing}  // 是否处于刷新状态。
+                                   ListEmptyComponent={() => this._listEmptyComponent()}
+                                   extraData={this.state} //有时候setState界面没刷新。需要强制刷新
+                    >
+                    </SectionList>
                 }
+
+                {this.currentClickIndex == null ? this.props.tabIdx == 0 ? <View style = {{backgroundColor:'#fff', position:'absolute',}}>
+                    <ScrocePickList
+                        viewType={'rollingType'}
+                        style = {{marginLeft:10, width:SCREEN_WIDTH - 20, height:50}} dataSource={['时间筛选','联盟筛选']}
+                        dropDownItemSelect = {(itemObject)=>{
+                            this.state.orderIndex = itemObject.index;
+                            this._getSportGameList(true);// 请求数据
+                        }}
+                    />
+                </View> : this.props.tabIdx == 1 ? <View style = {{flexDirection:'row', position:'absolute'}}>
+                    <ScrocePickList
+                        viewType={'dateType'}
+                        style = {{marginLeft:10, width:SCREEN_WIDTH/2 - 20, height:50}} dataSource={this.state.datePickerList}
+                        dropDownItemSelect = {(itemObject)=>{
+
+                            if (itemObject.index == 0){
+                                this.state.currentDate = '';
+                            }
+                            else {
+                                this.state.currentDate = itemObject.item;
+                            }
+                            this._getSportGameList(true);// 请求数据
+                        }}
+                    />
+                    <ScrocePickList
+                        viewType={'todayType'}
+                        style = {{marginLeft:20, width:SCREEN_WIDTH/2 - 20, height:50}} dataSource={['时间筛选','联盟筛选']}
+                        dropDownItemSelect = {(itemObject)=>{
+                            this.state.orderIndex = itemObject.index;
+                            this._getSportGameList(true);// 请求数据
+                        }}
+                    />
+                </View> : null : null}
+                <LoadingView ref='LoadingView'/>
                 <Toast ref="Toast" position='center'/>
             </View>
         );

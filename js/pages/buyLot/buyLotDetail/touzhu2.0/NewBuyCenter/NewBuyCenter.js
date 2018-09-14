@@ -1125,7 +1125,7 @@ export default class NewBuyCenter extends Component {
     if (playid == 7) {
       // 和值组选
       balls = ['大', '小', '单', '双'];
-      contents = ['和值', '组合'];
+      contents = ['总和值', '组合'];
       viewHeight = 110;
 
     } else if (playid == 8) {
@@ -1612,10 +1612,6 @@ export default class NewBuyCenter extends Component {
     } else if (this.props.js_tag == 'lhc' && playData.tpl == 12) {
       // 自选不中
       showSelectPlay = false;
-
-    } else if (this.props.js_tag == 'qxc') {
-      // 七星彩
-      showSelectPlay = true;
     }
 
     if (isChangeWanfa) {

@@ -7,6 +7,7 @@ import {
     View,
     Modal,
     TouchableOpacity,
+    Dimensions
 } from 'react-native';
 
 export default class TouZhuHeaderView extends Component {
@@ -57,11 +58,11 @@ export default class TouZhuHeaderView extends Component {
                                           borderRadius: 5,
                                           borderWidth: this.props.slectIndex == 1 ? 0 : 1,
                                           borderColor: 'lightgray',
-                                          width: Adaption.Width(120),
+                                          width: SCREEN_WIDTH/3-20,
                                           height: Adaption.Width(40),
                                           alignItems: 'center',
                                           justifyContent: 'center',
-                                          marginRight: Adaption.Width(30),
+                                          marginLeft: Adaption.Width(15),
                                       }}
                                       onPress={() => {
 
@@ -82,10 +83,11 @@ export default class TouZhuHeaderView extends Component {
                                           borderRadius: 5,
                                           borderWidth: this.props.slectIndex == 0 ? 0 : 1,
                                           borderColor: 'lightgray',
-                                          width: Adaption.Width(120),
+                                          width: SCREEN_WIDTH/3-20,
                                           height: Adaption.Width(40),
                                           alignItems: 'center',
-                                          justifyContent: 'center'
+                                          justifyContent: 'center',
+                                          marginLeft: Adaption.Width(15),
                                       }}
                                       onPress={() => {
 
@@ -98,6 +100,31 @@ export default class TouZhuHeaderView extends Component {
                                       }}>
                         <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.props.slectIndex == 0 ? 'white' : 'black' }}>
                             足球
+                        </CusBaseText>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={1}
+                                      style={{
+                                          backgroundColor: this.props.slectIndex == 2 ? '#e03a38' : 'white',
+                                          borderRadius: 5,
+                                          borderWidth: this.props.slectIndex == 2 ? 0 : 1,
+                                          borderColor: 'lightgray',
+                                          width: SCREEN_WIDTH/3-20,
+                                          height: Adaption.Width(40),
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          marginLeft: Adaption.Width(15),
+                                      }}
+                                      onPress={() => {
+
+                                          if (this.props.slectIndex == 2) {
+                                              this.props.close ? this.props.close() : null;
+                                          } else {
+                                              this.props.onChange ? this.props.onChange(2) : null;
+                                          }
+
+                                      }}>
+                        <CusBaseText style={{ fontSize: Adaption.Font(19, 15), color: this.props.slectIndex == 2 ? 'white' : 'black' }}>
+                            电子游戏
                         </CusBaseText>
                     </TouchableOpacity>
                 </View>

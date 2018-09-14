@@ -67,6 +67,23 @@ export default class newLotteryView extends Component{
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+
+        let aaa = nextProps.finishTime != 0 && this.state.finishTime == 0;
+        let bbb = nextProps.prevList && this.state.openListArr.length <= 0;
+        let ccc = nextProps.nextTimeList && this.state.nextCountDownList.length <= 0;
+        let ddd = nextProps.peilvDataArr.length != 0 && this.state.peilvDataList.length == 0;
+        let eee = nextProps.wafaDataArr.length != 0 && this.state.currentPlayDataArr.length == 0;
+
+        if (aaa || bbb || ccc || ddd || eee){
+            return true;
+        }
+        else  {
+            return false;
+        }
+
+    }
+
     render (){
 
         return <View style = {{flex:1, backgroundColor:'#fff'}}>

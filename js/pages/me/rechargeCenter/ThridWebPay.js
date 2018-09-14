@@ -25,7 +25,6 @@ class ThridWebPay extends Component {
 
         this.webUrl = this.props.navigation.state.params.webUrl;
         this.method = this.props.navigation.state.params.method;
-
     }
 
     render() {

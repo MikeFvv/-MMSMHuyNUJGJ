@@ -161,7 +161,7 @@ class NewLotBlockViewThere extends Component {
 
                 <View style={{flex:0.2}}>
                 <Image
-                    source =  {require('./img/mc_dianzi.png')}
+                   source={{ uri: info.item.icon }}
                     style={{resizeMode:'stretch',width:55,height:55,marginLeft:20,marginTop:8}}
                 />
                 </View>
@@ -217,7 +217,7 @@ class NewLotBlockViewThere extends Component {
 
     // 点击cell跳转投注页
     _jumpBuyLotDetail(info) {
-        if (info.item.enable == 2)
+        if (info.item.enable == 1)
         {
 
             Alert.alert(
@@ -232,6 +232,28 @@ class NewLotBlockViewThere extends Component {
             )
             return;
         }
+
+        if (global.UserLoginObject.Token != '' || global.UserLoginObject.Token.length != 0) {
+            if (global.UserLoginObject.is_Guest == 2) {
+                this.props.navigator.navigate('HomeComputMGGameView', { backAction: this.props.backAction, title: info.item.pt_name,playGame:info.item.tag})
+            } else {
+                this.props.navigator.navigate('HomeLandComputGameView', { backAction: this.props.backAction, title: info.item.pt_name,playGame:info.item.tag})
+
+            }
+        } else {
+            Alert.alert(
+                '温馨提示',
+                '您还未登录,请先登录',
+                [
+                    {
+                        text: '确定', onPress: () => {
+                        }
+                    },
+                ]
+            )
+        }
+
+
         //足彩入口
         // else if (info.item.js_tag === 'sport_key')
         // {

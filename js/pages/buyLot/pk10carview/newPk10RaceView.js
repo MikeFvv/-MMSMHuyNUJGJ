@@ -44,7 +44,6 @@ export default class newPk10RaceView extends Component{
             openWinStatuesArr:[], //庄家与闲家PK的输赢状态数组
             pickerBallsDesc:'', //底部工具栏显示的号码选择描述
             pickerBallsPeilv:'0', //盈利的总赔率
-            currentSinglePrice:'0', //当前的单价,下注时需要回调
             finishTime:0, //请求回来的数据
             singlePrice:'',//当前底部工具栏的输入金额
         })
@@ -85,6 +84,27 @@ export default class newPk10RaceView extends Component{
             let playName = nextProps.wanfaDataArr[0] ? nextProps.wanfaDataArr[0].submenu[0].playlist[0].playname : '';
             this.setState({currentplayName:playName, currentPlayDataArr:nextProps.wanfaDataArr});
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+
+        let aaa = nextProps.finishTime != 0 && this.state.finishTime == 0
+        let bbb = nextProps.prevList && this.state.openListArr.length <= 0
+        let ccc = nextProps.nextTimeList && this.state.nextCountDownList.length <= 0
+        let ddd = nextProps.peilvDataArr.length != 0 && this.state.peilvDataArr.length == 0
+        let eee = nextProps.wanfaDataArr.length != 0 && this.state.currentPlayDataArr.length == 0;
+        let fff = nextState.openBallsArr != this.state.openBallsArr;  //开奖号码不同时
+        let ggg = nextState.isCompleteRace != this.state.isCompleteRace;  //比赛完成的状态
+        let hhh = nextState.currentZhuShu != this.state.currentZhuShu; //注数不同时
+        let iii = nextState.selectBallArr != this.state.selectBallArr; //选择的号码改变时
+
+        if (aaa || bbb || ccc || ddd || eee || fff || ggg || hhh || iii){
+            return true;
+        }
+        else  {
+            return false;
+        }
+
     }
 
     componentDidMount() {
@@ -348,15 +368,15 @@ export default class newPk10RaceView extends Component{
                 pickerNumDesc={this.state.pickerBallsDesc}
                 pickerNumPeilv={this.state.pickerBallsPeilv}
                 singlePrice={this.state.singlePrice}
-                clearBallsClick = {()=> {
+                MoreFuctionClick = {()=> {
 
-                    this.props.ClearBalls ? this.props.ClearBalls() : null;
+                    this.props.MoreFuctionClick ? this.props.MoreFuctionClick() : null;
                 }}
                 xiaZhuClick = {()=> {
-                    this.props.XiaZhuClick ? this.props.XiaZhuClick(this.state.currentSinglePrice) : null;
+                    this.props.XiaZhuClick ? this.props.XiaZhuClick(this.state.singlePrice) : null;
                 }}
                 priceInputBlock = {(price) => {
-                    this.state.currentSinglePrice = price;
+                    this.state.singlePrice = price;
                 }}
                 ZhuShuPicker={this.state.currentZhuShu}
             />

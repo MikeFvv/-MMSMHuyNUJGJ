@@ -487,7 +487,7 @@ class Page extends Component {
                 }
                 break;
             case "购彩大厅":
-                navigate('BuyLot');
+                navigate('NewBuyLot');
                 break;
 
         }

@@ -61,7 +61,7 @@ class HomeReCaiBlockView extends Component {
   _renderItemView(item) {
     if (item.index == this.state.dataSource.length - 1 && this.props.caizhongIndex == 0) {
       return (
-        <TouchableOpacity activeOpacity={1} style={styles.cellStyle} onPress={() => this.props.navigator.navigate('BuyLot')}>
+        <TouchableOpacity activeOpacity={1} style={styles.cellStyle} onPress={() => this.props.navigator.navigate('NewBuyLot')}>
           <Image source={require('./img/ic_chakangengduo.png')} style={{ width: 50, height: 50, marginTop: 3 }} />
           <CusBaseText style={{ fontSize: Adaption.Font(15, 15), fontWeight: "400", marginTop: 5 }}>
             更多

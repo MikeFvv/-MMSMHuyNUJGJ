@@ -136,6 +136,7 @@ export default class UserInfoObject extends Component {
        'rise_lock': '', //每日加奖
        'session_key': '', //会话密钥
         'codePWD' : '',
+       'rebate':'',//时时返水
      };
 
       AsyncStorage.removeItem(key,(error) => {

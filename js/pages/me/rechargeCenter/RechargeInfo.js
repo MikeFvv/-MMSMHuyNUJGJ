@@ -12,6 +12,7 @@ import {
     Linking,
     Clipboard,
     CameraRoll,
+    Alert,
 } from 'react-native';
 
 import Regex from '../../../skframework/component/Regex';
@@ -86,15 +87,14 @@ class RechargeInfo extends Component {
               <View style={styles.rechargInfo}>
 		      	<View>
                     {this.payObject.man == 0 ?
-                        <CusBaseText style={styles.prex}>订 单 号   ：</CusBaseText>:null
+                        <CusBaseText style={styles.prex}>订 单 号   ：</CusBaseText>
+                        :null
                     }
                     <CusBaseText style={styles.prex}>充值金额 ：</CusBaseText>
                     {this._showPrexView()}
 		      	</View>
 		      	<View>
-                    {this.payObject.man == 0 ?
-                        <CusBaseText style={styles.prex}>{this.payObject.orderNumber}</CusBaseText>:null
-                    }
+                    {this.payObject.man == 0 ? this._showOrderView():null}
                     <View style={{marginTop:10,flexDirection:'row',alignItems:'center'}}>
                         <CusBaseText style={{fontSize:16,color:COLORS.appColor}}>{this.recharNumber}</CusBaseText>
                         <CusBaseText style={{color:'#535353',fontSize:15,marginLeft:2}}>元</CusBaseText>
@@ -182,6 +182,25 @@ class RechargeInfo extends Component {
         return null;
     }
 
+    _showOrderView = () => {
+	    return (
+            <View style={[{flexDirection:'row',alignItems:'center'},styles.prex]}>
+                <CusBaseText>{this.payObject.orderNumber}</CusBaseText>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={{borderRadius:10,borderColor:COLORS.appColor,borderWidth:1,marginLeft:15,
+                        width:53,height:20,justifyContent:'center',alignItems:'center'}}
+                    onPress={() => {
+                        Clipboard.setString(this.payObject.orderNumber);
+                    }}
+                >
+                    <CusBaseText style={{color:COLORS.appColor,fontSize:15}}>复制</CusBaseText>
+                </TouchableOpacity>
+            </View>
+        );
+
+    }
+
     _platform = () => {
         if (this.payObject.title.indexOf('微信') != -1) {
             this.placeholder = '请输入微信昵称';
@@ -266,11 +285,11 @@ class RechargeInfo extends Component {
 		// '微信' 'QQ' 支付宝
         let openURL = null;
         if (this.payObject.title.indexOf('微信') != -1) {
-            openURL =Android ? "tencent.mm": 'weixin://';
+            openURL = 'weixin://';
         }else if (this.payObject.title.indexOf('支付宝') != -1) {
-            openURL = Android ? "AlipayGphone":'alipay://';
+            openURL = 'alipay://';
         }else if (this.payObject.title.indexOf('QQ') != -1) {
-            openURL =Android ? "mobileqq": 'mqq://';
+            openURL = 'mqq://';
         }
         if (openURL == null) {
             this.refs.LoadingView && this.refs.LoadingView.showFaile('无法打开未知的平台');
@@ -356,8 +375,6 @@ const styles = StyleSheet.create({
 	codeImg:{
 	    flex:1,
 		resizeMode:'contain',
-		// width:145,
-		// height:145,
 	},
 	prepBtn:{
 		backgroundColor:COLORS.appColor,

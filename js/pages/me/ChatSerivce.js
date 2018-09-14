@@ -19,21 +19,6 @@ export default class Feedback extends Component {
                 leftClick={() => {navigation.state.params.callback(),navigation.goBack()}}
             />
         ),
-        // title: navigation.state.params.title,
-        // headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-        // headerTitleStyle:{color:'white',alignSelf:'center'},
-        // //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-        // headerRight: (
-        //     <View style={GlobalStyles.nav_blank_view} />
-        // ),
-        // headerLeft: (
-        //     <TouchableOpacity
-        //         activeOpacity={1}
-        //         style={GlobalStyles.nav_headerLeft_touch}
-        //         onPress={() => { navigation.goBack() }}>
-        //         <View style={GlobalStyles.nav_headerLeft_view} />
-        //     </TouchableOpacity>
-        // ),
     });
 
     componentDidMount(){
@@ -42,31 +27,45 @@ export default class Feedback extends Component {
     }
 
     render(){
-         
-        //后台返回URL作特殊处理
-        let chatServiceURL = GlobalConfig.service_url();
-        let chatServiceURL5 = '';
-        if(chatServiceURL!=undefined){
-        let chatServiceURL1 = chatServiceURL.replace(/&amp;/g,"&");
-        let chatServiceURL2 = chatServiceURL1.replace(/&gt;/g,">");
-        let chatServiceURL3 = chatServiceURL2.replace(/&lt;/g,"<");
-        let chatServiceURL4 = chatServiceURL3.replace(/&quot;/g,"");
-         chatServiceURL5 = chatServiceURL4.replace(/&#039;/g,"");
-        }
-
         return (
            <View style = {{flex: 1}}>
              <WebView
              style = {styles.container}
              bounces={false}
              automaticallyAdjustContentInsets={false}
-             source={{uri:chatServiceURL5 ? chatServiceURL5 : ''}}
+             source={{uri:this._chatService()}}
              >
              </WebView>
              <LoadingView ref = 'LoadingView'/>
            </View>
         );
+
     }
+
+    _chatService = () => {
+
+        if (this.props.navigation.state.params && this.props.navigation.state.params.chatServiceURL) {
+            return this._formatChatServiceURL(this.props.navigation.state.params.chatServiceURL)
+        }
+        if (GlobalConfig.service_url()) {
+            return this._formatChatServiceURL(GlobalConfig.service_url())
+        }
+        return "";
+    }
+
+    //后台返回URL作特殊处理
+    _formatChatServiceURL = (chatServiceURL) => {
+        let chatServiceURL5 = '';
+        if(chatServiceURL){
+            let chatServiceURL1 = chatServiceURL.replace(/(\\u0026)/g,"&").replace(/&amp;/g,"&")
+            let chatServiceURL2 = chatServiceURL1.replace(/&gt;/g,">");
+            let chatServiceURL3 = chatServiceURL2.replace(/&lt;/g,"<");
+            let chatServiceURL4 = chatServiceURL3.replace(/&quot;/g,"");
+            chatServiceURL5 = chatServiceURL4.replace(/&#039;/g,"");
+        }
+        return chatServiceURL5
+    }
+
 }
 
 const styles = StyleSheet.create({

@@ -8,6 +8,9 @@ import android.view.View;
 
 import com.bugtags.library.Bugtags;
 import com.facebook.react.ReactApplication;
+import com.github.yamill.orientation.OrientationPackage;
+import com.github.yamill.orientation.OrientationPackage;
+import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.jadsonlourenco.RNShakeEvent.RNShakeEventPackage;
 import com.beefe.picker.PickerViewPackage;
@@ -75,6 +78,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new OrientationPackage(),
+            new OrientationPackage(),
+            new OrientationPackage(),
             new VectorIconsPackage(),
             new RNShakeEventPackage(),
             new PickerViewPackage(),

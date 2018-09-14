@@ -290,6 +290,7 @@ export default class Register extends Component {
                     'user_Name': this.state.inputUserName, //用户名称
                     'user_Pwd': this.state.inputPWD,  //用户密码
                     'codePWD' : response.data.code,  //加密登录
+                    'rebate': response.data.rebate, //时时返水开关
                     //'rise_lock': response.data.rise_lock, //每日加奖跳动
                 };
 

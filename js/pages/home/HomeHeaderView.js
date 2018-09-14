@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   Alert,
+  AsyncStorage
 } from 'react-native';
 const { width, height } = Dimensions.get("window");
 const KAdaptionHeight = height / 736;
@@ -33,8 +34,9 @@ class HomeHeaderView extends Component {
       homeCaiArray: [],
       homeHeightArray: [],
       homeLowArray: [],
-      tabNames: ['热门', '高频彩', '低频彩', '体育彩'],
+      tabNames: ['热门', '彩票', '体育彩', '电子游戏'],
       tiyuArray: [],
+      dianziArray: [],
       tabIconNames: [require('./img/ic_remen.png'), require('./img/ic_gerenxiaoxi.png'), require('./img/ic_gerenxiaoxi.png'), require('./img/ic_gerenxiaoxi.png')],
     };
     this.zuqiuArray = [{ key: 1, value: 2 }];
@@ -76,6 +78,7 @@ class HomeHeaderView extends Component {
     this.state.homeHeightArray = HomeHeightZhongArray;
     this.state.homeLowArray = HomeLowZhongArray;
     this.state.tiyuArray = TiYuArray;
+    this.state.dianziArray = HomeComputerGameArray;
 
 
   }
@@ -84,6 +87,8 @@ class HomeHeaderView extends Component {
       this._fetchBanber();
       this._fetchSystemNotification();
       this.fetchHomeCaiArray();
+      this.fetchHomeComputerArray();
+      this._fetchMGGameData();
     }, 2000);
 
     // setTimeout(() => {
@@ -116,6 +121,43 @@ class HomeHeaderView extends Component {
 
   }
 
+  _fetchMGGameData() {
+    let paramsComputerGame = new FormData();
+    paramsComputerGame.append("ac", "GetIndexWebgame");
+    var promise = GlobalBaseNetwork.sendNetworkRequest(paramsComputerGame);
+    promise
+        .then((responseData) => {
+            if (responseData.msg == 0) {
+                let datalist = responseData.data;
+                    // let dataBannerList = response.data['banner'];
+                    // let dataNonticeList = response.data['notice'];
+                    // let dataWinlist = response.data['winlist'];
+                    let dataBlog = [];
+                    let i = 0;
+                   
+                    datalist.map(dict => {
+                        dataBlog.push({ key: i, value: dict });
+                        i++;
+                    });
+                    HomeComputerGameArray = [];
+                    HomeComputerGameArray = dataBlog;
+                    this.setState({ dianziArray: HomeComputerGameArray })
+                    let homeKey = 'HomeCaiZhongObjcet';
+                    UserDefalts.getItem(homeKey, (error, result) => {
+                      if (!error) {
+                        if (result !== '' && result !== null) {
+                          let homeModel = JSON.parse(result);
+                          homeModel.HomeComPuterArray = HomeComputerGameArray;
+                          UserDefalts.setItem(homeKey, JSON.stringify(homeModel), (error) => { });
+                        }
+                      }
+                    });
+            }
+        })
+        .catch((err) => {
+        })
+   }
+
   _fetchGamePianHaoData() {
     let params = new FormData();
     params.append("ac", "getUserHobby");
@@ -144,15 +186,22 @@ class HomeHeaderView extends Component {
                 }
               }
 
-              // 排序 HomeArray 数据
-              for (let h = 0; h < HomeArray.length; h++) {
-                let dic = HomeArray[h];
-                if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
-                  HomeArray.splice(h, 1);  // 删除
-                  HomeArray.splice(0, 0, dic); // 添加到第一位
-                  break;
+                 // 排序 HomeArray 数据
+                 for (let h = 0; h < AllZhongArray.length; h++) {
+                  let dic = AllZhongArray[h];
+                  if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
+                      AllZhongArray.splice(h, 1);  // 删除
+                      AllZhongArray.splice(0, 0, dic); // 添加到第一位
+                    break;
+                  }
                 }
-              }
+                for (var j = 0; j < AllZhongArray.length; j++) {
+                  homeIndexArray.push({ key: j, value: AllZhongArray[j] });
+                  if (j == 16) {
+                    break;
+                  }
+                }
+                homeIndexArray.push({ key: 17, value: {} });
 
               // 排序 HomeHeightZhongArray 数据
               for (let hh = 0; hh < HomeHeightZhongArray.length; hh++) {
@@ -165,7 +214,7 @@ class HomeHeaderView extends Component {
               }
             }
 
-            this.setState({ homeCaiArray: HomeArray, homeHeightArray: HomeHeightZhongArray })
+            this.setState({ homeCaiArray: homeIndexArray, homeHeightArray: HomeHeightZhongArray })
           }
 
         }
@@ -207,75 +256,73 @@ class HomeHeaderView extends Component {
             TiYuArray = [];
             datalist.map((item) => {
               if (item.type == 1) {
-                if (item.speed == 1) {
+                // if (item.speed == 1) {
                   HomeHeightZhongArray.push({ key: i, value: item });
-                } else if (item.speed == 0) {
-                  HomeLowZhongArray.push({ key: i, value: item });
-                }
-                if (item.hot == 1) {
-                  indexArray.push({ key: i, value: item });
-                }
+                // } else if (item.speed == 0) {
+                //   HomeLowZhongArray.push({ key: i, value: item });
+                // }
+                // if (item.hot == 1) {
+                //   indexArray.push({ key: i, value: item });
+                // }
+                // AllZhongArray.push({ key: i, value: item });
               } else {
                 TiYuArray.push({ key: i, value: item });
-                if (item.hot == 1) {
-                  indexArray.push({ key: i, value: item });
-                }
+                // if (item.hot == 1) {
+                //   indexArray.push({ key: i, value: item });
+                // }
               }
               i++;
             })
-            // for (var j = 0; j < datalist.length; j++) {
-            //   indexArray.push({ key: j, value: datalist[j] });
-            //   if (j == 16) {
-            //     break;
-            //   }
-            // }
-            // indexArray.push({ key: 17, value: {} });
-            indexArray.push({ key: 99, value: {} });
-
-
-            // 游戏偏好 在这里for循环里面改变顺序。
-            for (let i = global.YouXiPianHaoData.length - 1; i >= 0; i--) {
-
-              // 首页彩种
-              for (let h = 0; h < indexArray.length; h++) {
-                let dic = indexArray[h];
-                if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
-                  indexArray.splice(h, 1);  // 删除
-                  indexArray.splice(0, 0, dic); // 添加到第一位
-                  break;
-                }
-              }
-
-              // 首页高频彩
-              for (let hh = 0; hh < HomeHeightZhongArray.length; hh++) {
-                let dic = HomeHeightZhongArray[hh];
-                if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
-                  HomeHeightZhongArray.splice(hh, 1);  // 删除
-                  HomeHeightZhongArray.splice(0, 0, dic); // 添加到第一位
-                  break;
-                }
+            for (var j = 0; j < datalist.length; j++) {
+              indexArray.push({ key: j, value: datalist[j] });
+              if (j == 16) {
+                break;
               }
             }
-            // 到这里循环结束了，indexArray和HomeHeightZhongArray，就是按偏好排序后的数据
+            indexArray.push({ key: 17, value: {} });
+            // indexArray.push({ key: 99, value: {} });
             HomeArray = indexArray;
-
 
             this.setState({ homeCaiArray: indexArray, homeHeightArray: HomeHeightZhongArray, homeLowArray: HomeLowZhongArray, tiyuArray: TiYuArray })
 
-            let homeKey = 'HomeCaiZhongObjcet';
-            UserDefalts.getItem(homeKey, (error, result) => {
-              if (!error) {
-                if (result !== '' && result !== null) {
-                  let homeModel = JSON.parse(result);
-                  homeModel.HomeCaiZhongArray = HomeArray;
-                  homeModel.HomeHeightCaiZhongArray = HomeHeightZhongArray;
-                  homeModel.HomeLowCaiZhongArray = HomeLowZhongArray;
-                  homeModel.HomeCaiZhongAllArray = AllZhongArray;
-                  homeModel.HomeTiYuArray = TiYuArray;
-                  UserDefalts.setItem(homeKey, JSON.stringify(homeModel), (error) => { });
-                }
+            if (datalist && datalist.length > 0) {
+              let datas = JSON.stringify(datalist);
+              AsyncStorage.setItem('GameListData', datas, (error) => { });
+              let newmodel = {}
+              let openGameList = [];
+              for (let i = 0; i < datalist.length; i++) {
+                  let model = datalist[i];
+                  if (model.enable != 2 && model.type == 1) { //只存type == 1的正常彩票。除了体育彩
+                      openGameList.push(model);
+                  }
+                  // 存yearid
+                  if (model.js_tag == 'lhc') {
+                      global.yearId = model.yearid;
+                      if (global.yearId.length > 0) {
+                          break;  // 防止拿到空值，有值再退出
+                      }
+                  }
+                  newmodel[`${model.game_id}`] = model; // game_id作为key，每个key对应的Model存起来
               }
-            });
+              global.AllPlayGameList = openGameList;
+              global.GameListConfigModel = newmodel;
+
+          }
+          let homeKey = 'HomeCaiZhongObjcet';
+          UserDefalts.getItem(homeKey, (error, result) => {
+            if (!error) {
+              if (result !== '' && result !== null) {
+                let homeModel = JSON.parse(result);
+                homeModel.HomeCaiZhongArray = HomeArray;
+                homeModel.HomeHeightCaiZhongArray = HomeHeightZhongArray;
+                homeModel.HomeLowCaiZhongArray = HomeLowZhongArray;
+                homeModel.HomeCaiZhongAllArray = AllZhongArray;
+                homeModel.HomeTiYuArray = TiYuArray;
+                UserDefalts.setItem(homeKey, JSON.stringify(homeModel), (error) => { });
+              }
+            }
+          });
+           
 
           }
 
@@ -372,6 +419,44 @@ class HomeHeaderView extends Component {
       .catch(err => {
 
       });
+  }
+
+
+  //电子游戏
+  fetchHomeComputerArray() {
+
+    let paramsComputerGame = new FormData();
+    paramsComputerGame.append("ac", "GetIndexWebgame");
+    var promise = GlobalBaseNetwork.sendNetworkRequest(paramsComputerGame);
+    promise
+        .then((responseData) => {
+            if (responseData.msg == 0) {
+                let datalist = responseData.data;
+                  
+                    let dataBlog = [];
+                    let i = 0;
+                if (datalist && datalist.length > 0) {
+                    datalist.map(dict => {
+                        dataBlog.push({ key: i, value: dict });
+                        i++;
+                    });
+                    this.setState({ dianziArray: dataBlog })
+                    HomeComputerGameArray = dataBlog;
+
+                    UserDefalts.getItem(homeKey, (error, result) => {
+                      if (!error) {
+                        if (result !== '' && result !== null) {
+                          let homeModel = JSON.parse(result);
+                          homeModel.HomeComPuterArray = HomeComputerGameArray;
+                          UserDefalts.setItem(homeKey, JSON.stringify(homeModel), (error) => { });
+                        }
+                      }
+                    });
+            }
+          }
+        })
+        .catch((err) => {
+        })
   }
 
   render() {
@@ -700,74 +785,79 @@ class HomeHeaderView extends Component {
           dataSource={this.state.homeHeightArray}
           navigator={this.props.navigator}
           backAction={this.props.backAction}
-          tabLabel='高频彩'
+          tabLabel='彩票'
+         
         />
         <HomeCaiBlockView
           caizhongIndex={2}
-          dataSource={this.state.homeLowArray}
+          dataSource={this.state.tiyuArray}
           navigator={this.props.navigator}
           backAction={this.props.backAction}
-          tabLabel='低频彩'
+          tabLabel='体育彩'
         />
         <HomeCaiBlockView
           caizhongIndex={3}
-          dataSource={this.state.tiyuArray}
-          backAction={this.props.backAction}
+          dataSource={this.state.dianziArray}
+          backAction={this.props.backMgGameAction}
           navigator={this.props.navigator}
-          tabLabel='体育彩'
+          tabLabel='电子游戏'
         />
+       
       </ScrollableTabView>
     );
   }
 
   _onclickCaiZhong(obj) {
+    global.dianziIndex = obj.i;
+    
     switch (obj.i) {
       case 0:
         if (this.state.homeCaiArray != undefined && this.state.homeCaiArray.length % 3 > 0) {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: (this.state.homeCaiArray.length - this.state.homeCaiArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 }
+            style: { backgroundColor: 'white', width: width, height: (this.state.homeCaiArray.length - this.state.homeCaiArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 +150}
           });
         } else {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: this.state.homeCaiArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 }
+            style: { backgroundColor: 'white', width: width, height: this.state.homeCaiArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 +150 }
           });
         }
         break;
       case 1:
-        if (this.state.homeHeightArray != undefined, this.state.homeHeightArray.length % 3 > 0) {
+        if (this.state.homeHeightArray != undefined&&this.state.homeHeightArray.length % 3 > 0) {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: (this.state.homeHeightArray.length - this.state.homeHeightArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 }
+            style: { backgroundColor: 'white', width: width, height: (this.state.homeHeightArray.length - this.state.homeHeightArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135+150 }
           });
         } else {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: this.state.homeHeightArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 }
+            style: { backgroundColor: 'white', width: width, height: this.state.homeHeightArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 +150}
           });
         }
         break;
       case 2:
-        if (this.state.homeLowArray != undefined && this.state.homeLowArray.length % 3 > 0) {
+        if (this.state.tiyuArray.length % 3 > 0) {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: (this.state.homeLowArray.length - this.state.homeLowArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 }
+            style: { backgroundColor: 'white', width: width, height: (this.state.tiyuArray.length - this.state.tiyuArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 +150}
           });
         } else {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: this.state.homeLowArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 }
+            style: { backgroundColor: 'white', width: width, height: this.state.tiyuArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 +150}
           });
         }
         break;
       default:
         //  alert('敬请期待')
-        // this._refHeightView.setNativeProps({
-        //   style: {backgroundColor: 'white',width:width,height:260*KAdaptionHeight+135}});
-        if (this.state.tiyuArray.length % 3 > 0) {
+    
+        this.props.backHideFootAction();
+        if (this.state.dianziArray.length  > 0) {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: (this.state.tiyuArray.length - this.state.tiyuArray.length % 3) / 3 * 100 + 260 * KAdaptionHeight + 135 }
+            style: { backgroundColor: 'white', width: width, height: this.state.dianziArray.length  * 100 + 255 * KAdaptionHeight+20}
           });
-        } else {
+        }else {
           this._refHeightView.setNativeProps({
-            style: { backgroundColor: 'white', width: width, height: this.state.tiyuArray.length / 3 * 100 + 260 * KAdaptionHeight + 35 }
-          });
+            style: { backgroundColor: 'white', width: width, height: this.state.dianziArray.length  * 100 + 255 * KAdaptionHeight +50}
+          }); 
         }
+        
         break;
     }
   }

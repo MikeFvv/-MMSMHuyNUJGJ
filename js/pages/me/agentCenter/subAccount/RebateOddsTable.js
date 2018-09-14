@@ -1,35 +1,21 @@
 
 import React, { Component } from 'react';
 import {
-    AppRegistry,
     StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    StatusBar,
     Image,
-    Dimensions,
-    Alert,
-    ART,
-    ScrollView,
-    FlatList,
-    AsyncStorage,
     WebView
 } from 'react-native';
 
-const { width, height } = Dimensions.get("window");
 import DrawalSelectBankList from '../../drawalCenter/DrawalSelectBankList';
 import BaseNetwork from "../../../../skframework/component/BaseNetwork";
-import { Group } from "react-native/Libraries/ART/ReactNativeART";
-
 import createInvoke from 'react-native-webview-invoke/native'
 
 const KAdaptionWidth = SCREEN_WIDTH / 414;
 const KAdaptionHeight = SCREEN_HEIGHT / 736;
 
-const { Surface, Shape, Path } = ART;
-var ITEM_HEIGHT = 40;
-var type = "ssc";
 export default class RebateOddsTable extends Component {
 
     webview: WebView
@@ -90,17 +76,12 @@ export default class RebateOddsTable extends Component {
                 { 'id': 5, 'name': 'PC蛋蛋', 'type': 'pcdd' },
                 { 'id': 6, 'name': '3D', 'type': '3d' },
                 { 'id': 7, 'name': '六合彩', 'type': 'lhc' },
-
-
-                // { 'id': 8, 'name': '经典梯子', 'type': 'tzyx' },
-                // { 'id': 9, 'name': '幸运农场', 'type': 'xync' },
-                // { 'id': 10, 'name': 'PK拾牛牛', 'type': 'xypk' },
-                // { 'id': 11, 'name': '幸运扑克', 'type': 'pkniuniu' },
-                // { 'id': 12, 'name': '七星彩', "type": 'qxc'},
-
-                 { 'id': 8, 'name': '其他', 'type': 'other' },
-                
-                
+                { 'id': 8, 'name': '经典梯子', 'type': 'tzyx' },
+                { 'id': 9, 'name': '幸运农场', 'type': 'xync' },
+                { 'id': 10, 'name': 'PK拾牛牛', 'type': 'pkniuniu' },
+                { 'id': 11, 'name': '幸运扑克', 'type': 'xypk' },
+                { 'id': 12, 'name': '七星彩', "type": 'qxc'},
+                 // { 'id': 8, 'name': '其他', 'type': 'other' },
             ],
 
         }
@@ -236,7 +217,7 @@ export default class RebateOddsTable extends Component {
 const styles = StyleSheet.create({
 
     itemStyle: {
-        width: width / 3 - 10,
+        width: SCREEN_WIDTH / 3 - 10,
         height: 40,
         borderColor: '#DBDBDB',
         justifyContent: 'center',

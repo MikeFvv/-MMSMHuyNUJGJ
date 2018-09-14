@@ -26,31 +26,12 @@ export default class PreferentialDetial extends Component {
         this.state = {
           preferentialDetialArray:'',
         };
-      }
+    }
 
-      
 
     componentDidMount(){
-    
-        // let preg = /^[A-Za-z0-9]+$/;
-        // let is = preg.test(this.props.navigation.state.params.event_detail);
-        // let aaa = '';
-        // if(is==true){
-        //     aaa =  this._decipher(this.props.navigation.state.params.event_detail);
-        // }else {
-        //     aaa = this.props.navigation.state.params.event_detail;
-        // }
-   
-        // aaa = aaa.replace(/&amp;/g,"&");
-        // aaa = aaa.replace(/&gt;/g,">");
-        // aaa = aaa.replace(/&lt;/g,"<");
-        // aaa = aaa.replace(/&quot;/g,"'");
-        // aaa = aaa.replace(/&#039;/g,"\"");
-        // this.setState({ preferentialDetialArray: aaa});
         this._fetchPreferentialDetialData();
-       this.refs.LoadingView && this.refs.LoadingView.cancer(1);
-
-
+        this.refs.LoadingView && this.refs.LoadingView.cancer(1);
     }
 
     _decipher(val) {
@@ -61,7 +42,6 @@ export default class PreferentialDetial extends Component {
         for (let a = 0; a < val.length; a++) {
             valByte.push( parseInt(val[a], 16));
         }
-     
     
         if (valByte.length % 2 != 0) {
             return;
@@ -71,7 +51,6 @@ export default class PreferentialDetial extends Component {
         for (let i = 0; i < valByte.length; i+=2) {
             tempAr.push( valByte[i] << 4 | valByte[i + 1] );
         }
-    
     
         for (let a = 0; a < tempAr.length; a++) {
             for (let b = keyByte.length - 1; b >= 0; b--) {
@@ -84,9 +63,9 @@ export default class PreferentialDetial extends Component {
             str += String.fromCharCode(tempAr[i]);
         }
         return decodeURIComponent(escape(str));
-    
     }
-        _fetchPreferentialDetialData() {
+
+    _fetchPreferentialDetialData() {
             this.refs.LoadingView && this.refs.LoadingView.showLoading('正在加载中...');
                 //请求参数
               let params = new FormData();
@@ -127,6 +106,7 @@ export default class PreferentialDetial extends Component {
         return (
         <View style = {{flex: 1}}>
            <WebView style = {styles.container}
+             resizeMode={'stretch'}
              scalesPageToFit={false}
              bounces={false}
              onLoadEnd = {()=> this.refs.LoadingView && this.refs.LoadingView.cancer()}

@@ -44,7 +44,7 @@ global.GLOBALisRNParameters = true;
 global.SwitchRoute = 1;
 
 // 版本号    版本号的格式：v<主版本号>.<副版本号>.<发布号>
-global.VersionNum = 'v2.57.0';
+global.VersionNum = 'v2.58.3';
 // --------------------
 
 // 业主请求URL 每个App的请求域名(每个App都不一样) 会返回不同的域名及状态
@@ -168,6 +168,7 @@ global.UserLoginObject = {
     'user_Pwd': '',  //用户密码
     'rise_lock': '', //每日加奖是否跳动
     'codePWD' : '',  //加密登录密文
+    'rebate': '', //时时返水是否开启
 }
 
 // 请求错误提示
@@ -198,7 +199,7 @@ global.RNAlert = RNAlertView;
 
 //UserInfo
 global.UserInfo = UserInfo;
-
+global.HomeComputerGameArray = [];
 //存储本地的方法
 global.UserDefalts = AsyncStorage;
 //存储所有彩种数据
@@ -241,9 +242,6 @@ global.isTiShi = false;    // 是否不再提示
 global.isMeDown = true;    // 我知道啦
 
 global.invCode = ""; // 邀请码。
-
-//存储银行列表
-global.bankList = [];
 
 // 弹出玩法时的一个内容
 global.Wanfa = 0;    // 官方 or 信用
@@ -296,11 +294,9 @@ global.versionSDK = 21;
 // 是否有网络 true  or  false
 global.isFirstNetwork = true;
 
-// 切换线路使用 线路存储
-global.GlobalLineIPArray = [];
+
 // 请求少于GlobalLineIPRequestMax次 继续请求
 global.GlobalLineIPRequestMax = 10;
-
 global.GlobalLineIPIndex = null;
 
 // 购彩定时器

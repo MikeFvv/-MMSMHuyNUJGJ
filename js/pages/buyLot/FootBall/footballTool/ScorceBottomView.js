@@ -41,7 +41,7 @@ export default class ScorceBottomView extends Component {
 
        if (nextProps.normalPickDataDict){
            this.state.pickDataDict = nextProps.normalPickDataDict;
-           this._freshPeilv();
+           //this._freshPeilv();
        }
        else {
            this.state.pickDataDict = null;
@@ -54,9 +54,8 @@ export default class ScorceBottomView extends Component {
            this.state.zongHeDataDict = null;
        }
 
-       if (nextProps.currentGameType != this.state.gameTypeIndex || nextProps.currentTabIndex != this.state.tabIndex){
+       if (nextProps.currentTabIndex != this.state.tabIndex){
            this.isJustEnterIng = true; //重新赋值
-           this.state.gameTypeIndex = nextProps.currentGameType;
            this.state.tabIndex = nextProps.currentTabIndex;
        }
 
@@ -95,11 +94,15 @@ export default class ScorceBottomView extends Component {
                         //让球会出现多个
 
                         newPeilvArr  = responseData.data[0].bet_data[sportModel.playMethod][sportModel.isHVXO.toUpperCase()];
-                        let idx = sportModel.data.equal ? sportModel.data.equal : 0; //如果不存在多个盘则取第0个
 
-                        if (sportModel.p != newPeilvArr[idx].p){
-                            sportModel.p = newPeilvArr[idx].p;
-                            isNeedRender = true;
+                        for (let i = 0; i < newPeilvArr.length; i++){
+
+                            if (sportModel.k == newPeilvArr[i].k){
+                                if (sportModel.p != newPeilvArr[i].p){
+                                    sportModel.p = newPeilvArr[i].p;
+                                    isNeedRender = true;
+                                }
+                            }
                         }
                     }
                     else if (sportModel.playMethod == 'GL'){
@@ -107,11 +110,15 @@ export default class ScorceBottomView extends Component {
                         let isHost = sportModel.isHVXO == 'h' ? true : false;
                         let keyStr = isHost ? 'OV' : 'UN';
                         newPeilvArr = responseData.data[0].bet_data[sportModel.playMethod][keyStr];
-                        let idx = sportModel.data.equal ? sportModel.data.equal : 0; //如果不存在多个盘则取第0个
 
-                        if (sportModel.p != newPeilvArr[idx].p){
-                            sportModel.p = newPeilvArr[idx].p;
-                            isNeedRender = true;
+                        for (let i = 0; i < newPeilvArr.length; i++){
+
+                            if (sportModel.k == newPeilvArr[i].k){
+                                if (sportModel.p != newPeilvArr[i].p){
+                                    sportModel.p = newPeilvArr[i].p;
+                                    isNeedRender = true;
+                                }
+                            }
                         }
                     }
                     else {
@@ -200,7 +207,6 @@ export default class ScorceBottomView extends Component {
 
                     } else if (model.playMethod.includes('HC') || model.playMethod.includes('TCS')) { // 让分 // 波胆
                         teamData = `${model.isHVXO.toUpperCase()}`;
-
                     }
 
                     let betModel = {
@@ -322,15 +328,31 @@ export default class ScorceBottomView extends Component {
                     miaosuStr = model.k;
                 }
 
-                peilvStr = `@${model.p}`;
-
                 //如果是让分或者大小盈利不减去本金
                 if (model.playMethod == 'HC' || model.playMethod == 'GL' || model.playMethod == 'HHC' || model.playMethod == 'HGL') {
-                    currentPeilv = parseFloat(model.p, 10);
+
+                    switch (this.props.currentPanKou){
+                        case '香港盘':
+                            currentPeilv = parseFloat(model.HK, 10);  //香港盘盈利等于赔率 X 本金
+                            peilvStr = `@${model.HK}`;
+                            break;
+                        case '马来盘':
+                            currentPeilv = 1.00;  //马来盘盈利等于本金
+                            peilvStr = `@${model.MY}`;
+                            break;
+                        case '印尼盘':
+                            currentPeilv = 1.00;   //印尼盘盈利等于本金
+                            peilvStr = `@${model.IND}`;
+                            break;
+                        case '欧洲盘':
+                            currentPeilv = parseFloat(model.DEC, 10) - 1;  //欧洲盘盈利等于赔率 - 1
+                            peilvStr = `@${model.DEC}`;
+                    }
                 }
                 else {
                     //其他的都会减去本金
                     currentPeilv = parseFloat(model.p, 10) - 1;
+                    peilvStr = `@${model.p}`;
                 }
 
                 this.state.minTake = 2;

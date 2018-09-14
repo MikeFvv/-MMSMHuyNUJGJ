@@ -81,12 +81,7 @@ export default class LadderBallPickeView extends Component {
     render (){
 
         return <View style = {this.props.style}>
-            <View style = {{backgroundColor:'#f6f6f6',borderRadius:5, borderWidth:1, borderColor:'#d2d2d2', marginLeft:15, marginRight:15, height:200, width:SCREEN_WIDTH - 30, marginTop:10}}>
-                <View style = {{height:38, alignItems:'center', justifyContent:'center',borderColor:'#d2d2d2', borderBottomWidth:1}}>
-                    <CusBaseText style = {{fontSize:Adaption.Font(19,16), color:'#313131'}}>
-                        双面
-                    </CusBaseText>
-                </View>
+            <View style = {{backgroundColor:'#f6f6f6',borderRadius:5, borderWidth:1, borderColor:'#d2d2d2', marginLeft:15, marginRight:15, height:162, width:SCREEN_WIDTH - 30, marginTop:10}}>
                 <View style = {{flexDirection:'row', height:40,borderColor:'#d2d2d2', borderBottomWidth:1}}>
                     <View style = {{flex:0.25, alignItems:'center', justifyContent:'center'}}>
                         <CusBaseText style = {{fontSize:Adaption.Font(18,15), color:'#313131'}}>

@@ -3,21 +3,17 @@
 import React, { Component } from 'react';
 
 import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
+    StyleSheet,
+    View,
+    TextInput,
     Alert,
-  TouchableOpacity,
-  ScrollView,
+    TouchableOpacity,
+    ScrollView,
     StatusBar,
-  DeviceEventEmitter,
-  Image
+    Image
 } from 'react-native';
 
 import DrawalSelectBankList from '../drawalCenter/DrawalSelectBankList';
-import Regex from '../../../skframework/component/Regex'
-
 
 var accountBank = '';
 var accountNumber = '';
@@ -32,21 +28,13 @@ class ReviseBankCar extends Component {
 
   static navigationOptions = ({ navigation }) => ({
 
-    title: '修改银行卡',
-      headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-      headerTitleStyle: { color: 'white',alignSelf:'center' },
-      //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-      headerRight: (
-          <View style={GlobalStyles.nav_blank_view} />
+      header: (
+          <CustomNavBar
+              centerText = {"修改银行卡"}
+              leftClick={() => {navigation.state.params.callback(),navigation.goBack()} }
+          />
       ),
-    headerLeft: (
-      <TouchableOpacity
-        activeOpacity={1}
-        style={GlobalStyles.nav_headerLeft_touch}
-        onPress={() => { navigation.goBack() }}>
-        <View style={GlobalStyles.nav_headerLeft_view} />
-      </TouchableOpacity>
-    ),
+
   });
 
   constructor(props) {
@@ -83,11 +71,9 @@ class ReviseBankCar extends Component {
 
     let params = new FormData();
     params.append("ac", "getBankCardList");
-
     var promise = GlobalBaseNetwork.sendNetworkRequest(params);
     promise
       .then((responseData) => {
-        // console.log('responseData',responseData);
         if (responseData.msg == 0) {
           this.setState({
             dataSource: responseData.data,
@@ -175,6 +161,7 @@ class ReviseBankCar extends Component {
         <View style={styles.countView}>
           <CusBaseText style={styles.prex}>银行账号：</CusBaseText>
           <TextInput
+              editable={false}
             returnKeyType="done"
             underlineColorAndroid='transparent'
             defaultValue={accountNumber}
@@ -267,21 +254,14 @@ class ReviseBankCar extends Component {
       return;
     }
 
-    if (!Regex(accountNumber.trim(), "bankcard")) {
-      Alert.alert('该银行账号不合法！请重新输入!');
-      return;
-    }
-
     this._getUserInfo();
   }
 
   _getUserInfo() {
-
-      var loginObject = global.UserLoginObject;
-      this._postBankData(loginObject.Uid, loginObject.Token);
+      this._postBankData();
   }
 
-  _postBankData = (uid, token) => {
+  _postBankData = () => {
 
     let params = new FormData();
     params.append("ac", "updateUserBankCard");
@@ -295,12 +275,9 @@ class ReviseBankCar extends Component {
     params.append("more_bank",accountBank=='-1'?accountBankName:'');
     params.append("tk_pass", this.accountPwd);
     params.append("sessionkey", global.UserLoginObject.session_key);
-
     var promise = GlobalBaseNetwork.sendNetworkRequest(params);
     promise
       .then((responseData) => {
-
-        // console.log('responseData',responseData);
 
         if (responseData.msg == 0) {
           global.BankListArray[this.props.navigation.state.params.bankArray.index].value.address = accountBankAdress;
@@ -396,7 +373,6 @@ const styles = StyleSheet.create({
     flex: 0.2,
     justifyContent: 'center',
     height: 44,
-    // backgroundColor:'red'
   },
 
 });

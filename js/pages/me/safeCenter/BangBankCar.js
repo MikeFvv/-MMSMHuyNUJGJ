@@ -1,25 +1,18 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Image,
   FlatList,
   ActivityIndicator,
   Alert,
-    StatusBar,
   Dimensions,
   ImageBackground,
-  DeviceEventEmitter,
   Modal,
   TextInput
 } from "react-native";
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
-
 
 import BaseNetwork from "../../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../../skframework/tools/Adaption"; //字体适配
@@ -48,11 +41,6 @@ export default class BangBankCar extends Component {
       jiaoyiPass:'',
     };
   }
-
-  componentDidMount() {
-   
-  }
-
 
   //请求数据的圈圈
   renderLoadingView() {
@@ -156,8 +144,8 @@ export default class BangBankCar extends Component {
             backIcon =  require('./img/ic_LpufaBank.png');
 
           }else if (item.item.value.bank_typename == "广发银行") {
-            backBGImage =  require('./img/ic_pufaBank.png');
-            backIcon =  require('./img/ic_LpufaBank.png');
+            backBGImage =  require('./img/ic_guangdaBank.png');
+            backIcon =  require('./img/ic_LguangfaBank.png');
 
           }else if (item.item.value.bank_typename == "平安银行") {
             backBGImage =  require('./img/ic_pinganBank.png');

@@ -105,8 +105,6 @@ export default class saicheRoot extends Component {
 
             this.setState({
                 resultArr: ballNewArr,
-                isStartAnimatedCar:ballNewArr.length == 0 ? true : false,  //是否开始动画
-                isShowBackTimeView:ballNewArr.length == 0 ? false : true,  //是否显示倒计时背景图
             });
         }
     }
@@ -250,7 +248,17 @@ export default class saicheRoot extends Component {
 
           if (this.state.isStartAnimatedCar == false && this.lateShowResult == true) {
 
-              let rankCarStr = `${this.state.resultArr[0]},${this.state.resultArr[1]},${this.state.resultArr[2]},${this.state.resultArr[3]},${this.state.resultArr[4]},${this.state.resultArr[5]},${this.state.resultArr[6]},${this.state.resultArr[7]},${this.state.resultArr[8]},${this.state.resultArr[9]}`;
+              let rankCarStr = '';
+
+              if (this.state.resultArr.length != 0){
+
+                  rankCarStr = `${this.state.resultArr[0]},${this.state.resultArr[1]},${this.state.resultArr[2]},${this.state.resultArr[3]},${this.state.resultArr[4]},${this.state.resultArr[5]},${this.state.resultArr[6]},${this.state.resultArr[7]},${this.state.resultArr[8]},${this.state.resultArr[9]}`;
+
+              }
+              else {
+                  rankCarStr = '1,2,3,4,5,6,7,8,9,10';
+              }
+
               PushNotification.emit('RacingCarRankNotification', rankCarStr);  //实时排名的字符串
               this.setState({paiming: rankCarStr});
 
@@ -315,7 +323,7 @@ export default class saicheRoot extends Component {
             timing(this.state.daoluAnimat,
                 {
                     toValue: 100, // 目标值
-                    duration: 2000, // 动画时间
+                    duration: 1900, // 动画时间
                     easing: Easing.linear // 缓动函数
 
                 }).start();
@@ -331,13 +339,13 @@ export default class saicheRoot extends Component {
                         easing: Easing.linear // 缓动函数
 
                     }).start();
-            },2000)
+            },1900)
 
             //延迟冲线的动画
             setTimeout(()=>{
                 this.lateShowResult = true;
                 this.setState({showEndLine:true});
-            },3900)
+            },3800)
 
             //显示赛果的动画
             setTimeout(() => {
@@ -403,7 +411,7 @@ export default class saicheRoot extends Component {
                        width: iponeXorSix?34.4:ipone5?30:35,  //图片宽高比  4：1
                        height: iponeXorSix?8.6:ipone5?7.5:8.25 + i * 0.25,
                        marginTop: -2.2,
-                       marginRight: 16 + Adaption.Width(3.5) * i,
+                       marginRight: 30 + Adaption.Width(3.5) * i,
                    }}
 
                    result={this.state.resultArr}
@@ -521,13 +529,16 @@ export default class saicheRoot extends Component {
                     />
 
                     {/*<SaiCheBack source={require('../img/carViewImg/beijing2.png')} duration={1000} style={{width:width,height:width*232/889,marginLeft:0,}} />*/}
+                    <View style = {{position:'absolute', right:2,top:5}}>
+                        {this.state.showBeginLine ? <Image style = {{width:40,height:20, resizeMode:'contain'}} source={this.state.countDownText <= 1 ? require('../../img/carViewImg/greenLight.png') : require('../../img/carViewImg/redLight.png')}/> : null}
+                    </View>
 
                     <View style={{alignItems: 'flex-end', position: 'absolute', left: 0, top: iponeXorSix? 54:ipone5?47:60, width: width}}>
 
                         {this.state.showBeginLine ? <Image source={require('../../img/carViewImg/qidian.png')} style={{
                             position: 'absolute',
                             top: iponeXorSix ? -4:ipone5 ? -3:-5,
-                            right: 45,
+                            right: 60,
                             width: iponeXorSix ?45:ipone5?36:50,  //图片宽高比2：3
                             height: iponeXorSix ? 68 :ipone5?55:75,
                             bottom: 0,
@@ -537,7 +548,7 @@ export default class saicheRoot extends Component {
                         {this.state.showEndLine ? <Image source={require('../../img/carViewImg/zhongdian.png')} style={{
                             position: 'absolute',
                             top: iponeXorSix?-20:ipone5?-17:-22,
-                            left: 45,
+                            left: 40,
                             width: iponeXorSix? 56:ipone5?46:62,  //图片宽高比216 × 336  = 2:3
                             height: iponeXorSix?85:ipone5?70:93,
                             bottom: 0,
@@ -548,8 +559,8 @@ export default class saicheRoot extends Component {
                     {this.state.isShowBackTimeView == true ? <ImageBackground style={{
                         position: 'absolute',
                         top: Adaption.Height(40),
-                        left: SCREEN_WIDTH / 2 - 120,
-                        width: 240,
+                        left: SCREEN_WIDTH / 2 - 100,
+                        width: 200,
                         height: 60,
                         flexDirection:'row',
                         alignItems:'center',

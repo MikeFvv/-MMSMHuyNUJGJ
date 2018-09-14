@@ -14,12 +14,10 @@ import {
 
 import moment from 'moment';
 import Picker from 'react-native-picker';
-import DrawalSelectBankList from '../drawalCenter/DrawalSelectBankList';
 
 class BankTransferInfo extends Component {
 
 	static navigationOptions = ({ navigation }) => ({
-
 		header: (
 			<CustomNavBar
 				centerText={"银行转账"}
@@ -37,8 +35,6 @@ class BankTransferInfo extends Component {
 
 		this.state = {
 			storageBank: null,
-			bankList: [],
-			visible: false,
 			storageTime: moment().format('YYYY-MM-DD HH:mm'),
 		};
 		this.loginObject = null;
@@ -58,49 +54,9 @@ class BankTransferInfo extends Component {
 	}
 
 	componentDidMount() {
-
 		global.BankTransferInfoRouteKey = this.props.navigation.state.key;
-
 		this.loginObject = global.UserLoginObject;
-		// this.storageName = this.loginObject.Real_name;
-
-		if (global.bankList.length <= 0) {
-			this._fetchBankList();//请求银行卡列表
-		} else {
-			this.setState({
-				bankList: global.bankList,
-			});
-		}
-
 	}
-
-	_fetchBankList() {
-
-		let params = new FormData();
-		params.append("ac", "getBankCardList");
-
-		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-		promise
-			.then((responseData) => {
-
-				if (responseData.msg == 0) {
-					this.setState({
-						bankList: responseData.data,
-					});
-				} else {
-					if (responseData.param) {
-						Alert.alert(responseData.param);
-					}
-				}
-
-			})
-			.catch((err) => {
-				if (err && typeof (err) === 'string' && err.length > 0) {
-					this.refs.LoadingView && this.refs.LoadingView.showFaile(err);
-				}
-			})
-	}
-
 
 	_showTimePicker = () => {
 
@@ -197,7 +153,6 @@ class BankTransferInfo extends Component {
 				keyboardDismissMode={global.iOS ? 'on-drag' : 'none'}
 				style={styles.container}>
 
-
 				<View style={styles.titleView}>
 					<Image
 						style={styles.headImageViewStyle}
@@ -284,7 +239,6 @@ class BankTransferInfo extends Component {
 					</View>
 				</View>
 
-
 				<View style={styles.titleView}>
 					<Image
 						style={styles.headImageViewStyle}
@@ -328,21 +282,6 @@ class BankTransferInfo extends Component {
 					<CusBaseText style={styles.payText}>我已转账</CusBaseText>
 				</TouchableOpacity>
 
-				<DrawalSelectBankList
-					dataSource={this.state.bankList}
-					visible={this.state.visible}
-					onCancel={() => {
-						this.setState({
-							visible: false,
-						});
-					}}
-					onPress={(item) => {
-						this.setState({
-							visible: false,
-							storageBank: item,
-						});
-					}}
-				/>
 				<LoadingView ref="LoadingView" />
 			</ScrollView>
 		);
@@ -360,37 +299,31 @@ class BankTransferInfo extends Component {
 			this.refs.LoadingView && this.refs.LoadingView.showFaile('请填写入款人姓名');
 			return;
 		}
-
 		this._postBankInfo();
 	}
 
 	_postBankInfo = () => {
 
 		this.refs.LoadingView && this.refs.LoadingView.showLoading('loading');
-
 		let params = new FormData();
-
 		params.append("uid", this.loginObject.Uid);
 		params.append("token", this.loginObject.Token);
 		params.append('sessionkey', this.loginObject.session_key);
 		params.append("ac", "submitPayCompany");
-
 		params.append("pay_id", this.bankItem.id); //我方银行卡id
 		params.append("price", this.storageMoney); //用户存入的金额
 		params.append("time", this.state.storageTime);//存款人存款的时间,直接传时间格式
 		params.append("card_name", this.storageName.trim()); //存款人姓名或持卡人姓名
 
-		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+		let promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
 			.then((response) => {
-
 				if (response.msg == 0) {
 					this.refs.LoadingView && this.refs.LoadingView.cancer();
 					this.props.navigation.navigate('RechargeSubmit', { recharNumber: this.storageMoney, order: response.data.order });
 				} else {
 					this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
 				}
-
 			})
 			.catch((err) => {
 				if (err && typeof (err) === 'string' && err.length > 0) {

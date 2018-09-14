@@ -68,9 +68,9 @@ export default class PK10NiuNiuBottomView extends Component {
                </View>
             </View>
             <View style = {{height: 45, backgroundColor: '#434343', flexDirection: 'row'}}>
-                <TouchableOpacity onPress = {() => {this.props.clearBallsClick ? this.props.clearBallsClick() : null}} activeOpacity={0.7} style = {{flex:0.25,flexDirection:'row', alignItems:'center'}}>
-                    <Image style = {styles.newBottomImage} source = {require('../../../img/ic_buyLotClear.png')} />
-                    <CusBaseText style = {styles.newBottomText}>清空</CusBaseText>
+                <TouchableOpacity onPress = {() => {this.props.MoreFuctionClick ? this.props.MoreFuctionClick() : null}} activeOpacity={0.7} style = {{flex:0.25,flexDirection:'row', alignItems:'center'}}>
+                    <Image style = {styles.newBottomImage} source = {require('../../../img/ic_tzMore.png')} />
+                    <CusBaseText style = {styles.newBottomText}>更多</CusBaseText>
                 </TouchableOpacity>
                 <View style = {{marginTop:5, width:1, height:35, backgroundColor:'#525252'}}/>
                 <View style = {{flex:0.5, alignItems:'center', justifyContent:'center'}}>
@@ -118,6 +118,6 @@ const styles = StyleSheet.create({
     newBottomText:{
         color:'white',
         fontSize:Adaption.Font(18,16),
-        marginLeft:5
+        marginLeft:10
     },
 })

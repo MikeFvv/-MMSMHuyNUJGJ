@@ -40,33 +40,26 @@ export default {
         enParams.append("p", encryptPar);
 
         return new Promise(function (resolve, reject) {
-
-            // GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex++);
             // fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1], {
             fetch(urlPath ? urlPath + '/' + params._parts[0][1] + '/iOS' : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1] + '/iOS', {
                 method: 'POST',
                 headers: {
                     'BXVIP-UA': 'ios',
                 },
-                // body: params, // 参数
                 body: enParams, // 参数
                 timeout: 15, // 超时了
             })
                 .then((response) => response.json())
                 .then((responseData) => {
-
                     if (responseData.msg == 40000) {
-
-                        console.log(params);
-
-                        PushNotification.emit('ServerLoginOutNotification');  //任何接口返回40000,都踢下线
+                        PushNotification.emit('ServerLoginOutNotification');  //任何接口返回4000,都踢下线
                     }
-
+                    if (responseData.msg == 40020) {
+                        PushNotification.emit('IPLimitNotification',responseData.data);  //40020,IP限制
+                    }
                     resolve(responseData);
-
                 })
                 .catch((err) => {
-
 
                     global.GlobalLineIPIndex = global.GlobalLineIPIndex + 1;
                     GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex);
@@ -86,14 +79,11 @@ export default {
                             }
                             else {
                                 bodygroup = parameter + '=' + value + '&'
-
                             }
                         }
                         bodystr += bodygroup;
                     }
-
-                    { that.sendGrayLog(err, GRAYLOG_ERROR, bodystr) };
-
+                    {that.sendGrayLog(err, GRAYLOG_ERROR, bodystr)}
                     reject(err);
                 });
         });

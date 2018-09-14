@@ -615,7 +615,7 @@ export default class Pk10NiuNiuOpenInfoView extends Component{
             if (this.isFreshOpenReward == false){
                 this.isFreshOpenReward = true;
 
-                setTimeout(() => {this._fetchOpenInfoData(this.state.tag);}, 5000);
+                setTimeout(() => {this._fetchOpenInfoData(this.state.tag);}, 9000);
             }
 
              return <View style = {{flex:0.7, alignItems:'center', justifyContent:'center', flexDirection:'row'}}>

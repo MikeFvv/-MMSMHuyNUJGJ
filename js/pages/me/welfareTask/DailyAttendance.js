@@ -418,7 +418,7 @@ export default class DailyAttendance extends Component {
            累计签到奖励
          </CusBaseText>
          <TouchableOpacity activeOpacity={1} style = {{flex:0.35}} onPress={() => navigate('LiShiDailyAtten')}>
-            <CusBaseText style = {{fontSize:14,color:rgb(72,159,229),textAlign:'center',marginRight:5}}>
+            <CusBaseText style = {{fontSize:14,color:'rgb(72,159,229)',textAlign:'center',marginRight:5}}>
                 查看领取记录 >
              </CusBaseText>
           </TouchableOpacity>

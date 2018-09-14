@@ -22,17 +22,15 @@ export default class NavStyle extends Component {
 
     static defaultProps = {
         backgroundColor: 'white',
-        fontSize: '18',
+        fontSize: 18,
     };
 
     constructor(props) {
         super(props);
-
         this.animatedValue = new Animated.Value(0);
     }
 
     _createLeftNavView(){
-
 
         if (this.props.leftText != ''){
             return (<CusBaseText style={styles.leftStyle} onPress={() =>
@@ -110,25 +108,34 @@ export default class NavStyle extends Component {
 
         return (
             <View style={[styles.container, { backgroundColor: this.props.backgroundColor }]}>
+
                 {this._createLeftNavView()}
                 <View style={[styles.imageLogoStyle]}></View>
-
-
-
                 {this.props.rightText != '注册' ? (<CusBaseText style={[styles.rightStyle, { fontSize: this.props.fontSize, }]} adjustFontSizeToFit={true} onPress={() => this.props.rightClick()}>
-                    ￥: <CusBaseText style = {{fontSize: this.props.fontSize, color:'#fff45c'}}>
-                    {this.props.rightText}
-                </CusBaseText>元
+                    <CusBaseText style = {{fontSize: this.props.fontSize, color:'#fff45c'}}>
+                        {this._rightText()}
+                </CusBaseText>
                 </CusBaseText>) : (<CusBaseText style={[styles.rightStyle, { fontSize: this.props.fontSize }]} adjustFontSizeToFit={true} onPress={() => this.props.rightClick()}>
                     注册
                 </CusBaseText>)}
-                <View style={{position:'absolute',flexDirection:'row',width:WIDTH*0.4 ,left:(WIDTH -WIDTH*0.4)/2.0,alignItems:'center',justifyContent:'center'}}><Image style={[styles.imageLogoStyle2]}
-                                                                                                                                       source={this.props.homeNavLogo != '' ? { uri: this.props.homeNavLogo } : ''}
-                /></View>
+
+                <View style={{position:'absolute',flexDirection:'row',width:WIDTH*0.4 ,left:(WIDTH -WIDTH*0.4)/2.0,alignItems:'center',justifyContent:'center'}}>
+                    <Image style={[styles.imageLogoStyle2]}
+                           source={this.props.homeNavLogo != '' ? { uri: this.props.homeNavLogo } : ''}
+                    />
+                </View>
 
             </View>
         );
     }
+
+    _rightText = () => {
+        if (this.props.hiddenText) {
+            return ''
+        }
+        return '￥: '+(this.props.rightText?this.props.rightText:'')+'元'
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -137,12 +144,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     leftStyle: {
-        // backgroundColor: 'blue',
         marginTop: height == 812 ? 44 : 20,
         paddingLeft: 15,
-        // marginLeft: 15,
-        // alignItems: 'center',
-        // justifyContent: 'center',
         alignSelf: 'center',
         color: 'white',
         fontSize: 18,
@@ -151,9 +154,6 @@ const styles = StyleSheet.create({
     rightStyle: {
         marginTop: height == 812 ? 44 : 20,
         paddingRight: 10,
-        // marginRight: 15,
-        // alignItems: 'flex-end',
-        // justifyContent: 'flex-end',
         alignSelf: 'center',
         textAlign: 'right',
         color: 'white',
@@ -171,14 +171,11 @@ const styles = StyleSheet.create({
         height: 44,
         flex:0.36
     },
-
     imageLogoStyle2: {
-        // backgroundColor: 'red',
         marginTop: height == 812 ? 44 : 20,
         width: 170,
         height: 44,
         resizeMode: 'contain',
-        // flex:0.36
     },
 
 });

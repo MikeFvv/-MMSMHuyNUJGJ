@@ -507,7 +507,8 @@ export default class FBShopCarList extends Component {
         params.append('token', global.UserLoginObject.Token);
         params.append('uid', global.UserLoginObject.Uid);
         params.append('sessionkey', global.UserLoginObject.session_key);
-        params.append('game_type', this.props.navigation.state.params.gameType);
+        params.append('game_type', this.props.navigation.state.params.gameType); //gameType 0 默认滚球,1今日，2早盘
+        params.append('play_group',  this.props.navigation.state.params.playgroup == 1 ? 4 :  this.props.navigation.state.params.playgroup == 2 ? 5 : this.props.navigation.state.params.playgroup); //playgroup 0让球，4综合过关,5冠军
         params.append('payment_methods', 0);  //默认余额支付
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
@@ -517,6 +518,7 @@ export default class FBShopCarList extends Component {
                 this.refs.LoadingView && this.refs.LoadingView.dissmiss();
 
                 if (responseData.msg == 0 && responseData.data){
+                    global.UserLoginObject.TotalMoney = responseData.data.price;
                     PushNotification.emit('FBShopCarXiaZhuSuccessNotification');  //下注成功发出通知
                     PushNotification.emit('ClearFootBallGameViewBallNotification');//发出通知清空界面
                     this.props.navigation.goBack();

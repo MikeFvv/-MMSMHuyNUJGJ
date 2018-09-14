@@ -231,7 +231,7 @@ export default class AnimitView extends Component {
 
                 if (Object.values(this.state.animi)[0][0]._parent._value) {
                     this.lastSpeed = Object.values(this.state.animi)[0][0]._parent._value;
-                    let randomSpeed = Math.random() * Adaption.Width(150) + 30;
+                    let randomSpeed = Math.random() * Adaption.Width(120) + 20;
 
                     if (randomSpeed > this.lastSpeed) {
                         let penhuo = ((randomSpeed - this.lastSpeed) / this.defaultDistance);

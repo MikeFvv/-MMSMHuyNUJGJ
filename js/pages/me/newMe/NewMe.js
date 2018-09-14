@@ -15,18 +15,17 @@ import {
 import Toast, { DURATION } from 'react-native-easy-toast'
 import MyInfo from "../myinformation/MyInfo";
 
-//定义一个数组初始化按钮的图片路径
-// let personListImageArr = [ require('./img/ic_newme_winRecord.png'), require('./img/ic_newme_touzhuRecord.png'),
-//     require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
-//     require('./img/ic_newme_welfaTask.png'), require('./img/ic_newme_perMeagse.png'),
-//     require('./img/ic_newme_safeCenter.png'), require('./img/ic_feedBack.png'), require('./img/ic_newme_moreSetting.png')];
 
-//定义一个数组初始化按钮的图片路径
+//定义一个数组初始化按钮的图片路径(包含时时返水)
 let personListImageArr = [ require('./img/ic_newme_winRecord.png'), require('./img/ic_newme_touzhuRecord.png'),
-    require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_Vip.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
+    require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_Vip.png'),require('./img/ic_newme_ssReturnWater.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
     require('./img/ic_newme_welfaTask.png'), require('./img/ic_newme_perMeagse.png'),
     require('./img/ic_newme_safeCenter.png'), require('./img/ic_feedBack.png'), require('./img/ic_newme_moreSetting.png')];
 
+// let personListImageArr = [ require('./img/ic_newme_winRecord.png'), require('./img/ic_newme_touzhuRecord.png'),
+//     require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_Vip.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
+//     require('./img/ic_newme_welfaTask.png'), require('./img/ic_newme_perMeagse.png'),
+//     require('./img/ic_newme_safeCenter.png'), require('./img/ic_feedBack.png'), require('./img/ic_newme_moreSetting.png')];
 
 
 
@@ -64,13 +63,21 @@ export default class NewMe extends Component {
 
     componentDidMount() {
 
-        //初始化自定义数组
+        //包含时时返水的数组
         let itemList = [{key:0, value:{title:'中奖记录'}},
             {key:1, value:{title:'投注记录'}}, {key:2, value:{title:'账户明细'}},
-            {key:3, value:{title:'VIP等级'}}, {key:4, value:{title:'现金交易'}}, {key:5, value:{title:'代理中心'}},
-            {key:6, value:{title:'福利任务'}}, {key:7, value:{title:'个人消息'}},
-            {key:8, value:{title:'安全中心'}}, {key:9, value:{title:'意见反馈'}},
-            {key:10, value:{title:'更多设置'}}, {key:11, value:{title:''}}, {key:12, value:{title:''}}];
+            {key:3, value:{title:'VIP等级'}}, {key:4, value:{title:'现金交易'}}, {key:5, value:{title:'时时返水'}}, {key:6, value:{title:'代理中心'}},
+            {key:7, value:{title:'福利任务'}}, {key:8, value:{title:'个人消息'}},
+            {key:9, value:{title:'安全中心'}}, {key:10, value:{title:'意见反馈'}},
+            {key:11, value:{title:'更多设置'}}, ];
+
+        //初始化自定义数组
+        // let itemList = [{key:0, value:{title:'中奖记录'}},
+        //     {key:1, value:{title:'投注记录'}}, {key:2, value:{title:'账户明细'}},
+        //     {key:3, value:{title:'VIP等级'}}, {key:4, value:{title:'现金交易'}},  {key:6, value:{title:'代理中心'}},
+        //     {key:7, value:{title:'福利任务'}}, {key:8, value:{title:'个人消息'}},
+        //     {key:9, value:{title:'安全中心'}}, {key:10, value:{title:'意见反馈'}},
+        //     {key:11, value:{title:'更多设置'}}, {key:12, value:{title:''}}];
 
         //根据sysinfo 接口的 cash_status 字段显示或隐藏现金交易入口
         if (GlobalConfig.userData.cash_status == '0'){
@@ -352,6 +359,7 @@ export default class NewMe extends Component {
             params.append("uid", global.UserLoginObject.Uid);
             params.append("token", global.UserLoginObject.Token);
             params.append('sessionkey', global.UserLoginObject.session_key);
+            params.append('click','1');
             var promise = GlobalBaseNetwork.sendNetworkRequest(params);
             promise
                 .then(response => {
@@ -405,7 +413,7 @@ export default class NewMe extends Component {
         let rowHeight = (SCREEN_HEIGHT - headHeight - chaHeight)/4;
 
         //空白区域不能点击
-        return <TouchableOpacity onPress = {() => {item.index <= 10 ? this._clickMeBtn(item, navigate) : null}} activeOpacity={1} style = {{borderRightWidth:1, borderBottomWidth:1, borderColor:'#f3f3f3',justifyContent:'center', alignItems:'center', width:SCREEN_WIDTH/3, height:rowHeight, backgroundColor:'#fff'}}>
+        return <TouchableOpacity onPress = {() => {item.index <= 11 ? this._clickMeBtn(item, navigate) : null}} activeOpacity={1} style = {{borderRightWidth:1, borderBottomWidth:1, borderColor:'#f3f3f3',justifyContent:'center', alignItems:'center', width:SCREEN_WIDTH/3, height:rowHeight, backgroundColor:'#fff'}}>
             <View style = {{flexDirection:'row'}}>
                 <Image style = {{width:23, height:23}} source={personListImageArr[item.index]}/>
                 {item.item.value.title == '个人消息'? (this.state.messageArray != 0? <View style = {{backgroundColor:'red', width:6, height:6, borderRadius:3}}/> : null):null}
@@ -421,7 +429,7 @@ export default class NewMe extends Component {
     }
 
     _clickMeBtn(item, navigate) {
-
+        console.log(item,'好不好',this.state.is_GuestShiWan);
         //如果点击的是number类型，则是上面的按钮
         if (typeof(item) == 'number'){
 
@@ -631,7 +639,22 @@ export default class NewMe extends Component {
 
                                     navigate('MyInfo',{switchSegment:true});
                                 }
-                                
+
+                            }  else if (item.item.value.title == '时时返水'){
+
+                                if (global.UserLoginObject.rebate == 1){
+
+                                    navigate('SsReturnWater', {title:'时时返水',});
+                                }
+                                else {
+                                    Alert.alert(
+                                        '温馨提示',
+                                        '时时返水暂未开放',
+                                        [
+                                            {text: '确定', onPress: () => {}},
+                                        ]
+                                    )
+                                }
                             }
                         }
                     }

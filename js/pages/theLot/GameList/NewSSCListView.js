@@ -251,8 +251,7 @@ class NewSSCListView extends Component {
 
           let sunSize = xyncAddNum  <=84 ? '小' :'大';
           let sunSingle = xyncAddNum %2 != 0 ? '单' :"双";
-          let aGe = `${xyncAddNum}`.slice('');
-          let sunGe = aGe[0] <=4 ? '尾小':'尾大'; 
+          let sunGe = xyncAddNum % 10 <=4 ? '尾小':'尾大';  //拿到和值个位数判断尾大尾小
           let aTiger = allBallsArr[0] < allBallsArr[7] ? '虎':'龙';
           let titleArr = [xyncAddNum,sunSize,sunSingle,sunGe,aTiger];
              

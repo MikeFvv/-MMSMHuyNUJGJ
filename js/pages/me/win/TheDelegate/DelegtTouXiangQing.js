@@ -54,11 +54,12 @@ export default class DelegtTouXiangQing extends Component {
    
     let kaiJiangBallsArr = this.state.detialArray.value.kj_balls.split(' ')
     
-    if (this.state.detialArray.value.game_name == '幸运农场') {
-      return (
-        this._fruitSvegetables(kaiJiangBallsArr)
-      )
-    } else if (this.state.detialArray.value.game_name == '经典梯子') {
+    // if (this.state.detialArray.value.game_name == '幸运农场') {
+    //   return (
+    //     this._fruitSvegetables(kaiJiangBallsArr)
+    //   )
+    // } else
+    if (this.state.detialArray.value.game_name == '经典梯子') {
       return (
         this._tzyxTiZiView(kaiJiangBallsArr)
       )
@@ -183,36 +184,39 @@ export default class DelegtTouXiangQing extends Component {
     let singleStrColor = parseInt(kaiJiangBallsArr[2], 10) == 0 ? '#e33939' : '#00a0e9';
 
     return (
-      <View style={{ flexDirection: 'row', }}>
+        <View style={{ flexDirection: 'row', }}>
 
-        <View style={{
-          width: 35 * KAdaptionWith,
-          height: 35 * KAdaptionWith, backgroundColor: '#dcdcdc', borderRadius: 35 * KAdaptionWith * 0.5,
-        }}>
-          <CusBaseText style={{ color: '#626262', marginTop: 6 * KAdaptionWith }}>
-            {leftRight}
-          </CusBaseText>
+          <View style={{
+              width: 35 * KAdaptionWith,
+              height: 35 * KAdaptionWith, backgroundColor: '#dcdcdc', borderRadius: 35 * KAdaptionWith * 0.5,
+              alignItems:'center', justifyContent:'center'
+          }}>
+            <CusBaseText style={{ color: '#626262' }}>
+                {leftRight}
+            </CusBaseText>
+          </View>
+
+          <View style={{
+              width: 35 * KAdaptionWith,
+              height: 35 * KAdaptionWith, backgroundColor: '#626262', borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith,
+              alignItems:'center', justifyContent:'center'
+          }}>
+            <CusBaseText style={{ color: 'white' }}>
+                {ladderCount}
+            </CusBaseText>
+          </View>
+
+          <View style={{
+              width: 35 * KAdaptionWith,
+              height: 35 * KAdaptionWith, backgroundColor: singleStrColor, borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith,
+              alignItems:'center', justifyContent:'center'
+          }}>
+            <CusBaseText style={{ color: 'white' }}>
+                {singleStr}
+            </CusBaseText>
+          </View>
+
         </View>
-
-        <View style={{
-          width: 35 * KAdaptionWith,
-          height: 35 * KAdaptionWith, backgroundColor: '#626262', borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith
-        }}>
-          <CusBaseText style={{ color: 'white', marginTop: 6 * KAdaptionWith }}>
-            {ladderCount}
-          </CusBaseText>
-        </View>
-
-        <View style={{
-          width: 35 * KAdaptionWith,
-          height: 35 * KAdaptionWith, backgroundColor: singleStrColor, borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith
-        }}>
-          <CusBaseText style={{ color: 'white', marginTop: 6 }}>
-            {singleStr}
-          </CusBaseText>
-        </View>
-
-      </View>
     );
   }
   //头部视图

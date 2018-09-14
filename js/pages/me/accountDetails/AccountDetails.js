@@ -358,7 +358,7 @@ export default class AccountDetails extends Component {
                 />
                 {this.state.showPop ?
                     <View style={{ position: 'absolute', top: 0, left: 0 }}>
-                        <MenuPop_Window height={200} show={this.state.showPop} closeModal={(show) => {
+                        <MenuPop_Window height={240} show={this.state.showPop} closeModal={(show) => {
                             this.setState({ showPop: show })
                         }}
                             clickButtonCallback={(data) => {

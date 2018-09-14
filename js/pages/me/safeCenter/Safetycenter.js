@@ -2,20 +2,13 @@ import React, {Component} from 'react';
 import {
     View,
     StyleSheet,
-    ScrollView,
-    Text,
     Image,
     TouchableOpacity,
-    Alert,
-    StatusBar,
     Dimensions,
     ImageBackground,
-
 } from 'react-native';
 
-const {width, height} = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
+const {width, } = Dimensions.get("window");
 import BaseNetwork from "../../../skframework/component/BaseNetwork"; //网络请求
 export default class Safetycenter extends Component {
 

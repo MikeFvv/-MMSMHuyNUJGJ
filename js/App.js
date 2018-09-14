@@ -43,7 +43,11 @@ import MoreNotification from './pages/home/MoreNotification'; //公告
 import TouZhuRecord from './pages/home/TouZhuRecord'; //投注记录&购彩记录
 import ForgetPWD from './pages/login/forgetpwd/Forgetpwd';  //忘记密码
 import TouZhuZuCaiDanZhuDetial from './pages/home/TouZhuZuCaiDanZhuDetial'; //投注足球单注详情
-
+import HomeComputMGGameView from './pages/home/HomeComputMGGameView'; //电子游戏
+import HomeLandComputGameView from './pages/home/HomeLandComputGameView'; //电子游戏
+import HomeMoreComputGameView from './pages/home/HomeMoreComputGameView'; //电子游戏
+import HomeSearchMGGameView from './pages/home/HomeSearchMGGameView'; //搜索电子游戏
+import HomeDianZiGameView from './pages/home/HomeDianZiGameView'; 
 import FindPWD from './pages/login/forgetpwd/Findpassword';   //密码找回
 import BuyLotDetail from './pages/buyLot/buyLotDetail/BuyLotDetail';
 import PersonalMessage from './pages/home/PersonalMessage'; //个人消息
@@ -149,9 +153,16 @@ import AllenDragShortCutMainView from './allenPlus/AllenDragShortCutMainView';
 import FBShopCarView from './pages/buyLot/FootBall/fbShopCar/FBShopCarList'; //体彩购物车列表
 import FootballResult from './pages/buyLot/FootBall/Result/FootballResult';
 import FootballResultDetail from "./pages/buyLot/FootBall/Result/FootballResultDetail";
+import FootballPeilvCaculate from './pages/buyLot/FootBall/more/PeilvCaculateTable';  //足彩赔率计算表
 
 //新全部彩种界面
 import NewBuyLot from './pages/buyLot/NewBuyLot';
+
+//SsReturnWater时时返水
+import  SsReturnWater from './pages/me/more/SsReturnWater';
+
+// IP限制
+import IPLimit from "./pages/me/IPLimit";
 
 // 通过TabNavigator做路由映射
 const MainTab = TabNavigator({
@@ -350,6 +361,11 @@ const MainNav = StackNavigator({
     BindBankCard: { screen: BindBankCard },
     DrawalInfo: { screen: DrawalInfo },
     DrawalSubmit: { screen: DrawalSubmit },
+    HomeComputMGGameView: { screen: HomeComputMGGameView },
+    HomeLandComputGameView: { screen: HomeLandComputGameView },
+    HomeMoreComputGameView: { screen: HomeMoreComputGameView },
+    HomeSearchMGGameView: { screen: HomeSearchMGGameView },
+    HomeDianZiGameView: { screen: HomeDianZiGameView },
 
     //现金交易
     CashTrasaAcount: { screen: CashTrasaAcount },
@@ -410,6 +426,7 @@ const MainNav = StackNavigator({
     Screening : {screen: Screening },  // 筛选联赛
     FBShopCar : {screen: FBShopCarView}, //体彩购物车列表
     GameRulesHome: {screen: GameRulesHome},  // 足球玩法规则
+    PeilvCaculate: {screen: FootballPeilvCaculate},//足彩赔率计算表
 
 
     FootballResult:{screen:FootballResult}, //足球结果
@@ -422,6 +439,9 @@ const MainNav = StackNavigator({
 
     //新全部彩种
     NewBuyLot:{screen:NewBuyLot},
+
+    //时时返水
+    SsReturnWater:{screen:SsReturnWater},
     
 });
 

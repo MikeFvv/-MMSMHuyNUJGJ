@@ -184,7 +184,7 @@ class BuyLotDetail extends Component {
                 if (this.state.isShowShopAlertView == true){
 
                     this.setState({
-                        isShowShopAlertView:true,
+                        isShowShopAlertView:false,
                     })
                 }
 
@@ -985,15 +985,9 @@ class BuyLotDetail extends Component {
                         //每次回调传入号码和标题参数
                         this._caculateAllPlayGame(ballSelectDatas, this.state.currentPlayData, titleArr);
                     }}
-                    ClearBalls={() => {
-
-                        this.refs.Toast && this.refs.Toast.show('清空号码成功!', 1000);
-                        //只清空当前界面的号码
-                        PushNotification.emit('ClearAllBalls');
+                    MoreFuctionClick={()=>{
                         this.setState({
-                            pickerZhuShu: 0,
-                            totalPrice: 0.00,
-                            ballSelectData: {},
+                            showRoadModal: true,
                         })
                     }}
                     XiaZhuClick={(singlePrice) => {
@@ -1020,11 +1014,11 @@ class BuyLotDetail extends Component {
                             let zhushu = this.state.pickerZhuShu;
                             //没有选择号码时不能弹出视图
 
-                            if (parseInt(singlePrice, 10) != 0 && zhushu > 0){
+                            if (parseInt(singlePrice, 10) != 0 && zhushu > 0 && singlePrice != ''){
                                 let shopModelArr = this._handleTouZhuBalls((Number.parseInt || parseInt)(zhushu, 10) * parseInt(singlePrice), parseInt(singlePrice), zhushu);
                                 this._submitToTuoZhu(shopModelArr);
                             }
-                            else if (parseInt(singlePrice, 10) == 0){
+                            else if (parseInt(singlePrice, 10) == 0 || singlePrice == ''){
                                 Alert.alert('温馨提示', '金额不能为0元!', [{ text: '确定', onPress: () => { } }]);
                             }
                             else if (zhushu == 0){
@@ -1038,6 +1032,7 @@ class BuyLotDetail extends Component {
                 <Toast ref="Toast" position='center'/>
                 <LoadingView ref='LoadingView'/>
                 {this._countDownTimeView()}
+                {this._trend_RoadModal(1)}
             </View>
         }
         else if (this.state.current_js_tag == 'tzyx'){
@@ -1100,14 +1095,11 @@ class BuyLotDetail extends Component {
                 {this._lotteryTypeChange()}
                 {this._bottomToolView()}
                 {this._shopContenView()}
-                {this._trend_RoadModal()}
+                {this._trend_RoadModal(0)}
                 <Toast ref="Toast" position='center'/>
                 <LoadingView ref='LoadingView'/>
                 {this._countDownTimeView()}
             </View>
-        }
-        else {
-
         }
 
         return (
@@ -1330,7 +1322,7 @@ class BuyLotDetail extends Component {
                 <LoadingView ref='LoadingView'/>
                 {this._countDownTimeView()}
                 {this._isShowGuideView()} 
-                {this._trend_RoadModal()} 
+                {this._trend_RoadModal(0)}
             </View>
         );
     }
@@ -1529,9 +1521,10 @@ class BuyLotDetail extends Component {
     }
 
     // 点击弹出 走势和路纸图的model
-    _trend_RoadModal() {
+    _trend_RoadModal(type) {
         return(
             <TrendRoadModel
+                modelType={type}
                 isClose={this.state.showRoadModal}
                 close={() => {
                     this.setState({
@@ -1581,6 +1574,42 @@ class BuyLotDetail extends Component {
                     this.setState({
                         showRoadModal: false,
                     })
+                }}
+                touzhuRecord={()=>{
+
+                    if (global.UserLoginObject.Token == '') {
+
+                        this.setState({
+                            showRoadModal: false,
+                        })
+
+                        setTimeout(()=>{
+                            Alert.alert('提示', '您还未登录,请先去登录',
+                                [
+                                    {text: '取消', onPress: () => { }},
+                                    {text: '确定', onPress: () => {this.props.navigation.navigate('Login', {title: '登录', isBuy: true})}},
+                                ]
+                            )
+                        },100)
+                    } else {
+
+                        this.setState({
+                            showRoadModal: false,
+                        })
+
+                        //进入投注页面。如果选择了号码。则帮他清空。要不然倒计时弹窗会在别的页面弹出
+                        if (this.state.pickerZhuShu != 0) {
+
+                            PushNotification.emit('ClearAllBalls');
+                            this.setState({
+                                pickerZhuShu: 0,
+                                totalPrice: 0.00,
+                                ballSelectData: {},
+                            })
+                        }
+
+                        this.props.navigation.navigate('TouZhuRecord', {wanfa: 1});
+                    }
                 }}
             >
             </TrendRoadModel>

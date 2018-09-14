@@ -277,11 +277,6 @@ class BindBankCard extends Component {
 			this.refs.LoadingView && this.refs.LoadingView.showFaile('请输入4位交易密码');
 			return;
 		}
-	
-		if (!Regex(this.accountNumber.trim(), "bankcard")) {
-			this.refs.LoadingView && this.refs.LoadingView.showFaile('该银行账号不合法！请重新输入!');
-			return;
-		}
 
 		this._postBankData();
 	}

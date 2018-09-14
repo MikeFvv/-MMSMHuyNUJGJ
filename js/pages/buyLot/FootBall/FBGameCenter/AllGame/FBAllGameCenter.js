@@ -11,19 +11,19 @@ import {
     View,
     ScrollView,
     ActivityIndicator,
+    ImageBackground,
+    Image,
 } from 'react-native';
 import Toast, { DURATION } from 'react-native-easy-toast';
+import Moment from 'moment';
 
-import ItemView_HC_GL from './ItemView_HC_GL';
-import ItemView_1X2 from './ItemView_1X2';
-import ItemView_TCS from './ItemView_TCS';
-import ItemView_TG from './ItemView_TG';
-import ItemView_TGOE from './ItemView_TGOE';
-import ItemView_FLG from './ItemView_FLG';
-import ItemView_1X2GL from './ItemView_1X2GL';
-import ItemView_BTS from './ItemView_BTS';
 import FBGameBottom from './FBGameBottom';  // 底部
+import ItemView_LName_RPeilv from '../NewAllGame/ItemView_LNameRPeilv';  //左队名，右边赔率的视图
+import ItemView_HLRView from '../NewAllGame/ItemView_HaflView';  //左右对称视图,单个视图为左描述右赔率
+import ItemView_TCSView from '../NewAllGame/ItemView_TCSView';  //三列布局的视图
+import ItemView_GLTGOE from  '../NewAllGame/ItemView_GLTGOE';   //两列布局的视图
 import ScorceZHBottom from '../../footballTool/ScorceSpecailBottomView'; // 综合过关底部
+import PanKouChangeTool from  '../../footballTool/ScorcePanKouPeilvChange'; //盘口转换的工具类
 
 let lastTabIdx = -1;
 export default class FBAllGameCenter extends Component {
@@ -39,6 +39,8 @@ export default class FBAllGameCenter extends Component {
             sltBallData: [],  // 选择的号码, [字典]
             oldBallData: [],  // 上次选的
             allSltDic: props.superAllSltDic, // 综合过关 在进入所有玩法时 选择的号码数据。
+            beiginTime:'', //比赛开始的时间(非滚球时显示)
+            rollingTime:'',//滚球中的时间
         };
 
         lastTabIdx = props.tabIdx;
@@ -79,7 +81,7 @@ export default class FBAllGameCenter extends Component {
         if (lastTabIdx != nextProps.tabIdx) {
             lastTabIdx = nextProps.tabIdx;
 
-            if (nextProps.game_type == 3 && nextProps.superSltDic.d_key != null) {
+            if (nextProps.tabIdx == 1 && nextProps.superSltDic.d_key != null) {
                 this.showSuperDic = true;
                 this.state.oldBallData = [];
                 this.state.sltBallData = [];
@@ -117,17 +119,20 @@ export default class FBAllGameCenter extends Component {
         params.append("game_type", this.props.game_type);
         params.append("sport_key", 'FT');
         params.append("hg_id", this.props.hg_id);
-        params.append("play_group", this.props.tabIdx); // 0:所有盤口, 1:讓球 & 大小盤口, 2:上半場盤口, 3: 比分盤口, 4:主盤口, 5:進球盤口, 6:其他盤口
-
-        console.log('所有玩法请求 params == ', params);
+        params.append("play_group", 0); // 0:所有盤口, 1:讓球 & 大小盤口, 2:上半場盤口, 3: 比分盤口, 4:主盤口, 5:進球盤口, 6:其他盤口
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
             .then((response) => {
-                console.log('所有玩法请求', response);
+
                 if (response.msg == 0) {
+
+                    let newData = this._handleAllGamePanKou(response.data.bet_data);
+
                     this.setState({
-                        bet_data: response.data.bet_data,
+                        bet_data: newData,
+                        beiginTime:response.data.begin_time,
+                        rollingTime:response.data.rolling_time,
                         isLoading: false,
                         isHaveData: Object.keys(response.data.bet_data).length > 0 ? true : false,
                         isRefresh: refresh ? refresh : false,
@@ -172,7 +177,8 @@ export default class FBAllGameCenter extends Component {
         params.append('sessionkey', global.UserLoginObject.session_key);
         params.append('ver', global.VersionNum);
         params.append('payment_methods', 0);  //默认余额支付
-        params.append('game_type', this.props.game_type);
+        params.append('game_type', this.props.game_type); //gameType 0 默认滚球,1今日，2早盘
+        params.append('play_group',this.props.play_group); //playgroup 0让球，4综合过关,5冠军
         params.append('is_better', paramData.is_better ? 1 : 0);  // 接受最佳赔率
         params.append('data', JSON.stringify(paramData.data));
 
@@ -188,6 +194,7 @@ export default class FBAllGameCenter extends Component {
                 }
 
                 if (response.msg == 0 && response.data) {
+                    global.UserLoginObject.TotalMoney = response.data.price;
                     this.refs.Toast && this.refs.Toast.show('下注成功!', 1000);
                     
                     // 清空选号内容
@@ -218,6 +225,134 @@ export default class FBAllGameCenter extends Component {
             })
     }
 
+    //处理所有玩法的HC,HHC,GL,HGL的盘口的赔率
+    _handleAllGamePanKou(data){
+
+        if (Object.keys(data).length != 0){
+
+            let HCData = data.HC ? data.HC : null;
+            let HHCData = data.HHC ? data.HHC : null;
+            let GLData = data.GL ? data.GL : null;
+            let HGLData = data.HGL ? data.HGL : null;
+
+            //让分的盘口赔率处理
+            if (HCData){
+
+                let hchDataArr = HCData.H;
+                let hcvDataArr = HCData.V;
+
+                for (let i = 0 ; i < hchDataArr.length; i++){
+
+                    let hchModel = hchDataArr[i];
+
+                    hchModel.HK = hchModel.p; //让分HC主香港盘的赔率
+                    hchModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '印尼盘');//让分HC主印尼盘的赔率
+                    hchModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '马来盘');//让分HC主马来盘的赔率
+                    hchModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '欧洲盘');//让分HC主欧洲盘的赔率
+                }
+
+
+                for (let j = 0 ; j < hcvDataArr.length; j++){
+
+                    let hcvModel = hcvDataArr[j];
+
+                    hcvModel.HK = hcvModel.p; //让分HC客香港盘的赔率
+                    hcvModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '印尼盘');//让分HC客印尼盘的赔率
+                    hcvModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '马来盘');//让分HC客马来盘的赔率
+                    hcvModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '欧洲盘');//让分HC客欧洲盘的赔率
+                }
+            }
+
+            //半场让分的盘口赔率处理
+            if (HHCData){
+
+                let hhchDataArr = HCData.H;
+                let hhcvDataArr = HCData.V;
+
+                for (let i = 0 ; i < hhchDataArr.length; i++){
+
+                    let hchModel = hhchDataArr[i];
+
+                    hchModel.HK = hchModel.p; //让分HC主香港盘的赔率
+                    hchModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '印尼盘');//让分HC主印尼盘的赔率
+                    hchModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '马来盘');//让分HC主马来盘的赔率
+                    hchModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hchModel.p, '欧洲盘');//让分HC主欧洲盘的赔率
+                }
+
+
+                for (let j = 0 ; j < hhcvDataArr.length; j++){
+
+                    let hcvModel = hhcvDataArr[j];
+
+                    hcvModel.HK = hcvModel.p; //让分HC客香港盘的赔率
+                    hcvModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '印尼盘');//让分HC客印尼盘的赔率
+                    hcvModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '马来盘');//让分HC客马来盘的赔率
+                    hcvModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(hcvModel.p, '欧洲盘');//让分HC客欧洲盘的赔率
+                }
+            }
+
+            //大小的盘口赔率处理
+            if (GLData){
+
+                let glovDataArr = GLData.OV;
+                let glunDataArr = GLData.UN;
+
+                for (let i = 0 ; i < glovDataArr.length; i++){
+
+                    let glovModel = glovDataArr[i];
+
+                    glovModel.HK = glovModel.p; //让分HC主香港盘的赔率
+                    glovModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '印尼盘');//让分HC主印尼盘的赔率
+                    glovModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '马来盘');//让分HC主马来盘的赔率
+                    glovModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '欧洲盘');//让分HC主欧洲盘的赔率
+                }
+
+
+                for (let j = 0 ; j < glunDataArr.length; j++){
+
+                    let glunModel = glunDataArr[j];
+
+                    glunModel.HK = glunModel.p; //让分HC客香港盘的赔率
+                    glunModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '印尼盘');//让分HC客印尼盘的赔率
+                    glunModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '马来盘');//让分HC客马来盘的赔率
+                    glunModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '欧洲盘');//让分HC客欧洲盘的赔率
+                }
+
+            }
+
+            //半场大小的盘口赔率处理
+            if (HGLData){
+
+                let hglovDataArr = GLData.OV;
+                let hglunDataArr = GLData.UN;
+
+                for (let i = 0 ; i < hglovDataArr.length; i++){
+
+                    let glovModel = hglovDataArr[i];
+
+                    glovModel.HK = glovModel.p; //让分HC主香港盘的赔率
+                    glovModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '印尼盘');//让分HC主印尼盘的赔率
+                    glovModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '马来盘');//让分HC主马来盘的赔率
+                    glovModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glovModel.p, '欧洲盘');//让分HC主欧洲盘的赔率
+                }
+
+
+                for (let j = 0 ; j < hglunDataArr.length; j++){
+
+                    let glunModel = hglunDataArr[j];
+
+                    glunModel.HK = glunModel.p; //让分HC客香港盘的赔率
+                    glunModel.IND = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '印尼盘');//让分HC客印尼盘的赔率
+                    glunModel.MY = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '马来盘');//让分HC客马来盘的赔率
+                    glunModel.DEC = PanKouChangeTool.getScorcePankouChangePeilv(glunModel.p, '欧洲盘');//让分HC客欧洲盘的赔率
+                }
+            }
+        }
+
+        return data;
+    }
+
+
     _allGameView() {
 
         if (Object.keys(this.state.bet_data).length <= 0) {
@@ -236,57 +371,99 @@ export default class FBAllGameCenter extends Component {
         }
 
         let sltkey = this.state.sltBallData[0] ? this.state.sltBallData[0]['d_key'] : '';
-        if (this.props.game_type == 3 && showSuperD && this.props.superSltDic.d_key) {
+        if (this.props.tabIdx == 1 && showSuperD && this.props.superSltDic.d_key) {
             // 如果.superSltDic['d_key'] 的值存在，那就用它。
             sltkey = this.props.superSltDic.d_key;
         }
 
         return (
             <View>
-                {this._HC_GL('HC', old_keys, sltkey)}
-                {this._HC_GL('HHC', old_keys, sltkey)}
-                {this._HC_GL('GL', old_keys, sltkey)}
-                {this._HC_GL('HGL', old_keys, sltkey)}
-                {this._1X2('1X2', old_keys, sltkey)}
-                {this._1X2('H1X2', old_keys, sltkey)}
-                {this._TCS('TCS', old_keys, sltkey)}
-                {this._TCS('HTCS', old_keys, sltkey)}
-                {this._TG('TG', old_keys, sltkey)}
-                {this._TG('HTG', old_keys, sltkey)}
-                {this._TGOE('BTS', old_keys, sltkey)}
-                {this._TGOE('HBTS', old_keys, sltkey)}
-                {this._HC_GL('GLH', old_keys, sltkey)}
-                {this._HC_GL('GLV', old_keys, sltkey)}
-                {this._HC_GL('HGLH', old_keys, sltkey)}
-                {this._HC_GL('HGLV', old_keys, sltkey)}
-                {this._TGOE('TGOE', old_keys, sltkey)}
-                {this._TGOE('HTGOE', old_keys, sltkey)}
-                {this._FLG('FLG', old_keys, sltkey)}
-                {this._TGOE('HFT', old_keys, sltkey)}
-                {this._FLG('WM', old_keys, sltkey)}
-                {this._TGOE('DC', old_keys, sltkey)}
-                {this._1X2('CNS', old_keys, sltkey)}
-                {this._1X2('WTN', old_keys, sltkey)}
-                {this._1X2GL('1X2GL', old_keys, sltkey)}
-                {this._BTS('1X2BTS', old_keys, sltkey)}
-                {this._1X2GL('GLBTS', old_keys, sltkey)}
-                {this._FLG('1X2FG', old_keys, sltkey)}
-                {this._1X2('R2G', old_keys, sltkey)}
-                {this._1X2('R3G', old_keys, sltkey)}
-                {this._TGOE('HMG', old_keys, sltkey)}
-                {this._TGOE('HMG1x2', old_keys, sltkey)}
-                {this._1X2('SBH', old_keys, sltkey)}
-                {this._TGOE('FGM', old_keys, sltkey)}
-                {this._TGOE('TFG3W', old_keys, sltkey)}
-                {this._TGOE('TFG', old_keys, sltkey)}
-                {this._1X2GL('DCGL', old_keys, sltkey)}
-                {this._BTS('DCBTS', old_keys, sltkey)}
-                {this._FLG('DCFTS', old_keys, sltkey)}
-                {this._1X2GL('GLTGOE', old_keys, sltkey)}
-                {this._1X2GL('GLFTS', old_keys, sltkey)}
-                {this._1X2('WFB', old_keys, sltkey)}
-                {this._1X2('WEH', old_keys, sltkey)}
-                {this._1X2('WBH', old_keys, sltkey)}
+                {/*让球*/}
+                {this._LNameRPeilv('HC', old_keys, sltkey)}
+                {/*半场让球*/}
+                {this._LNameRPeilv('HHC', old_keys, sltkey)}
+                {/*大小*/}
+                {this._HaflView('GL', old_keys, sltkey)}
+                {/*半场大小*/}
+                {this._HaflView('HGL', old_keys, sltkey)}
+                {/*独赢*/}
+                {this._LNameRPeilv('1X2', old_keys, sltkey)}
+                {/*半场独赢*/}
+                {this._LNameRPeilv('H1X2', old_keys, sltkey)}
+                {/*波胆*/}
+                {this._TCSView('TCS', old_keys, sltkey)}
+                {/*半场波胆*/}
+                {this._TCSView('HTCS', old_keys, sltkey)}
+                {/*总进球数*/}
+                {this._GLTGOEView('TG', old_keys, sltkey)}
+                {/*半场总进球数*/}
+                {this._GLTGOEView('HTG', old_keys, sltkey)}
+                {/*双方球队进球*/}
+                {this._HaflView('BTS', old_keys, sltkey)}
+                {/*半场双方球队进球*/}
+                {this._HaflView('HBTS', old_keys, sltkey)}
+                {/*球队进球数: 主 - 大/小*/}
+                {this._HaflView('GLH', old_keys, sltkey)}
+                {/*球队进球数: 客 - 大/小*/}
+                {this._HaflView('GLV', old_keys, sltkey)}
+                {/*球队进球数: 主 - 大/小 - 上半场*/}
+                {this._HaflView('HGLH', old_keys, sltkey)}
+                {/*球队进球数: 客 - 大/小 - 上半场*/}
+                {this._HaflView('HGLV', old_keys, sltkey)}
+                {/*单双*/}
+                {this._HaflView('TGOE', old_keys, sltkey)}
+                {/*半场单双*/}
+                {this._HaflView('HTGOE', old_keys, sltkey)}
+                {/*半场 / 全场*/}
+                {this._LNameRPeilv('HFT', old_keys, sltkey)}
+                {/*净胜球数*/}
+                {this._LNameRPeilv('WM', old_keys, sltkey)}
+                {/*双重机会*/}
+                {this._LNameRPeilv('DC', old_keys, sltkey)}
+                {/*零失球*/}
+                {this._LNameRPeilv('CNS', old_keys, sltkey)}
+                {/*零失球获胜*/}
+                {this._LNameRPeilv('WTN', old_keys, sltkey)}
+                {/*独赢&双方进球*/}
+                {this._LNameRPeilv('1X2BTS', old_keys, sltkey)}
+                {/*独赢 & 进球 / 大小*/}
+                {this._TCSView('1X2GL', old_keys, sltkey)}
+                {/*进球大/ 小 & 双方球队进球*/}
+                {this._GLTGOEView('GLBTS', old_keys, sltkey)}
+                {/*独赢&最先进球*/}
+                {this._LNameRPeilv('1X2FG', old_keys, sltkey)}
+                {/*先进2球的一方*/}
+                {this._HaflView('R2G', old_keys, sltkey)}
+                {/*先进3球的一方*/}
+                {this._HaflView('R3G', old_keys, sltkey)}
+                {/*最多进球的半场*/}
+                {this._LNameRPeilv('HMG', old_keys, sltkey)}
+                {/*双半场进球*/}
+                {this._LNameRPeilv('SBH', old_keys, sltkey)}
+                {/*首个进球方式*/}
+                {this._LNameRPeilv('FGM', old_keys, sltkey)}
+                {/*首个进球时间*/}
+                {this._LNameRPeilv('TFG', old_keys, sltkey)}
+                {/*首个进球时间-3项*/}
+                {this._LNameRPeilv('TFG3W', old_keys, sltkey)}
+                {/*双重机会 & 进球/大小*/}
+                {this._TCSView('DCGL', old_keys, sltkey)}
+                {/*双重机会 & 双方球队进球*/}
+                {this._LNameRPeilv('DCBTS', old_keys, sltkey)}
+                {/*双重机会 & 最先进球*/}
+                {this._LNameRPeilv('DCFTS', old_keys, sltkey)}
+                {/*进球大 / 小 & 进球单 / 双*/}
+                {this._GLTGOEView('GLTGOE', old_keys, sltkey)}
+                {/*进球大/ 小 & 最先进球*/}
+                {this._GLTGOEView('GLFTS', old_keys, sltkey)}
+                {/*落后反超获胜*/}
+                {this._LNameRPeilv('WFB', old_keys, sltkey)}
+                {/*赢得任一半场*/}
+                {this._LNameRPeilv('WEH', old_keys, sltkey)}
+                {/*赢得所有半场*/}
+                {this._LNameRPeilv('WBH', old_keys, sltkey)}
+                {/*最先 / 最后进球*/}
+                {this._LNameRPeilv('FLG', old_keys, sltkey)}
             </View>
         )
     }
@@ -294,7 +471,7 @@ export default class FBAllGameCenter extends Component {
     _handleSltData(key, ballData) {
         console.log('当前点击数据 == ', key, ' == ', ballData, this.state.bet_data[key]);
 
-        if (this.props.game_type == 3 && ballData[0].d_key != null) {
+        if (this.props.tabIdx == 1 && ballData[0].d_key != null) {
             // 综合过关 你妹的坑货
             let dkey = ballData[0].d_key;
 
@@ -305,7 +482,7 @@ export default class FBAllGameCenter extends Component {
 
             let sltDic = {};
             // 这样把superBackup的值赋给 sltDic，可以说是浅拷贝；如果sltDic = superBackup 这样给sltDic赋值的话，在下面代码改变sltDic的值时，superBackup也会跟着变。
-            Object.assign(sltDic, this.props.superBackupSltDic);
+             Object.assign(sltDic, this.props.superBackupSltDic);
 
             sltDic['k'] = ballData[0].k;
             sltDic['p'] = ballData[0].p;
@@ -373,10 +550,11 @@ export default class FBAllGameCenter extends Component {
             }
 
             // 到这呢 要把这个this.props.superAllSltDic回调回去。
+
             Object.assign(this.state.allSltDic, { [sltDic.sectionItemiId]: sltDic });
             this.props.zongheBackData ? this.props.zongheBackData(this.state.allSltDic, this.props.superSltDic) : null;
 
-        } else if (this.props.game_type == 3 && ballData[0].d_key == null) {
+        } else if (this.props.tabIdx == 1 && ballData[0].d_key == null) {
             // 没有选择了，那就把他的值都干掉。
             delete this.props.superSltDic.d_key;
             delete this.props.superSltDic.sltIdx;
@@ -395,125 +573,76 @@ export default class FBAllGameCenter extends Component {
         })
     }
 
-    _HC_GL(key, old_keys, slt_key) {
+    //HC,1x2, DC,HFT, CNS, WBH,WEH,SBH,的样式都是左队名右赔率
+    _LNameRPeilv(key, old_keys, slt_key) {
         let data = this.state.bet_data[key];
         if (data == null) { return null };
 
         return (
-            <ItemView_HC_GL d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
+            <ItemView_LName_RPeilv d_key={key} data={data} style={{b: styles.haderStyle }} nowGameData={this.props.nowGameData}
                 slt_key={slt_key}
                 old_keys={old_keys}
                 superSltDic={this.props.superSltDic}
+                selectPanKou={this.props.selectPanKou}
                 ballClick={(ballData) => {
                     this._handleSltData(key, ballData);
                 }}>
-            </ItemView_HC_GL>
+            </ItemView_LName_RPeilv>
         )
     }
 
-    _1X2(key, old_keys, slt_key) {
+    //GL,BTS,TGOE,GLTGOE 的样式。左右对称，视图为左描述右按钮的View
+    _HaflView(key, old_keys, slt_key){
+
         let data = this.state.bet_data[key];
         if (data == null) { return null };
 
         return (
-            <ItemView_1X2 d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_1X2>
+            <ItemView_HLRView d_key={key} data={data} style={{b: styles.haderStyle }} nowGameData={this.props.nowGameData}
+                                   slt_key={slt_key}
+                                   old_keys={old_keys}
+                                   selectPanKou={this.props.selectPanKou}
+                                   superSltDic={this.props.superSltDic}
+                                   ballClick={(ballData) => {
+                                       this._handleSltData(key, ballData);
+                                   }}>
+            </ItemView_HLRView>
         )
     }
 
-    _TCS(key, old_keys, slt_key) {
+    //TCS, 1X2GL, DCGL 的样式.三列Item布局的样式
+    _TCSView(key, old_keys, slt_key){
+
         let data = this.state.bet_data[key];
         if (data == null) { return null };
+
         return (
-            <ItemView_TCS d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_TCS>
+            <ItemView_TCSView d_key={key} data={data} style={{b: styles.haderStyle }} nowGameData={this.props.nowGameData}
+                              slt_key={slt_key}
+                              old_keys={old_keys}
+                              superSltDic={this.props.superSltDic}
+                              ballClick={(ballData) => {
+                                  this._handleSltData(key, ballData);
+                              }}>
+            </ItemView_TCSView>
         )
     }
 
-    _TG(key, old_keys, slt_key) {
-        let data = this.state.bet_data[key];
-        if (data == null) { return null };
-        return (
-            <ItemView_TG d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_TG>
-        )
-    }
+    //GLTGOE, GLFTS的样式,两列Item布局的样式
+    _GLTGOEView(key, old_keys, slt_key){
 
-    _TGOE(key, old_keys, slt_key) {
         let data = this.state.bet_data[key];
         if (data == null) { return null };
-        return (
-            <ItemView_TGOE d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_TGOE>
-        )
-    }
 
-    _FLG(key, old_keys, slt_key) {
-        let data = this.state.bet_data[key];
-        if (data == null) { return null };
         return (
-            <ItemView_FLG d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_FLG>
-        )
-    }
-
-    _1X2GL(key, old_keys, slt_key) {
-        let data = this.state.bet_data[key];
-        if (data == null) { return null };
-        return (
-            <ItemView_1X2GL d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_1X2GL>
-        )
-    }
-
-    _BTS(key, old_keys, slt_key) {
-        let data = this.state.bet_data[key];
-        if (data == null) { return null };
-        return (
-            <ItemView_BTS d_key={key} data={data} style={{ a: styles.viewStyle, b: styles.haderStyle }} nowGameData={this.props.nowGameData}
-                slt_key={slt_key}
-                old_keys={old_keys}
-                superSltDic={this.props.superSltDic}
-                ballClick={(ballData) => {
-                    this._handleSltData(key, ballData);
-                }}>
-            </ItemView_BTS>
+            <ItemView_GLTGOE d_key={key} data={data} style={{b: styles.haderStyle }} nowGameData={this.props.nowGameData}
+                              slt_key={slt_key}
+                              old_keys={old_keys}
+                              superSltDic={this.props.superSltDic}
+                              ballClick={(ballData) => {
+                                  this._handleSltData(key, ballData);
+                              }}>
+            </ItemView_GLTGOE>
         )
     }
 
@@ -521,11 +650,55 @@ export default class FBAllGameCenter extends Component {
 
         let isShowBottom = this.state.sltBallData.length > 0 && this.state.sltBallData[0].d_key != null ? true : false;
 
+        // let isShowCorner = this.props.nowGameData.is_corner == 1 ? '(角球数) ' : '';
+        let raceTime = ''; //比赛的时间。
+
+        //滚球中
+        if (this.props.game_type == 0){
+
+            let splitArr = this.state.rollingTime.split(' '); //分割后台返回的时间字符串
+            if (this.state.rollingTime.includes('1H')) {
+                raceTime =  '上半场 ' + '   ' + splitArr[splitArr.length - 1]; //上半场
+            } else if (this.state.rollingTime.includes('2H')) {
+                raceTime =  '下半场 ' + '   ' + splitArr[splitArr.length - 1]; //下半场
+            } else {
+                raceTime = this.state.rollingTime;
+            }
+        }
+        else {
+            raceTime =  this.state.beiginTime;
+        }
+
         return (
             <View style={{ flex: 1 }}>
 
                 {this.state.isHaveData
                     ? <ScrollView style={{}}>
+                        <ImageBackground style = {{width:SCREEN_WIDTH, height:135, alignItems:'center'}} source = {require('../../img/ic_football_result_detail.jpg')} resizeMode={'stretch'}>
+                            <CusBaseText style = {{marginTop:15, backgroundColor: 'transparent', color:'#fff', fontSize:Adaption.Font(20,18)}}>
+                                {this.props.leagueData}
+                            </CusBaseText>
+                            <View style = {{flexDirection:'row', alignItems:'center'}}>
+                                <View style = {{flex:0.45, justifyContent:'center'}}>
+                                    <CusBaseText style = {{textAlign: 'right',backgroundColor: 'transparent', color:'#fff', marginTop:15, fontSize:Adaption.Font(17,15)}}>
+                                        {this.props.nowGameData.h}
+                                    </CusBaseText>
+                                </View>
+                                <View style={{flex:0.1, marginTop:15, alignItems:'center'}}>
+                                    <Image style={{width: Adaption.Width(30), height:  Adaption.Width(30), resizeMode:'contain'}} source={require('../../img/ic_football_result_vs.png')}/>
+                                </View>
+                                <View style = {{flex:0.45, justifyContent:'center'}}>
+                                    <CusBaseText style = {{textAlign: 'left',backgroundColor: 'transparent', color:'#fff', marginTop:15, fontSize:Adaption.Font(17,15)}}>
+                                        {this.props.nowGameData.v}
+                                    </CusBaseText>
+                                </View>
+                            </View>
+                            <View style = {{backgroundColor:'#29262d', width:Adaption.Width(180), height:35, marginTop:10, justifyContent:'center', alignItems:'center'}}>
+                                <CusBaseText style = {{backgroundColor: 'transparent', color:'#fff', fontSize:Adaption.Font(15,12), marginLeft:5}}>
+                                    {raceTime}
+                                </CusBaseText>
+                            </View>
+                        </ImageBackground>
                         {this._allGameView()}
                         <View style={{ height: isShowBottom ? 90 : 0, marginBottom: SCREEN_HEIGHT == 812 ? 34 : 0 }} />
                     </ScrollView>
@@ -535,13 +708,14 @@ export default class FBAllGameCenter extends Component {
                     </View>
                 }
 
-                {this.props.game_type != 3
+                {this.props.tabIdx != 1
                     ? <FBGameBottom style={{}}
                         isShowView={isShowBottom}  // 显示底部view
                         sport_id={this.props.sport_id}
                         game_type={this.props.game_type} // 0滚球、1今日、2早盘、3综合、4冠军
                         sltBallData={this.state.sltBallData}  // 选择的号码
                         nowGameData={this.props.nowGameData}  // 当前盘口的数据
+                        selectPanKou={this.props.selectPanKou}
                         xiaZhuClick={(paramData) => {
 
                             if (global.UserLoginObject.Uid != '') {
@@ -598,26 +772,18 @@ export default class FBAllGameCenter extends Component {
 
 
 const styles = StyleSheet.create({
-    // 不想每个itemview里面都写一次，所以在这写当样式传进去用
-    // 每个itemview的外边框
-    viewStyle: {
-        width: SCREEN_WIDTH - 20,
-        margin: 10,
-        borderColor: '#d2d2d2',
-        borderWidth: 0.5,
-        borderRadius: 3,
-        backgroundColor: '#fff',
-    },
+
     // 每个itemview的头部样式
     haderStyle: {
-        backgroundColor: '#f3f3f3',
+        backgroundColor: '#f5f6f7',
         justifyContent: 'center',
         // alignItems: 'center',
-        paddingLeft: Adaption.Width(20),
-        width: SCREEN_WIDTH - 21, // 多减1为不挡住左右边线条
+        width: SCREEN_WIDTH, // 多减1为不挡住左右边线条
         borderTopLeftRadius: 3,
         borderTopRightRadius: 3,
-        borderColor: '#d2d2d2',
+        borderColor: '#d1d2d3',
         borderBottomWidth: 0.5,
+        height:50,
+        flexDirection:'row',
     },
 })

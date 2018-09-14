@@ -394,7 +394,7 @@ export default class MeWinRecord extends Component {
             <Image resizeMode={'stretch'} style={{ width: 60 , height: 50  }} source={require('../../home/img/ic_noData.png')}></Image>
             <CusBaseText style={{ textAlign: 'center', marginTop: 5,color:'#bfbfbf'}}>暂无记录</CusBaseText>
             <TouchableOpacity activeOpacity={1} style={{ width: 80, height: 25, marginTop: 5, backgroundColor:COLORS.appColor, borderRadius: 8, justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => navigate('BuyLot')}>
+              onPress={() => navigate('NewBuyLot')}>
               <CusBaseText style={{ fontSize: 14, color: 'white', textAlign: 'center' }}>
                 立即购买
                 </CusBaseText>

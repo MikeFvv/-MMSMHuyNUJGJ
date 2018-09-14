@@ -218,6 +218,7 @@ export default class Login extends Component {
                             'user_Name': this.state.userText, //用户名称
                             'user_Pwd': this.state.pwdText,  //用户密码
                             'codePWD': response.data.code,  //加密登录
+                            'rebate': response.data.rebate, //判断时时返水是否开启
                             //'rise_lock': response.data.rise_lock, //每日加奖跳动
                         };
 

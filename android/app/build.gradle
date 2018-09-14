@@ -190,6 +190,8 @@ def sVzokhttplibrary = "0.0.7"// maven OK HTTP 库版本
 def sVzappupdatelibrary = "0.3.3" // maven 更新app 库版本
 
 dependencies {
+    compile project(':react-native-orientation')
+    compile project(':react-native-orientation')
     compile project(':react-native-vector-icons')
     compile project(':react-native-shake-event')
     compile project(':react-native-picker')

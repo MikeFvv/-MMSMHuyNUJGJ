@@ -11,18 +11,13 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-
-var CryptoJS = require("crypto-js");
-
 var dataRequest;
 export default class DataRequest {
-
 
     static rootCallBack = null;
 
     constructor(isInit) {
         if (isInit) this.start();
-
     }
 
     static init(isInit, funAction) {
@@ -67,10 +62,6 @@ export default class DataRequest {
         Cpicon = GlobalConfig.cpicon();
         CPLinShiIcon = GlobalConfig.backupCpicon();
         HomeBanner = GlobalConfig.homeBanner();
-        if (bankList.length == 0 || bankList == null) {
-            //请求银行列表
-            this._fetchBankList();
-        }
 
         // 投注时存的gameid，在加密登录的时候要提交到后台。游戏偏好使用。
         AsyncStorage.getItem('TouZhuGameIDNote', (error, res) => {
@@ -82,7 +73,7 @@ export default class DataRequest {
             }
         });
 
-        this._fetchGamePlayData();
+       // this._fetchGamePlayData();
         //进入APP 默认去读缓存
         global.UserInfo.shareInstance();
         global.UserInfo.queryUserInfo((result) => {
@@ -123,13 +114,13 @@ export default class DataRequest {
         });
         this._getPlayDatas();
 
-
         //  首页请求数据缓存
         let homeKey = 'HomeCaiZhongObjcet';
         UserDefalts.getItem(homeKey, (error, result) => {
             if (!error) {
                 if (result == '' || result == null) {
                     this._fetchHomeData();
+                    this._fetchGamePlayData();
                 } else if (result !== '' && result !== null) {
                     let homeModel = JSON.parse(result);
                     AllZhongArray = homeModel.HomeCaiZhongAllArray;
@@ -154,15 +145,11 @@ export default class DataRequest {
     }
 
     _fetchMeiRiQianDaoData(){
-
-        //请求参数
         let params = new FormData();
         params.append("ac", "getUserSignedLog");
         params.append("uid", global.UserLoginObject.Uid);
         params.append("token",global.UserLoginObject.Token);
         params.append("sessionkey",global.UserLoginObject.session_key);
-       
-
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
           .then(response => {
@@ -172,24 +159,20 @@ export default class DataRequest {
   }
 
 
-  _fetchGamePianHaoData() {
+   _fetchGamePianHaoData() {
     if (global.UserLoginObject.Uid != '' && global.UserLoginObject.Token != '') {
     let params = new FormData();
-  params.append("ac", "getUserHobby");
-  params.append("uid", global.UserLoginObject.Uid);
-  params.append("token", global.UserLoginObject.Token);
-  params.append("sessionkey", global.UserLoginObject.session_key);
-
-      var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
+      params.append("ac", "getUserHobby");
+      params.append("uid", global.UserLoginObject.Uid);
+      params.append("token", global.UserLoginObject.Token);
+      params.append("sessionkey", global.UserLoginObject.session_key);
+      let promise = GlobalBaseNetwork.sendNetworkRequest(params);
       promise
           .then(response => {
               if (response.msg == 0) {
-                
                 let data = response.data ? response.data : [];
                 global.YouXiPianHaoData = data;
                 let gameList = global.AllPlayGameList;
-
                 for (let i = data.length - 1; i >= 0; i--) {
                     for (let j = 0; j < gameList.length; j++) {
                         let dic = gameList[j];
@@ -202,6 +185,43 @@ export default class DataRequest {
                 }
                 global.AllPlayGameList = gameList;
               }
+
+          
+
+              if (global.YouXiPianHaoData.length > 0) {
+                  let homeIndexArray = [];
+    
+                for (let i = global.YouXiPianHaoData.length - 1; i >= 0; i--) {
+    
+                  // 排序 HomeArray 数据
+                  for (let h = 0; h < AllZhongArray.length; h++) {
+                    let dic = AllZhongArray[h];
+                    if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
+                        AllZhongArray.splice(h, 1);  // 删除
+                        AllZhongArray.splice(0, 0, dic); // 添加到第一位
+                      break;
+                    }
+                  }
+                  for (var j = 0; j < AllZhongArray.length; j++) {
+                    homeIndexArray.push({ key: j, value: AllZhongArray[j] });
+                    if (j == 16) {
+                      break;
+                    }
+                  }
+                  homeIndexArray.push({ key: 17, value: {} });
+                  HomeArray = homeIndexArray;
+                  // 排序 HomeHeightZhongArray 数据
+                  for (let hh = 0; hh < HomeHeightZhongArray.length; hh++) {
+                    let dic = HomeHeightZhongArray[hh];
+                    if (global.YouXiPianHaoData[i] == dic.value['game_id']) {
+                      HomeHeightZhongArray.splice(hh, 1);  // 删除
+                      HomeHeightZhongArray.splice(0, 0, dic); // 添加到第一位
+                      break;
+                    }
+                  }
+                }
+    
+              }
           })
           .catch(err => {
           });
@@ -209,30 +229,25 @@ export default class DataRequest {
   }
 
 
-  // 提交游戏偏好需要的gameid
-  _updateUserHobby() {
-
+   // 提交游戏偏好需要的gameid
+   _updateUserHobby() {
     let keys = Object.keys(global.GTouZhuGameID);
     if (keys.length <= 0) {
         return;  // 没有值直接退出
     }
-
     let gameidStr_list = '';
     for (let i = 0; i < keys.length; i++) {
         let gaid = keys[i];
         let count = GTouZhuGameID[gaid];
         gameidStr_list += (i == keys.length - 1 ? `${gaid}:${count}` : `${gaid}:${count},`);
     }
-
     let params = new FormData();
     params.append("ac", "updateUserHobby");
     params.append("uid", global.UserLoginObject.Uid);
     params.append("token", global.UserLoginObject.Token);
     params.append("sessionkey", global.UserLoginObject.session_key);
     params.append("str_list", gameidStr_list);
-    // params.append("str_list", '36:88,25:100,40:50');
-  
-    var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+    let promise = GlobalBaseNetwork.sendNetworkRequest(params);
     promise
         .then(response => {
             if (response.msg == 0) {
@@ -246,90 +261,17 @@ export default class DataRequest {
         });
   }
 
-  //获取个人消息数据
-  _fetchPersonalMessageData() {
-
-    if (global.UserLoginObject.Uid != '' && global.UserLoginObject.Token != '') {
-        //请求参数
-    let params = new FormData();
-    params.append("ac", "flushPrice");
-    params.append("uid", global.UserLoginObject.Uid);
-    params.append("token", global.UserLoginObject.Token);
-    params.append("sessionkey", global.UserLoginObject.session_key);
-
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
-        promise
-            .then(response => {
-                if (response.msg == 0) {
-                    let datalist = response.data;
-                    if (response.data == null ) {
-                        PersonMessageArray=0;
-                        Hongbaolihe = 0;
-                        Gerenfankui = 0;
-                        Fuliqiandao = 0;
-                        AnQuanZhongXin = 0;
-
-                    } else {
-                       if((1 & response.data.user_flag)>0){
-                        Hongbaolihe = 1;
-                       }else {
-                        Hongbaolihe = 0;
-                       }
-                       if((2 & response.data.user_flag)>0){
-                        PersonMessageArray = 1;
-                       }else {
-                        PersonMessageArray = 0;
-                       }
-                       if((4 & response.data.user_flag)>0){
-                        Gerenfankui = 1;
-                       }else {
-                        Gerenfankui = 0;
-                       }
-                       if((8 & response.data.user_flag)>0){
-                        Fuliqiandao = 1;
-                       }else {
-                        Fuliqiandao = 0;
-                       }
-                       if((16 & response.data.user_flag)>0){
-                        AnQuanZhongXin = 1;
-                       }else {
-                        AnQuanZhongXin = 0;
-                       }
-                    }
-
-                } else {
-
-                }
-
-            })
-            .catch(err => {
-            });
-    }
-}
-
     //首页彩种数据
     _fetchHomeData() {
-          
         let paramsNotice = new FormData();
         paramsNotice.append("ac", "getSystemNotice");
         var promise = GlobalBaseNetwork.sendNetworkRequest(paramsNotice);
         promise
             .then(response => {
                 if (response.msg == 0) {
-   
                     let datalist = response.data;
                     if (datalist && datalist.length > 0) {
-   
-                        let datalist = response.data;
-                        // let dataBannerList = response.data['banner'];
-                        // let dataNonticeList = response.data['notice'];
-                        // let dataWinlist = response.data['winlist'];
-                        
-                      HomeSystemArray = datalist;
-                        // SwiperArray = dataBannerList;
-                        // HomeSystemArray = dataNonticeList;
-                        // FootWinArray = dataWinBlog;
+                        HomeSystemArray = datalist;
                         let homeObjcet = {
                              HomeCaiZhongArray: HomeArray,
                             HomeSystemArray: HomeSystemArray,
@@ -339,136 +281,17 @@ export default class DataRequest {
                             HomeLowCaiZhongArray: HomeLowZhongArray,
                             HomeCaiZhongAllArray: AllZhongArray,
                             HomeTiYuArray:TiYuArray
-   
                         }
-   
                         let homeCaizhongValue = JSON.stringify(homeObjcet);
-   
                         let key = 'HomeCaiZhongObjcet';
                         UserDefalts.setItem(key, homeCaizhongValue, (error) => {
                             if (!error) {
                             }
                         });
-   
-                       
-                    } 
-   
+                    }
                 } 
             })
             .catch(err => {
-              
-            });
-      
-
-        //请求参数
-        let params = new FormData();
-        params.append("ac", "getGameListAtin");
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-        promise
-            .then(response => {
-                if (response.msg == 0) {
-
-                    let datalist = response.data;
-                    if (datalist) {
-
-                        let datalist = response.data;
-                        // let dataBannerList = response.data['banner'];
-                        // let dataNonticeList = response.data['notice'];
-                        // let dataWinlist = response.data['winlist'];
-                        let indexArray = [];
-                        let dataBlog = [];
-                        let i = 0;
-                       
-                        datalist.map(dict => {
-                            dataBlog.push({ key: i, value: dict });
-                            i++;
-                        });
-                         AllZhongArray = dataBlog;
-                        // for (var j = 0; j < datalist.length; j++) {
-                        //     indexArray.push({ key: j, value: datalist[j] });
-                        //     if (j == 16) {
-                        //         break;
-                        //     }
-                        // }
-                       // indexArray.push({ key: 17, value: {} });
-
-                        HomeHeightZhongArray = [];
-                        HomeLowZhongArray = [];
-                        TiYuArray = [];
-
-                        datalist.map((item) => {
-                        if (item.type == 1) {
-                            if (item.speed == 1 ) {
-                                HomeHeightZhongArray.push({ key: i, value: item });
-                            } else if (item.speed == 0) {
-                                HomeLowZhongArray.push({ key: i, value: item });
-                            }
-                            if (item.hot == 1) {
-                                indexArray.push({key: i, value: item});
-                            }
-                        }else {
-                            TiYuArray.push({ key: i, value: item });
-                            if (item.hot == 1 ) {
-                              indexArray.push({key: i, value: item});
-                              }
-                          }
-                            i++;
-                        })
-                         indexArray.push({ key: 99, value: {} });
-
-                    
-
-
-                        HomeArray = indexArray;
-                        // SwiperArray = dataBannerList;
-                        // HomeSystemArray = dataNonticeList;
-                        // FootWinArray = dataWinBlog;
-                        let homeObjcet = {
-                            HomeCaiZhongArray: HomeArray,
-                            HomeSwiperArray: SwiperArray,
-                            HomeSystemArray: HomeSystemArray,
-                            HomeFootWinArray: FootWinArray,
-                            HomeHeightCaiZhongArray: HomeHeightZhongArray,
-                            HomeLowCaiZhongArray: HomeLowZhongArray,
-                            HomeCaiZhongAllArray: AllZhongArray,
-                            HomeTiYuArray:TiYuArray
-
-                        }
-
-                        let homeCaizhongValue = JSON.stringify(homeObjcet);
-
-                        let key = 'HomeCaiZhongObjcet';
-                        UserDefalts.setItem(key, homeCaizhongValue, (error) => {
-                            if (!error) {
-                            }
-                        });
-
-                        if (DataRequest.rootCallBack != undefined) {
-                            DataRequest.rootCallBack(true);
-                        }
-                    } else {
-                        if (DataRequest.rootCallBack != undefined) {
-                            DataRequest.rootCallBack(false);
-                        }
-                    }
-
-                } else {
-                    {
-                        if (DataRequest.rootCallBack != undefined) {
-                            DataRequest.rootCallBack(false);
-                        }
-                    }
-                    ;
-                }
-            })
-            .catch(err => {
-                {
-
-                    if (DataRequest.rootCallBack != undefined) {
-                        DataRequest.rootCallBack(false);
-                    }
-
-                }
             });
     }
 
@@ -477,10 +300,7 @@ export default class DataRequest {
         //请求参数
         let params = new FormData();
         params.append("ac", "getNoticeAppForOffline");
-
-
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
         promise
             .then(response => {
                 if (response.msg == 0) {
@@ -494,62 +314,98 @@ export default class DataRequest {
                         AsyncStorage.removeItem('HomeGongGaoObjcet', (error) => {
                         });
                     }
-
-                } else {
-                    {
-                        //this._alertShow(response.param)
-                    }
-                    ;
                 }
             })
             .catch(err => {
             });
     }
 
-    //请求银行列表
-    _fetchBankList() {
-        let params = new FormData();
-        params.append("ac", "getBankCardList");
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-        promise
-            .then((responseData) => {
-                if (responseData.msg == 0) {
-                    global.bankList = responseData.data;
-                }
-            })
-            .catch((err) => {
-            })
-    }
-
     //请求彩种玩法，缓存到global
     _fetchGamePlayData() {
-        //缓存所有彩种列表
+        //请求参数
         let params = new FormData();
         params.append("ac", "getGameListAtin");
-
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
-            .then((responseData) => {
+            .then(response => {
+                let datalist = response.data;
 
-                if (responseData.msg == 0) {
+                if (response.msg == 0) {
 
-                    let datalist = responseData.data;
+                    if (datalist) {
+                        let indexArray = [];
+                        let dataBlog = [];
+                        let i = 0;
+                        datalist.map(dict => {
+                            dataBlog.push({ key: i, value: dict });
+                            i++;
+                        });
+                        AllZhongArray = dataBlog;
+                        HomeHeightZhongArray = [];
+                        HomeLowZhongArray = [];
+                        TiYuArray = [];
+                        datalist.map((item) => {
+                            if (item.type == 1) {
+                                // if (item.speed == 1 ) {
+                                    HomeHeightZhongArray.push({ key: i, value: item });
+                                // } else if (item.speed == 0) {
+                                //     HomeLowZhongArray.push({ key: i, value: item });
+                                // }
+                                // if (item.hot == 1) {
+                                //     indexArray.push({key: i, value: item});
+                                // }
+                            }else {
+                                TiYuArray.push({ key: i, value: item });
+                                // if (item.hot == 1 ) {
+                                //     indexArray.push({key: i, value: item});
+                                // }
+                            }
+                            i++;
+                        })
+                        for (var j = 0; j < datalist.length; j++) {
+                            indexArray.push({ key: j, value: datalist[j] });
+                            if (j == 16) {
+                              break;
+                            }
+                          }
+                          indexArray.push({ key: 17, value: {} });
+                        // indexArray.push({ key: 99, value: {} });
+                        HomeArray = indexArray;
+                        let homeObjcet = {
+                            HomeCaiZhongArray: HomeArray,
+                            HomeSwiperArray: SwiperArray,
+                            HomeSystemArray: HomeSystemArray,
+                            HomeFootWinArray: FootWinArray,
+                            HomeHeightCaiZhongArray: HomeHeightZhongArray,
+                            HomeLowCaiZhongArray: HomeLowZhongArray,
+                            HomeCaiZhongAllArray: AllZhongArray,
+                            HomeTiYuArray:TiYuArray
+                        }
+                        let homeCaizhongValue = JSON.stringify(homeObjcet);
+                        let key = 'HomeCaiZhongObjcet';
+                        UserDefalts.setItem(key, homeCaizhongValue, (error) => {
+                            if (!error) {
+                            }
+                        });
+                        if (DataRequest.rootCallBack != undefined) {
+                            DataRequest.rootCallBack(true);
+                        }
+                    } else {
+                        if (DataRequest.rootCallBack != undefined) {
+                            DataRequest.rootCallBack(false);
+                        }
+                    }
+
                     if (datalist && datalist.length > 0) {
-
-                        // 缓存数据
-                        let datas = JSON.stringify(responseData.data);
+                        let datas = JSON.stringify(datalist);
                         AsyncStorage.setItem('GameListData', datas, (error) => { });
-                        
                         let newmodel = {}
                         let openGameList = [];
-
                         for (let i = 0; i < datalist.length; i++) {
                             let model = datalist[i];
-
                             if (model.enable != 2 && model.type == 1) { //只存type == 1的正常彩票。除了体育彩
                                 openGameList.push(model);
                             }
-
                             // 存yearid
                             if (model.js_tag == 'lhc') {
                                 global.yearId = model.yearid;
@@ -557,19 +413,25 @@ export default class DataRequest {
                                     break;  // 防止拿到空值，有值再退出
                                 }
                             }
-
                             newmodel[`${model.game_id}`] = model; // game_id作为key，每个key对应的Model存起来
                         }
-
                         global.AllPlayGameList = openGameList;
                         global.GameListConfigModel = newmodel;
                     }
+
+                } else {
+
+                    if (DataRequest.rootCallBack != undefined) {
+                        DataRequest.rootCallBack(false);
+                    }
+
                 }
-
             })
-
-            .catch((err) => {
-            })
+            .catch(err => {
+                if (DataRequest.rootCallBack != undefined) {
+                    DataRequest.rootCallBack(false);
+                }
+            });
     }
 
 
@@ -614,9 +476,7 @@ export default class DataRequest {
             params.append("uid", global.UserLoginObject.Uid);  //去掉首尾空格
             params.append("code", global.UserLoginObject.codePWD);
             params.append("edition", global.VersionNum);
-
             var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
             promise
                 .then(response => {
 
@@ -662,6 +522,7 @@ export default class DataRequest {
                                 'fp_lhc': response.data.fp_lhc, // 六合彩
                                 'fp_other':response.data.fp_other, //其他彩种的返点
                                 'codePWD': response.data.code,  //加密登录
+                                'rebate': response.data.rebate, //时时返水是否开启
                                 //'rise_lock': response.data.rise_lock, //每日加奖跳动
                             };
 
@@ -683,10 +544,21 @@ export default class DataRequest {
                         global.UserLoginObject = loginObject;
                         //加密登录成功后用新的uid,token请求
                         this._fetchGamePianHaoData();  // 拿到uid token后请求游戏偏好
-                        this._updateUserHobby();  // 提交gameid, 用于后台搞游戏偏好的。
-                        // this._fetchPersonalMessageData();
                         this._fetchMeiRiQianDaoData();
                         PushNotification.emit('LoginSuccess', global.UserLoginObject);
+
+                        AsyncStorage.getItem('lastEnterAppTime', (error, result) => {
+                            if (!error && result) {
+                                let interval = (new Date().getTime()) - Number.parseInt(result);
+                                interval = interval / (60*60*1000) ;
+                                if (interval > 1) {  //间隔一个小时请求
+                                    this._updateUserHobby();  // 提交gameid, 用于后台搞游戏偏好的。
+                                }
+                            }else {
+                                this._updateUserHobby();  // 提交gameid, 用于后台搞游戏偏好的。
+                            }
+                        });
+                        AsyncStorage.setItem('lastEnterAppTime', (new Date().getTime()).toString(), (error)=>{});
 
                         //将数据存到本地
                         global.UserInfo.shareInstance();

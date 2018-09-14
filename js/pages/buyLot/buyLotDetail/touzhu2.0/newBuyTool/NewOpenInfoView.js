@@ -407,7 +407,7 @@ class NewOpenInfoView extends Component {
                }
 
                ballDS = ballSum % 2 == 0 ? '双' : '单';
-               ballTail = parseInt(ballsArr[ballsArr.length - 1], 10) > 10 ? '尾大' : '尾小';
+               ballTail = ballSum % 10 > 4 ? '尾大' : '尾小';  //总和的个位数的大小
                longhu = parseInt(ballsArr[0], 10) > parseInt(ballsArr[ballsArr.length - 1], 10) ? '龙' : '虎';
                sumds = ballSum > 84 ? '大' : '小';
 
@@ -841,7 +841,7 @@ class NewOpenInfoView extends Component {
             }
 
             ballDS = ballSum % 2 == 0 ? '双' : '单';
-            ballTail = parseInt(ballsArr[ballsArr.length - 1],10) > 10 ? '尾大' : '尾小';
+            ballTail = ballSum % 10 > 4 ? '尾大' : '尾小';  //总和的个位数的大小
             longhu = parseInt(ballsArr[0],10) > parseInt(ballsArr[ballsArr.length - 1],10) ? '龙' : '虎';
             sumds = ballSum > 84 ? '大' : '小';
             let balldesc = `${ballSum} ${sumds} ${ballDS} ${ballTail} ${longhu}`;

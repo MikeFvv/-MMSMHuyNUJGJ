@@ -64,13 +64,9 @@ export default class Home extends Component {
 
     this.loginOut = false;
     this.isJump == false;
-    this.isTiShi = false;
     this.wating = false;
     this.isRefreshView = true;  //是否刷新render
     this.canPush = true;
-
-    this.lineIPIndex1 = 0;
-    this.lineIPIndex2 = 0;
     this.lineIPIndex3 = 0;
   }
 
@@ -80,7 +76,6 @@ export default class Home extends Component {
     header: (
       <NavStyle
         backgroundColor={COLORS.appColor}
-
         homeNavLogo={GlobalConfig.userData.phone_logo}
         fontSize={navigation.state.params ? ((global.UserLoginObject.Token != '') ? 14 : 18) : null}
         leftText={navigation.state.params ? ((global.UserLoginObject.Token != '') ? "" : '登录') : null}
@@ -208,7 +203,6 @@ export default class Home extends Component {
         var promise = BaseNetwork.sendNetworkRequest(params);
         promise
           .then(response => {
-
             if (response.msg == 0 && response.data) {
 
               if ((1 & response.data.user_flag) > 0) {
@@ -216,15 +210,12 @@ export default class Home extends Component {
               } else {
                 Hongbaolihe = 0;
               }
-
               this.isRefreshView = false;
               this.props.navigation.setParams({});
             }
           })
-
           .catch(error => {
           })
-
 
         //点击打开每日嘉奖,登录后
         setTimeout(() => {
@@ -264,14 +255,9 @@ export default class Home extends Component {
       });
     }
 
-
     this.state.banbarArray = SwiperArray;
-
     this.state.footWinArray = FootWinArray;
-
     this.state.homeSystemArray = HomeSystemArray;
-
-
   }
 
 
@@ -291,13 +277,7 @@ export default class Home extends Component {
     } else {
       this.state.homeArray = HomeArray;
     }
-    // 缓冲页面停留延时
 
-    //15秒过后刷新获取最新的首页数据覆盖之前旧的缓存
-    // setTimeout(() => {
-    //   this._fetchHomeData();
-    // }, 20000);
-    //检测网络是否连接
     NetInfo.isConnected.fetch().then(isConnected => {
       // this.setState({ isConnected });
     });
@@ -327,7 +307,6 @@ export default class Home extends Component {
       });
     }
 
-
     // 通知
     JPushModule.addReceiveCustomMsgListener((message) => {
       // console.log(message);
@@ -346,37 +325,24 @@ export default class Home extends Component {
     if (CPYuMingShuRu == 1) {
       setTimeout(() => {
         this._fetchHomeArray();
-
       }, 2000);
-
     }
-
-    //   this.subscription222 = PushNotification.addListener('BiaoJiMessageSuccess', () => {
-
-    //     this._fetchPersonalMessageData();
-    // });
 
     //接受投注成功时刷新金额的通知
     this.subscription2 = PushNotification.addListener('RefreshUserTotalMoney', (money) => {
-
       this._renderReFresh();
       if (typeof (money) == 'number') {
-
         money = money.toFixed(2);
       }
-
       this.props.navigation.state.params.home_userMoney = money;
     })
 
     //接受我的界面刷新金额的通知
     this.subscription3 = PushNotification.addListener('RefreshHomeNavRightText', (money) => {
-
       this._renderReFresh();
       if (typeof (money) == 'number') {
-
         money = money.toFixed(2);
       }
-
       this.props.navigation.state.params.home_userMoney = money;
     })
 
@@ -387,22 +353,19 @@ export default class Home extends Component {
       this.loginOut = false;
       this.state.is_GuestShiWan = loginObject.is_Guest;
       this._fetchPersonalMessageData();
-
       this._forceRefreshNav();
-
       this.refs.LoadingView && this.refs.LoadingView.showSuccess('登录成功!', 2);
-
     });
 
-    //退出登录成功重新给导航栏赋值
-    this.subscription5 = PushNotification.addListener('LoginOutSuccess', () => {
+       //退出登录成功重新给导航栏赋值
+      this.subscription5 = PushNotification.addListener('LoginOutSuccess', () => {
       this.props.navigation.state.params.home_userMoney = null;
       this.loginOut = true;
 
-    })
+    });
 
-    //首页监听所有接口请求是否超时的通知
-    this.subscription6 = PushNotification.addListener('ServerLoginOutNotification', () => {
+       //首页监听所有接口请求是否超时的通知
+      this.subscription6 = PushNotification.addListener('ServerLoginOutNotification', () => {
 
       if (this.loginOut == false) {
 
@@ -425,7 +388,7 @@ export default class Home extends Component {
           }
         })
       }
-    })
+    });
 
   }
 
@@ -458,17 +421,24 @@ export default class Home extends Component {
             datalist.map((item) => {
               if (item.type == 1) {
 
-                if (item.hot == 1) {
-                  indexArray.push({ key: i, value: item });
-                }
+                // if (item.hot == 1) {
+                //   indexArray.push({ key: i, value: item });
+                // }
               } else {
-                if (item.hot == 1) {
-                  indexArray.push({ key: i, value: item });
-                }
+                // if (item.hot == 1) {
+                //   indexArray.push({ key: i, value: item });
+                // }
               }
               i++;
-            })
-            indexArray.push({ key: 99, value: {} });
+            }) 
+             for (var j = 0; j < datalist.length; j++) {
+              indexArray.push({ key: j, value: datalist[j] });
+              if (j == 16) {
+                break;
+              }
+            }
+            indexArray.push({ key: 17, value: {} });
+            // indexArray.push({ key: 99, value: {} });
 
             this.setState({ homeArray: indexArray })
           }
@@ -519,16 +489,11 @@ export default class Home extends Component {
     //移除监听
     NetInfo.isConnected.removeEventListener('connectionChange', this._handleIsConnectedChange);
 
-
     this.time_interval && clearTimeout(this.time_interval);
 
     if (typeof (this.subscription2) == 'object') {
       this.subscription2 && this.subscription2.remove();
     }
-
-    // if (typeof (this.subscription4444) == 'object') {
-    //   this.subscription4444 && this.subscription4444.remove();
-    // }
 
     if (typeof (this.subscription3) == 'object') {
       this.subscription3 && this.subscription3.remove();
@@ -660,6 +625,7 @@ export default class Home extends Component {
             HomeArray = homeModel.HomeCaiZhongArray;
             HomeHeightZhongArray = homeModel.HomeHeightCaiZhongArray;
             HomeLowZhongArray = homeModel.HomeLowCaiZhongArray;
+            HomeComputerGameArray = homeModel.HomeComPuterArray;
           } else {
             this.setState({
               isNoNetworkBig: true,
@@ -675,18 +641,18 @@ export default class Home extends Component {
   }
 
 
-
-
   _backAction = () => {
-    // global.ShouYeYinDao=0;
-    // PushNotification.emit('HomeYinDao', global.UserLoginObject);
+    if (!this.loginOut) {
+      this._forceRefreshNav();
+    }
+  }
 
+  _backMGGameAction = () => {
     if (!this.loginOut) {
 
       this._forceRefreshNav();
 
     }
-
   }
 
   _oldVersionjudgment() {
@@ -849,17 +815,23 @@ export default class Home extends Component {
         renderItem={item => this._renderItemView(item)}
         horizontal={false} //水平还是垂直
         showsVerticalScrollIndicator={false} //不显示右边滚动条
-        ListFooterComponent={() => this._listFooterComponent()}
+       // ListFooterComponent={() => this._listFooterComponent()}
         ListHeaderComponent={() => this._listHomeHeaderComponent()}
       />
     );
 
   }
+    //点击电子游戏隐藏底部
+    _backHideFootAction = () => { 
+      this._listHeaderComponent()
+    }
 
   _listHomeHeaderComponent() {
     return this.state.homeArray.length !== 0 ? (
       <HomeHeaderView
         backAction={this._backAction}
+        backMgGameAction={this._backMGGameAction}
+        backHideFootAction={this._backHideFootAction}
         // is_GuestShiWan={this.state.is_GuestShiWan}
         navigator={this.props.navigation}
       >
@@ -867,17 +839,17 @@ export default class Home extends Component {
     ) : null;
   }
 
-  _listFooterComponent() {
-    return this.state.homeArray.length !== 0 ? (
-      <HomeCaiFootView
-        backAction={this._backAction}
-        // is_GuestShiWan={this.state.is_GuestShiWan}
-        navigator={this.props.navigation}
-      >
-      </HomeCaiFootView>
-    ) : null;
+  // _listFooterComponent() {
+  //   return this.state.homeArray.length !== 0 ? (
+  //     <HomeCaiFootView
+  //       backAction={this._backAction}
+  //       // is_GuestShiWan={this.state.is_GuestShiWan}
+  //       navigator={this.props.navigation}
+  //     >
+  //     </HomeCaiFootView>
+  //   ) : null;
 
-  }
+  // }
 
   _renderItemView(item) {
     return null;
@@ -891,13 +863,8 @@ export default class Home extends Component {
       <View style={styles.container}>
         <Modal
           visible={this.state.isSystemWeiHu}
-          //显示是的动画默认none
-          //从下面向上滑动slide
-          //慢慢显示fade
           animationType={'none'}
-          //是否透明默认是不透明 false
           transparent={true}
-          //关闭时调用
           onRequestClose={() => {
           }}
         >{this._isXiTongWeiHuLo()}</Modal>
@@ -912,7 +879,6 @@ export default class Home extends Component {
 
         {iOS ? this.state.isNoNetwork ? this._noNetworkTopComponent() : null : null}
         {this._listHeaderComponent()}
-        {/* {this._renderFlatlist()} */}
         <HomeGongGao></HomeGongGao>
         <Toast
           ref="toast"
@@ -921,13 +887,8 @@ export default class Home extends Component {
 
         <Modal
           visible={this.state.isShowOldVersion}
-          //显示是的动画默认none
-          //从下面向上滑动slide
-          //慢慢显示fade
           animationType={'none'}
-          //是否透明默认是不透明 false
           transparent={true}
-          //关闭时调用
           onRequestClose={() => {
           }}
         >{this._isShowOldVersionView()}</Modal>

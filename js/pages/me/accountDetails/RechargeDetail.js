@@ -45,8 +45,8 @@ export  default class RechargeDetail extends Component{
             </View>
               <View style = {{width:SCREEN_WIDTH-20,marginLeft:10,height:1,marginTop:5,backgroundColor:'#f3f3f3'}}></View>
             <View style={styles.itemView}>
-                <CusBaseText style={styles.childView}>入款金额:</CusBaseText>
-                <CusBaseText style={styles.childView_two}>{this.props.navigation.state.params.detialArray.value.price}元</CusBaseText>
+                <CusBaseText style={styles.childView}>实际存款:</CusBaseText>
+                <CusBaseText style={styles.childView_two}>{this.props.navigation.state.params.detialArray.value.pay_price}元</CusBaseText>
             </View>
             <View style = {{width:SCREEN_WIDTH-20,marginLeft:10,height:1,marginTop:5,backgroundColor:'#f3f3f3'}}></View>
             <View style={styles.itemView}>
@@ -57,6 +57,11 @@ export  default class RechargeDetail extends Component{
             <View style={styles.itemView}>
                 <CusBaseText style={styles.childView}>首存优惠:</CusBaseText>
                 <CusBaseText style={styles.childView_two}>{this.props.navigation.state.params.detialArray.value.price_first}</CusBaseText>
+            </View>
+          <View style = {{width:SCREEN_WIDTH-20,marginLeft:10,height:1,marginTop:5,backgroundColor:'#f3f3f3'}}></View>
+          <View style={styles.itemView}>
+                <CusBaseText style={styles.childView}>实际到账:</CusBaseText>
+                <CusBaseText style={styles.childView_two}>{this.props.navigation.state.params.detialArray.value.price}</CusBaseText>
             </View>
           <View style = {{width:SCREEN_WIDTH-20,marginLeft:10,height:1,marginTop:5,backgroundColor:'#f3f3f3'}}></View>
            
