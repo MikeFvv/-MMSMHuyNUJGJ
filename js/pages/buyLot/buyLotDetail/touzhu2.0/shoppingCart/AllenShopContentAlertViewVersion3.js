@@ -47,8 +47,8 @@ export default class ShopContentAlertView extends Component {
 
         })
 
-        // 优先判断1-5分彩，再判断双面/官方玩法
-        let ffsf = props.tag.indexOf('ff') == 0 || props.tag.indexOf('sf') == 0 || props.tag.indexOf('wf') == 0;
+        // 优先判断1-5分彩，再判断双面/官方玩法,新彩种全部改成一键购买
+        let ffsf = props.tag.indexOf('ff') == 0 || props.tag.indexOf('sf') == 0 || props.tag.indexOf('wf') == 0 || props.tag == 'jdtxyx' || props.tag == 'jdxypk' || props.tag == 'xyqxc' || props.tag == 'jdxync';
         // isGF: 双面1，官方0。
         this.isShowOneKey = ffsf || (!ffsf && props.isGF == 1); // 一键购买。 成立条件：分分三分彩 或 (非分分三分 && 双面)
 
@@ -82,8 +82,8 @@ export default class ShopContentAlertView extends Component {
             })
         }
 
-        // 优先判断1-5分彩，再判断双面/官方玩法
-        let ffsf = nextProps.tag.indexOf('ff') == 0 || nextProps.tag.indexOf('sf') == 0 || nextProps.tag.indexOf('wf') == 0;
+        // 优先判断1-5分彩，再判断双面/官方玩法,新彩种全部改成一键购买
+        let ffsf = nextProps.tag.indexOf('ff') == 0 || nextProps.tag.indexOf('sf') == 0 || nextProps.tag.indexOf('wf') == 0 || nextProps.tag == 'jdtxyx' || nextProps.tag == 'jdxypk' || nextProps.tag == 'xyqxc' || nextProps.tag == 'jdxync';
         this.isShowOneKey = ffsf || (!ffsf && nextProps.isGF == 1); // 一键购买。 成立条件：分分三分彩 或 (非分分三分 && 双面)
 
     }

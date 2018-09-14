@@ -370,6 +370,9 @@ export default class InvitedCodeManage extends Component {
                             <Text style={styles.PopLotTitle}>
                                 PC蛋蛋:
                              </Text>
+                             <Text style={styles.PopLotTitle}>
+                                其他:
+                             </Text>
                         </View>
                         <View style={{ flex: 1, alignItems: 'flex-start' }}>
                             <Text style={styles.PopLotValue}>
@@ -380,6 +383,9 @@ export default class InvitedCodeManage extends Component {
                             </Text>
                             <Text style={styles.PopLotValue}>
                                 {this.item ? this.item.item.value.fp_pcdd : ""}
+                            </Text>
+                            <Text style={styles.PopLotValue}>
+                                {this.item ? this.item.item.value.fp_other : ""}
                             </Text>
                         </View>
                     </View>

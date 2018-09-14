@@ -124,7 +124,7 @@ export default class TrendCenter extends Component {
     this.js_tag = js_tag;
 
     if (!this.state.isPullRefresh) { // 如果是下拉，则不重置。
-      this.state.selectBtnIdx = js_tag == 'lhc' ? 0 : this.props.selectIdx; // 重置。
+      this.state.selectBtnIdx = (js_tag == 'lhc' || js_tag == 'xypk' || js_tag == 'tzyx') ? 0 : this.props.selectIdx; // 重置。
     }
 
     if (js_tag == '3d') {
@@ -145,6 +145,15 @@ export default class TrendCenter extends Component {
     } else if (js_tag == 'pcdd') {
       this.titleArr = ["正码一", "正码二", "正码三"];
     
+    } else if (js_tag == 'qxc') {
+      this.titleArr = ["千位走势", "百位走势", "十位走势", "个位走势"];
+
+    } else if (js_tag == 'xync') {
+      this.titleArr = ["小区", "大区"];
+
+    } else if (js_tag == 'pkniuniu') {
+      this.titleArr = ["冠军走势", "亚军走势", "季军走势", "第四名", "第五名", "第六名", "第七名", "第八名", "第九名", "第十名"];
+    
     } else {
       this.titleArr = ["开奖结果"];
     }
@@ -164,10 +173,12 @@ export default class TrendCenter extends Component {
   _createHeaderBtn(data) {
 
     let btnArr = [];
-    for (let a = 0; a <= (this.js_tag == 'lhc' ? 0 : data.length); a++) {
+    let len = (this.js_tag == 'lhc' || this.js_tag == 'xypk' || this.js_tag == 'tzyx') ? 1 : data.length + 1;
+
+    for (let a = 0; a < len; a++) {
       btnArr.push(
         <TouchableOpacity key={a} activeOpacity={0.7} 
-          style={{ width: this.js_tag == 'lhc' ? SCREEN_WIDTH : SCREEN_WIDTH / 4.0, justifyContent: 'center', alignItems: 'center', borderColor: COLORS.appColor, borderBottomWidth: this.state.selectBtnIdx == a ? 2 : 0 }}
+          style={{ width: len <= 4 ? SCREEN_WIDTH / len : SCREEN_WIDTH / 4.0, justifyContent: 'center', alignItems: 'center', borderColor: COLORS.appColor, borderBottomWidth: this.state.selectBtnIdx == a ? 2 : 0 }}
           onPress={() => {
             if (a != this.state.selectBtnIdx) {
 

@@ -91,7 +91,7 @@ class HomeCaiBlockView extends Component {
     // }else 
     if (item.index == this.state.dataSource.length - 1 && this.props.caizhongIndex == 0) {
       return (
-        <TouchableOpacity activeOpacity={1} style={styles.cellStyle} onPress={() => this.props.navigator.navigate('BuyLot', { backAction: this.props.backAction})}>
+        <TouchableOpacity activeOpacity={1} style={styles.cellStyle} onPress={() => this.props.navigator.navigate('NewBuyLot', { backAction: this.props.backAction})}>
           <Image source={require('./img/ic_chakangengduo.png')} style={{ width: 50, height: 50, marginTop: 3 }} />
           <CusBaseText style={{ fontSize: Adaption.Font(15, 15), fontWeight: "400", marginTop: 5 }}>
             更多

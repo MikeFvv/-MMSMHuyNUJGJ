@@ -168,21 +168,21 @@ export default class TOTrend extends Component {
     _allOpenList(pig_tage) {  //开奖分类界面判断
         
         if (pig_tage == 'pk10' || pig_tage == 'pcdd' ||
-          pig_tage == 'k3' ||pig_tage == '3d' || pig_tage == '11x5') {
+          pig_tage == 'k3' ||pig_tage == '3d' || pig_tage == '11x5' || pig_tage == 'tzyx' || pig_tage == 'xypk' || pig_tage == 'qxc') {
           return (
             <Greeting
               openListData={this.state.dataOPenList ? this.state.dataOPenList : []}
               tag={this.props.tag}
               jstag={pig_tage} />)
 
-        } else if (pig_tage == 'lhc') {
+        } else if (pig_tage == 'lhc' || pig_tage == 'pkniuniu') {
           return (
             <LhcOrSsc
               openListData={this.state.dataOPenList ? this.state.dataOPenList : []}
               tag={this.props.tag}
               jstag={pig_tage} />)
 
-        } else {
+        } else if ( pig_tage == 'ssc'|| pig_tage == 'xync'  ){
           return (
             <NewSSCListView
               openListData={this.state.dataOPenList ? this.state.dataOPenList : []}

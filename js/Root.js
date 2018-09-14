@@ -27,8 +27,6 @@ import BaseNetwork from './skframework/component/BaseNetwork'
 import SwitchURLRoot from "./skframework/common/SwitchURLClass";
 import DataRequest from "./common/DataRequest";
 import GetSetStorge from './skframework/component/GetSetStorge';
-import RNFetchBlob from 'react-native-fetch-blob';
-
 import AllenModal from './skframework/component/AllenModal';
 
 import {
@@ -459,11 +457,6 @@ export default class Root extends Component {
         promise
             .then(response => {
                 if (response.msg == 0) {
-
-                    // 初始化
-                    this.lineIPIndex1 = 0;
-
-                    // Alert.alert('验证成功');
 
                     if (this.state.isShowEnterUrlPage == true) {
                         this.setState({
@@ -1196,7 +1189,7 @@ export default class Root extends Component {
                     GlobalConfig.baseURL = AddHttpIPArry[resultIndex];
                     global.GlobalLineIPIndex = resultIndex;
 
-                    this._getSysInfo(arrUrl[0]);
+                    this._getSysInfo(GlobalConfig.baseURL);
 
                 } else {
                     this.isLoadData = true;

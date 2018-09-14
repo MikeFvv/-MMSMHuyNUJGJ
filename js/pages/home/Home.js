@@ -126,9 +126,9 @@ export default class Home extends Component {
 
     if (global.UserLoginObject.Token == '') {
       //是否首页进入登录和注册
-      global.isHomeVcPush = true;
-      const { navigate } = this.props.navigation;
-      navigate('Login', { title: '登录' });
+       global.isHomeVcPush = true;
+       const { navigate } = this.props.navigation;
+       navigate('Login', { title: '登录' });
     }
     else {
 
@@ -490,7 +490,7 @@ export default class Home extends Component {
           home_userMoney: global.UserLoginObject.TotalMoney,
         });
         global.isInBuyLotVC = false;  //防止BuyLotDetail销毁时重新DidMount请求数据
-      }, 200);
+      }, 800);
     }
   }
 

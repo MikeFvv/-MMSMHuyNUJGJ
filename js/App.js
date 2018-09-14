@@ -95,6 +95,7 @@ import FindpsEmail from './pages/login/forgetpwd/FindpsEmail'; //通过邮箱找
 import FindpsPhoneNum from './pages/login/forgetpwd/FindpsPhoneNum'; //通过手机号码找回密码
 import FindpsEncrypt from './pages/login/forgetpwd/FindpsEncrypt'; //通过密保问题找回密码
 import MyInfo from './pages/me/myinformation/MyInfo'; //个人信息页面
+
 import GrowthDetail from './pages/me/myinformation/GrowthDetail'; //成长明细
 import LevelReward from './pages/me/myinformation/LevelReward'; //等级奖励
 import MissionPackage from './pages/me/myinformation/MissionPackage'; //任务礼包

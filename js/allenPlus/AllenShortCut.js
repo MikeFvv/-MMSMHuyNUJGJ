@@ -65,8 +65,6 @@ export default class AllenShortCut extends Component {
             outputRange: ['0deg', '135deg']
         });
 
-        //  const { navigate } = this.props.navigation;
-        console.log("renderShortCut", this.state.modalVisible);
         return (
             <View>
                 <Modal

@@ -546,9 +546,7 @@ export default class FBShopCarList extends Component {
                 }
             })
             .catch((err) => {
-                if (err.message != '') {
-                    this.refs.Toast && this.refs.Toast.show(err.message , 1000);
-                }
+
             })
     }
 

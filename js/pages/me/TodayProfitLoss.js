@@ -14,8 +14,6 @@ import {
 } from "react-native";
 import Toast, { DURATION } from 'react-native-easy-toast'
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
 
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../skframework/tools/Adaption";
@@ -29,21 +27,6 @@ export default class TodayProfitLoss extends Component {
               leftClick={() =>  navigation.goBack() }
           />
       ),
-    // title: '今日盈亏',
-    //   headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-    // headerTitleStyle: { color: 'white' ,alignSelf:'center'},
-    //   //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-    //   headerRight: (
-    //       <View style={GlobalStyles.nav_blank_view} />
-    //   ),
-    // headerLeft: (
-    //         <TouchableOpacity
-    //             activeOpacity={1}
-    //             style={GlobalStyles.nav_headerLeft_touch}
-    //             onPress={() => { navigation.goBack() }}>
-    //             <View style={GlobalStyles.nav_headerLeft_view} />
-    //         </TouchableOpacity>
-    //     ),
   });
 
   constructor(props) {
@@ -57,10 +40,9 @@ export default class TodayProfitLoss extends Component {
 
   componentWillMount() {
     this._fetchPreferentialData();
-
   }
- _fetchPreferentialData(){
 
+ _fetchPreferentialData(){
       //请求参数
       let params = new FormData();
       params.append("ac", "todayWin");

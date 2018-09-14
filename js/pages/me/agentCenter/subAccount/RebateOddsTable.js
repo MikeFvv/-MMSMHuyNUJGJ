@@ -89,7 +89,20 @@ export default class RebateOddsTable extends Component {
                 { 'id': 4, 'name': '11选5', 'type': '11x5' },
                 { 'id': 5, 'name': 'PC蛋蛋', 'type': 'pcdd' },
                 { 'id': 6, 'name': '3D', 'type': '3d' },
-                { 'id': 7, 'name': '六合彩', 'type': 'lhc' }],
+                { 'id': 7, 'name': '六合彩', 'type': 'lhc' },
+
+
+                // { 'id': 8, 'name': '经典梯子', 'type': 'tzyx' },
+                // { 'id': 9, 'name': '幸运农场', 'type': 'xync' },
+                // { 'id': 10, 'name': 'PK拾牛牛', 'type': 'xypk' },
+                // { 'id': 11, 'name': '幸运扑克', 'type': 'pkniuniu' },
+                // { 'id': 12, 'name': '七星彩', "type": 'qxc'},
+
+                 { 'id': 8, 'name': '其他', 'type': 'other' },
+                
+                
+            ],
+
         }
     }
 

@@ -13,15 +13,22 @@ import {
 } from 'react-native';
 
 import Toast, { DURATION } from 'react-native-easy-toast'
-import Moment from 'moment';
+import MyInfo from "../myinformation/MyInfo";
 
-
+//定义一个数组初始化按钮的图片路径
+// let personListImageArr = [ require('./img/ic_newme_winRecord.png'), require('./img/ic_newme_touzhuRecord.png'),
+//     require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
+//     require('./img/ic_newme_welfaTask.png'), require('./img/ic_newme_perMeagse.png'),
+//     require('./img/ic_newme_safeCenter.png'), require('./img/ic_feedBack.png'), require('./img/ic_newme_moreSetting.png')];
 
 //定义一个数组初始化按钮的图片路径
 let personListImageArr = [ require('./img/ic_newme_winRecord.png'), require('./img/ic_newme_touzhuRecord.png'),
-    require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
+    require('./img/ic_newme_accountDetail.png'),require('./img/ic_newme_Vip.png'),require('./img/ic_newme_cashTrade.png'), require('./img/ic_newme_agentCenter.png'),
     require('./img/ic_newme_welfaTask.png'), require('./img/ic_newme_perMeagse.png'),
     require('./img/ic_newme_safeCenter.png'), require('./img/ic_feedBack.png'), require('./img/ic_newme_moreSetting.png')];
+
+
+
 
 export default class NewMe extends Component {
 
@@ -60,15 +67,15 @@ export default class NewMe extends Component {
         //初始化自定义数组
         let itemList = [{key:0, value:{title:'中奖记录'}},
             {key:1, value:{title:'投注记录'}}, {key:2, value:{title:'账户明细'}},
-            {key:3, value:{title:'现金交易'}}, {key:4, value:{title:'代理中心'}},
-            {key:5, value:{title:'福利任务'}}, {key:6, value:{title:'个人消息'}},
-            {key:7, value:{title:'安全中心'}}, {key:8, value:{title:'意见反馈'}},
-            {key:9, value:{title:'更多设置'}}, {key:10, value:{title:''}}, {key:11, value:{title:''}}];
+            {key:3, value:{title:'VIP等级'}}, {key:4, value:{title:'现金交易'}}, {key:5, value:{title:'代理中心'}},
+            {key:6, value:{title:'福利任务'}}, {key:7, value:{title:'个人消息'}},
+            {key:8, value:{title:'安全中心'}}, {key:9, value:{title:'意见反馈'}},
+            {key:10, value:{title:'更多设置'}}, {key:11, value:{title:''}}, {key:12, value:{title:''}}];
 
         //根据sysinfo 接口的 cash_status 字段显示或隐藏现金交易入口
         if (GlobalConfig.userData.cash_status == '0'){
-            personListImageArr.splice(3,1);
-            itemList.splice(3,1);
+            personListImageArr.splice(4,1);
+            itemList.splice(4,1);
         }
 
         this.setState({
@@ -356,12 +363,15 @@ export default class NewMe extends Component {
 
                         this.refs.Toast.show('刷新金额成功!', 1000);
 
+                        
+
                         //数字类型的取两位小数
                         if (typeof(response.data.price) == 'number') {
 
                             response.data.price = response.data.price.toFixed(2);
                         }
 
+                       
                         global.UserLoginObject.TotalMoney = response.data.price;
                         // global.UserLoginObject.Sign_event = response.data._user.sign_event;//判断每日签到通道是否开启 0 未开，1开启
                         // global.UserLoginObject.Gift_event = response.data._user.gift_event;//判断红包通道是否开启0 未开，1开启
@@ -385,6 +395,8 @@ export default class NewMe extends Component {
     //渲染每个Item
     _renderItemView(item) {
 
+        
+
         const { navigate } = this.props.navigation;
 
         //每个Cell的高度等于屏幕高度 - 头部的高度 - 充值头部高度
@@ -393,7 +405,7 @@ export default class NewMe extends Component {
         let rowHeight = (SCREEN_HEIGHT - headHeight - chaHeight)/4;
 
         //空白区域不能点击
-        return <TouchableOpacity onPress = {() => {item.index <= 9 ? this._clickMeBtn(item, navigate) : null}} activeOpacity={1} style = {{borderRightWidth:1, borderBottomWidth:1, borderColor:'#f3f3f3',justifyContent:'center', alignItems:'center', width:SCREEN_WIDTH/3, height:rowHeight, backgroundColor:'#fff'}}>
+        return <TouchableOpacity onPress = {() => {item.index <= 10 ? this._clickMeBtn(item, navigate) : null}} activeOpacity={1} style = {{borderRightWidth:1, borderBottomWidth:1, borderColor:'#f3f3f3',justifyContent:'center', alignItems:'center', width:SCREEN_WIDTH/3, height:rowHeight, backgroundColor:'#fff'}}>
             <View style = {{flexDirection:'row'}}>
                 <Image style = {{width:23, height:23}} source={personListImageArr[item.index]}/>
                 {item.item.value.title == '个人消息'? (this.state.messageArray != 0? <View style = {{backgroundColor:'red', width:6, height:6, borderRadius:3}}/> : null):null}
@@ -593,6 +605,7 @@ export default class NewMe extends Component {
                             }
                             else if (item.item.value.title == '更多设置') {
                                 navigate('MoreSetting', {title: '更多设置'})
+                                console.log('点击进去');
                             }
                             else if (item.item.value.title == '意见反馈') {
                                 navigate('FeedbackList', {
@@ -602,7 +615,23 @@ export default class NewMe extends Component {
                                 })
                             }
                             else if (item.item.value.title == '今日盈亏'){
-                                navigate('TodayProfitLoss', {title:'今日盈亏'})
+                                navigate('TodayProfitLoss', {title:'今日盈亏'});
+                            } else if (item.item.value.title == 'VIP等级'){  
+                                
+                                if (GlobalConfig.userData.event_rise <= 0){
+                                    Alert.alert(
+                                        '温馨提示',
+                                        'VIP系统已关闭',
+                                        [
+                                            {text: '确定', onPress: () => {}},
+                                        ]
+                                    )
+
+                                } else {
+
+                                    navigate('MyInfo',{switchSegment:true});
+                                }
+                                
                             }
                         }
                     }
@@ -751,7 +780,9 @@ export default class NewMe extends Component {
                         </Image>
                     </TouchableOpacity>
                 </View>
-            </View>)}
+            </View>
+            )
+        }
             <View style = {{height:Adaption.Height(70), width:SCREEN_WIDTH}}>
                 <View style = {{height:Adaption.Height(63), backgroundColor:'#fff', flexDirection:'row'}}>
                     <TouchableOpacity onPress = {() => this._clickMeBtn(9, navigate)} style = {{flex:0.25, justifyContent:'center', alignItems:'center'}} activeOpacity={0.7}>

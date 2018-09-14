@@ -214,6 +214,7 @@ export default class Login extends Component {
                             'fp_3d': response.data.fp_3d, // 3D
                             'fp_11x5': response.data.fp_11x5, // 11选5
                             'fp_lhc': response.data.fp_lhc, // 六合彩
+                            'fp_other':response.data.fp_other, //其他彩种的返点
                             'user_Name': this.state.userText, //用户名称
                             'user_Pwd': this.state.pwdText,  //用户密码
                             'codePWD': response.data.code,  //加密登录

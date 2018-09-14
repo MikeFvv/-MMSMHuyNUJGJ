@@ -50,6 +50,13 @@ class LhcOrSscListView extends Component {
         timer = null;
         this.leftCellArray = [];
         this.rightCellArray = [];
+        this.niuNiuLeftCellArry = [];
+        this.niuNiuRightCellArray = [];
+        this.textZangArr = ['庄','闲一','闲二','闲三','闲四','闲五'];
+        this.flexZangArry = [45,45,45,45,45,45];
+        this.lhcFlexTextArry = [50,50,50,50,50,50,50];
+        this.lhcTextTile = ['生肖','单双','色波','五行','特头','尾数','单双'];
+        this.nullBall1 = '9';
         this.baseFontSize =Adaption.Font(14, 12);
         this.hederFontSize=Adaption.Font(15, 12);
         this.qishuFontSize=Adaption.Font(14, 12);
@@ -58,16 +65,11 @@ class LhcOrSscListView extends Component {
 
     }
 
-
-
-  
-
     componentWillReceiveProps(nextProps) {
 
         //重新赋值tag 和 jstag 同步刷新界面
         if (nextProps.jstag != null && nextProps.openListData.length != 0 && nextProps.tag != null)
         {
-
             if(this.state.tag != nextProps.tag) {
                 this.setState({isShowLoad:false});
                 this.state.js_tag = nextProps.jstag;
@@ -75,13 +77,16 @@ class LhcOrSscListView extends Component {
                 this.state.dataSource = nextProps.openListData;
 
                 this._loadData(nextProps.openListData);
+                console.log(nextProps.openListData);
             }
         }
    
     }
 
     componentDidMount() {
+        
         this._loadData(this.state.dataSource);
+        this._fetchPreferentialData(true,false);
      }
 
   
@@ -93,98 +98,209 @@ class LhcOrSscListView extends Component {
     _loadData(data) {
         this.leftCellArray = [];
         this.rightCellArray = [];
+        this.niuNiuLeftCellArry = [];
+        this.niuNiuRightCellArray = [];
+
+       
+
         for(let i = 0; i < data.length; i++) {
             var bgColor = i % 2 == 0 ? '#f3f3f3' : '#fff';
-
             this.leftCellArray.push(this._leftCellTemple(i,bgColor,data[i]));
             this.rightCellArray.push(this._rightCellTemple(i,bgColor,data[i]));
+            this.niuNiuLeftCellArry.push(this._niuNiuLeftCellTemple(i,bgColor,data[i]));
+            this.niuNiuRightCellArray.push(this._niuNiuRightCellTemple(i,bgColor,data[i]));
         }
         this.setState({});
     }
 
-
-
     //每一个组件中必须有一个render方法，用于输出组件
     render() {
         //使用return 来返回要输出的内
+        if (this.state.js_tag == 'lhc') {
         return ( 
             <View style={{flex:1}}>
                 <ScrollView vertical = {true} style={{flex:1}}
-                              refreshControl={
-                                  <RefreshControl
-                                      refreshing={this.state.isRefreshing}
-                                      onRefresh={this._onRefresh.bind(this)}
-                                      tintColor="#bbb"
-                                      colors={['#ddd', '#0398ff']}
-                                      progressBackgroundColor='#fff'
-                                  >
-                                  </RefreshControl>
-                              }
-                              onMomentumScrollEnd = {this._contentViewScroll.bind(this)}
-                              ref={(scrollView) => { _scrollView = scrollView; }}
-        >
-
+                refreshControl={
+                <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this._onRefresh.bind(this)}
+                tintColor="#bbb"
+                colors={['#ddd', '#0398ff']}
+                progressBackgroundColor='#fff'>
+                </RefreshControl>
+             }
+                onMomentumScrollEnd = {this._contentViewScroll.bind(this)}
+                ref={(scrollView) => { _scrollView = scrollView; }}>
             <View style={{width:225}}>
-                <View style = {{flexDirection: 'row',height:40,width:225,flex:1}}>
-                    <View style={{width:52,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5}}>
-                        <CusBaseText style={{fontSize:this.hederFontSize}}>期号</CusBaseText>
-                    </View>
-                    <View style={{width:123,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5}}>
-                        <CusBaseText style={{fontSize:this.hederFontSize}}>平码</CusBaseText>
-                    </View>
-                    <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5,borderRightWidth:0.5,borderRightColor:'#ccc'}}>
-                        <CusBaseText style={{fontSize:this.hederFontSize}}>特码</CusBaseText>
-                    </View>
-                </View></View>
-            {this.leftCellArray}
-            {/*<View style={{backgroundColor:'yellow',width:width/2.0,position:'absolute',left:width/2,top:0}}>*/}
-                <ScrollView style={{position:'absolute',left:225,top:0}}
-                            horizontal={true}
-                                >
-                    <View>
-                        <View style = {{width:350,backgroundColor:'#fff'}}>
-                            <View style = {{width:350,flexDirection: 'row',height:40,flex:1}}>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderTopWidth:1,borderTopColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>生肖</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderTopWidth:1,borderTopColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>单双</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderTopWidth:1,borderTopColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>色波</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderTopWidth:1,borderTopColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>五行</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderTopWidth:1,borderTopColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>特头</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopColor:'#ccc',borderTopWidth:1,borderBottomWidth:0.5}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>尾数</CusBaseText>
-                                </View>
-                                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopColor:'#ccc',borderTopWidth:1,borderBottomWidth:0.5,borderRightWidth:1,borderRightColor:'#ccc'}}>
-                                    <CusBaseText style={{fontSize:this.hederFontSize}}>单双</CusBaseText>
-                                </View>
-                            </View></View>
+            <View style = {{flexDirection: 'row',height:40,width:225,flex:1}}>
+            <View style={{width:52,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5}}>
+            <CusBaseText style={{fontSize:this.hederFontSize}}>期号</CusBaseText>
+            </View>
+            <View style={{width:123,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5}}>
+            <CusBaseText style={{fontSize:this.hederFontSize}}>平码</CusBaseText>
+            </View>
+            <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5,borderRightWidth:0.5,borderRightColor:'#ccc'}}>
+            <CusBaseText style={{fontSize:this.hederFontSize}}>特码</CusBaseText>
+            </View>
+            </View></View>
+                      {this.leftCellArray}
+            <ScrollView style={{position:'absolute',left:225,top:0}} horizontal={true}>
+            <View>
+            <View style = {{width:350,backgroundColor:'#fff'}}>
+            <View style = {{width:350,flexDirection: 'row',height:40,flex:1}}>
+            {this._allArrayView(this.lhcFlexTextArry ,this.lhcTextTile ,this.nullBall1)}
+            </View></View>
                         {this.rightCellArray}
+            </View>
+            <View style={{width:225,}}>
+            </View></ScrollView>
+               {this.state.needloadBottowIndicator == true  ?(<View style={{marginVertical:15,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+            <ActivityIndicator /><Text style={{color:'gray'}}> {this.state.loadingText}</Text> </View>):null}
+            </ScrollView>
+            </View>
+        );
 
+    }   else if (this.state.js_tag = 'pkniuniu'){
+  
+        return (      
+              <ScrollView vertical = {true} style={{flex:1}}
+             refreshControl={
+             <RefreshControl
+               refreshing={this.state.isRefreshing}
+               onRefresh={this._onRefresh.bind(this)}
+               tintColor="#bbb"
+               colors={['#ddd', '#0398ff']}
+               progressBackgroundColor='#fff'
+           > 
+           </RefreshControl>
+           }
+       onMomentumScrollEnd = {this._contentViewScroll.bind(this)}
+       ref={(scrollView) => { _scrollView = scrollView; }}>
 
-                    </View>
-                    <View style={{width:225,}}>
+          <View style={{width:width/2.0+55}}>
+          <View style = {{flexDirection: 'row',height:40,width:width/2.0+55,flex:1}}>
+          <View style={{width:55,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5}}>
+          <CusBaseText style={{fontSize:this.hederFontSize}}>期号</CusBaseText>
+          </View>
+          <View style={{flex:1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5,}}>
+          <CusBaseText style={{fontSize:this.hederFontSize}}>开奖号码</CusBaseText>
+          </View>
+          </View></View>
 
-                    </View>
-                </ScrollView>
-                {this.state.needloadBottowIndicator == true  ?(<View style={{marginVertical:15,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                    <ActivityIndicator /><Text style={{color:'gray'}}> {this.state.loadingText}</Text>
-                </View>):null}
+                    {this.niuNiuLeftCellArry}
 
+          <ScrollView style={{position:'absolute',left:width/2.0+55,top:0}} horizontal={true}>
+          <View>
+          <View style = {{width:270,backgroundColor:'#fff'}}>
+          <View style = {{width:270,flexDirection: 'row',height:40,flex:1}}>
+                     {this._allArrayView(this.flexZangArry ,this.textZangArr ,this.nullBall1)}
+          </View></View>
+                     {this.niuNiuRightCellArray}
+          </View>
 
+          <View style={{width:width/2.0+55}}></View>
+          </ScrollView>
+           {this.state.needloadBottowIndicator == true ? (<View style={{marginVertical:15,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+         <ActivityIndicator /><Text style={{color:'gray'}}>  {this.state.loadingText}</Text>
+         </View>):null}
+         </ScrollView>
+    
+      );}
+    }
+    
+    
 
-        </ScrollView>
+_niuNiuLeftCellTemple(key,bg,data){
+        
+      let jiequQishu = `${data.value.qishu}`;
+      jiequQishu =  jiequQishu  != '' ? jiequQishu.substr(jiequQishu.length - 4, 4) :'--';
+      let imageBall = data.value.balls == undefined ? "" :data.value.balls;
+      let kaiBall = imageBall.split("+")
+      let haoBall = kaiBall.join(' ')
+
+    return (
+        <View key={key+"left"} style={{width:width/2.0+55,backgroundColor:bg}}>
+            <View style = {{flexDirection: 'row',height:40,width:width/2.0+55,flex:1}}>
+                <View style={{width:55,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.qishuFontSize}}>{jiequQishu}期</CusBaseText>
+                </View>
+                <View style={{flex:1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,flexDirection: 'row'}}>
+                    <CusBaseText style={{color:'red',fontSize:this.baseFontSize}}>{haoBall!= ''? haoBall:"正在开奖..."}</CusBaseText>
+                </View>
+            </View>
         </View>
+    );
+}
 
+
+_niuNiuRightCellTemple(key,bg,data){
+
+    let imageBall = data.value.balls == undefined ? "" :data.value.balls;
+    let kaiBall = imageBall.split("+")
+    let ballsDescArr = [];  //庄家-闲五的号码pk数组
+
+    for (let i = 0; i < 6; i++){
+        let ballsNewArr = [kaiBall[i],kaiBall[i+1],kaiBall[i+2],kaiBall[i+3],kaiBall[i+4]];
+        let ballsDesc = this._getNiuniu(ballsNewArr);
+        ballsDescArr.push(ballsDesc);
+    }
+
+    let  titleArray  = [ballsDescArr[0],ballsDescArr[1],ballsDescArr[2],ballsDescArr[3],ballsDescArr[4],ballsDescArr[5]]; 
+    return (
+     <View key={key+"left"} style = {{width:270,backgroundColor:bg}}>
+        <View style = {{width:270,flexDirection: 'row',height:40,flex:1}}>
+        {this._allArrayView(this.flexZangArry,titleArray,imageBall)}
+        </View></View>
         );
     }
+
+
+    _allArrayView(flexArray,titleArray,imageBall){
+
+        var arrayTitle =[];
+        for (let i = 0; i< flexArray.length; i++){
+           arrayTitle.push(
+        //     <View style={{height:40, flex:flexArray[i],alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:0.5,borderBottomWidth:0.5,borderTopWidth:0.5,borderTopColor:'#ccc',}}>
+        //     <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{imageBall != '' ? titleArray[i] : '--'}</CusBaseText>
+        //   </View> 
+        <View key={i} style={{flex:flexArray[i],alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderTopWidth:1,borderTopColor:'#ccc',borderBottomWidth:0.5,}}>
+            <CusBaseText style={{fontSize:this.baseFontSize,color:'rgba(85,85,85,1)'}}>{imageBall != '' ? titleArray[i] : '--'}</CusBaseText>
+            </View>
+           )
+        }
+        return  arrayTitle;
+
+   }
+
+
+   _getNiuniu(array) {
+
+    for (let a = 0; a < array.length; a++) {
+        for (let b = a + 1; b < array.length; b++) {
+            for (let c = b + 1; c < array.length; c++) {
+
+                let isNiu = (parseInt(array[a]) + parseInt(array[b]) + parseInt(array[c])) % 10;
+                if (isNiu == 0) {
+                    let sum = (parseInt(array[0]) + parseInt(array[1]) + parseInt(array[2]) + parseInt(array[3]) + parseInt(array[4])) % 10;
+                    
+                    let result = `牛${sum}`;
+                    result = result.replace(/0/g, '牛');
+                    result = result.replace(/1/g, '一');
+                    result = result.replace(/2/g, '二');
+                    result = result.replace(/3/g, '三');
+                    result = result.replace(/4/g, '四');
+                    result = result.replace(/5/g, '五');
+                    result = result.replace(/6/g, '六');
+                    result = result.replace(/7/g, '七');
+                    result = result.replace(/8/g, '八');
+                    result = result.replace(/9/g, '九');
+                    return result; // 跳出循环
+                }
+            }
+        }
+    }
+    return '无牛'; // 上面循环都走完了，都没有进入if的话 就只能走这无牛啦
+}
 
 
 
@@ -193,116 +309,105 @@ class LhcOrSscListView extends Component {
         let teMa = '';
         let jiequQishu = `${data.value.qishu}`;
         jiequQishu =  jiequQishu != '' ? jiequQishu.substr(jiequQishu.length - 4, 4) : '--';
-          
+        teMa = data.value.balls .substring(data.value.balls.length-2);
+        let colors = lhcViewColor();
+        var colorStr = '#e6374e';
+        for (let b in colors) {
+        let ballAr = colors[b].balls;
 
-          teMa = data.value.balls .substring(data.value.balls.length-2);
-
-                let colors = lhcViewColor();
-                var colorStr = '#e6374e';
-                for (let b in colors) {
-                let ballAr = colors[b].balls;
-
-                if (ballAr.includes(teMa)) {
-                    colorStr = colors[b].color;
-                    break;
-                  }
+            if (ballAr.includes(teMa)) {
+                colorStr = colors[b].color;
+                break;
                 }
+            }
 
-
-        return (<View key={key+"left"} style={{width:225,backgroundColor:bg}}>
+        return (
+         <View key={key+"left"} style={{width:225,backgroundColor:bg}}>
                 <View style = {{flexDirection: 'row',height:40,width:220,flex:1}}>
                     <View style={{width:52,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
                         <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.qishuFontSize}}>{jiequQishu}期</CusBaseText>
                     </View>
-                    <View style={{width:123,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,flexDirection: 'row'}}>
-                        {/* <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:10}}>{data.value.balls!= ''?data.value.balls:"正在开奖..."}</CusBaseText> */}
-                    
+                    <View style={{width:123,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,flexDirection: 'row'}}>                    
                         {data.value.balls != '' ? this._viewslhc(data.value.balls) : this._kspksText()}
                     </View>
                     <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,borderRightWidth:0.5,borderRightColor:'#ccc'}}>
                         <CusBaseText style={{color:colorStr,fontSize:this.baseFontSize}}>{teMa!= ''? teMa :"--"}</CusBaseText>
                     </View>
-                </View></View>);
-    }
+                </View></View>  
+            );
+         }
 
-    _kspksText() {
+     _kspksText() {
+            return (
+            <View style={{ marginTop: 5 }}>
+                <Text allowFontScaling={false} style={{ color: 'red', fontSize:this.baseFontSize}}> 正在开奖...</Text>
+            </View>
+            )
+        }
+
+        //六合彩
+     _viewslhc(balls) {
+            let string = balls;
+            if (string == undefined) {
+            return;
+            }
+            if (string == undefined) { return; }
+            if (string.length > 0) {
+            let array = string.split('+');
+            let popped = array.pop();
+            var viewArr = [];
+            for (var i = 0; i < array.length; i++) {
+                viewArr.push(
+                <View key={i} style={{flexDirection: 'row'}}>
+                    {this._lhcViewBalls(array[i])}
+                </View>
+                );
+            }
+            return viewArr;
+            }
+        }
+
+     _lhcViewBalls(i) {
+        var selectColor = '#e6374e';
+        let default_color = lhcViewColor();
+        for (var b in default_color) {
+        let ballAr = default_color[b].balls;
+        if (ballAr.includes(i)) {
+            selectColor = default_color[b].color;
+            break;
+        }
+     }
+
         return (
-          <View style={{ marginTop: 5 }}>
-            <Text allowFontScaling={false} style={{ color: 'red', fontSize:this.baseFontSize}}> 正在开奖...</Text>
-          </View>
-        )
-      }
-
-  //六合彩
-  _viewslhc(balls) {
-    let string = balls;
-    if (string == undefined) {
-      return;
-    }
-    if (string == undefined) { return; }
-    if (string.length > 0) {
-      let array = string.split('+');
-      let popped = array.pop();
-      var viewArr = [];
-      for (var i = 0; i < array.length; i++) {
-        viewArr.push(
-          <View key={i} style={{flexDirection: 'row'}}>
-            {this._lhcView(array[i])}
-          </View>
-        );
-      }
-      return viewArr;
-    }
-  }
-
-  _lhcView(i) {
-
-    var selectColor = '#e6374e';
-    let default_color = lhcViewColor();
-    for (var b in default_color) {
-      let ballAr = default_color[b].balls;
-      if (ballAr.includes(i)) {
-        selectColor = default_color[b].color;
-        break;
-      }
-    }
-
-    return (
-        <View key={i} style={{flexDirection: 'row'}}>
-          <Text allowFontScaling={false} style={{color:selectColor,fontSize:this.baseFontSize,marginLeft:3}}>{i}</Text>
-        </View>
-      )
-    }
-
-
-
-
+            <View key={i} style={{flexDirection: 'row'}}>
+            <Text allowFontScaling={false} style={{color:selectColor,fontSize:this.baseFontSize,marginLeft:3}}>{i}</Text>
+            </View>
+           )
+        }
 
     _rightCellTemple(key,bg,data){
 
             let allBallsArr =data.value.balls.split('+');
-       
             let teMa = allBallsArr[allBallsArr.length - 1]; // 特码
             let teMaSum = parseInt(teMa.substr(0, 1)) + parseInt(teMa.substr(1, 1)); // 特码值相加
-            
             let lhcZong = `合${teMaSum % 2 == 0 ? '双' : '单'}`;
             let lhcdanshuan = parseInt(teMa) % 2 == 0 ? '双' : '单';
+            let shengxiao = shengxiaoIdxBalls(); // 传入一个号码 判断是哪个生肖 鼠、牛、虎、兔.....
+            var sxName = '';
 
-              // 传入一个号码 判断是哪个生肖 鼠、牛、虎、兔.....
-            // getShengxiaoToBallStr(ball) {
-                let shengxiao = shengxiaoIdxBalls();
-                var sxName = '';
-                for (let a in shengxiao) {
+            for (let a in shengxiao) {
                 let ballAr = shengxiao[a].balls;
+
                 if (ballAr.includes(teMa)) {
                     sxName = shengxiao[a].name;
                     break;
                 }
-                }
+            }
 
             // 传入一个号码 判断是属于红波，绿波，蓝波
                 let colors = lhcViewColor();
                 var colorStr = '';
+
                 for (let b in colors) {
                 let ballArlhc = colors[b].balls;
 
@@ -311,7 +416,6 @@ class LhcOrSscListView extends Component {
                     break;
                     }
                 }
-
 
                  // 传入一个号码 判断是属于金、木、水、火、土
                  let wuAll = lhcViewWuXing();
@@ -349,33 +453,13 @@ class LhcOrSscListView extends Component {
                      }
                  }
               
-                
-
-        return (<View key={key+"left"} style = {{width:350,backgroundColor:bg}}>
-            <View style = {{width:350,flexDirection: 'row',height:40,flex:1}}>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? sxName :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? lhcdanshuan :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? colorStr :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? wuName :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? touName :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? weiName :'--'}</CusBaseText>
-                </View>
-                <View style={{width:50,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,borderRightWidth:1,borderRightColor:'#ccc'}}>
-                    <CusBaseText style={{color:'rgba(85,85,85,1)',fontSize:this.baseFontSize}}>{allBallsArr != '' ? lhcZong :'--'}</CusBaseText>
-                </View>
-            </View></View>);
-    }
+         let titleArray = [sxName,lhcdanshuan,colorStr,wuName,touName,weiName,lhcZong];
+            return (
+                <View key={key+"left"} style = {{width:350,backgroundColor:bg}}>
+                <View style = {{width:350,flexDirection: 'row',height:40,flex:1}}>
+                    {this._allArrayView(this.lhcFlexTextArry ,titleArray ,allBallsArr)}
+                </View></View>); 
+            }
 
     _contentViewScroll(e){
 
@@ -384,20 +468,19 @@ class LhcOrSscListView extends Component {
         var oriageScrollHeight = e.nativeEvent.layoutMeasurement.height; //scrollView高度
         if (offsetY + oriageScrollHeight >= contentSizeHeight) {
 
-            if(this.state.isFirstreachBottow&&!this.state.isLoadingData) {
-                this.setState({
-                    loadingText:'加载数据中...',
-                    needloadBottowIndicator:true,
-            });
-              timer = setTimeout(() => {
-                  this.moreTime ++;
-                  this._fetchPreferentialData(false,true,contentSizeHeight-oriageScrollHeight-50);
-                }, 200);
-                this.state.isLoadingData = true;
+                    if(this.state.isFirstreachBottow&&!this.state.isLoadingData) {
+                        this.setState({
+                            loadingText:'加载数据中...',
+                            needloadBottowIndicator:true,
+                    });
+                    timer = setTimeout(() => {
+                        this.moreTime ++;
+                        this._fetchPreferentialData(false,true,contentSizeHeight-oriageScrollHeight-50);
+                        }, 200);
+                        this.state.isLoadingData = true;
+                    }
             }
-
-    }
-}
+        }
 
     componentWillUnmount() {
         if(timer) {
@@ -405,31 +488,28 @@ class LhcOrSscListView extends Component {
         }
     }
 
-
-
     _onRefresh() {
         let  that  = this;
         that.setState({isRefreshing:true});
         setTimeout(() => {
             that.moreTime = 0;
             that._fetchPreferentialData(true,false);
-
         }, 200);
     }
 
-
+    
     _kspksText() {
         return (
             <View style={{marginTop: 5}}>
-                <Text allowFontScaling={false} style={{color: 'gray'}}>
-                    正在开奖.....
-                </Text>
-            </View>
-        )
-    }
+                    <Text allowFontScaling={false} style={{color: 'gray'}}>
+                        正在开奖.....
+                    </Text>
+                </View>
+            )
+        }
 
 
-    //获取开奖大厅的数据（每个彩种的信息）
+     //获取开奖大厅的数据（每个彩种的信息）
     _fetchPreferentialData(isReload,isxiala,juli) {
 
         // let requesMask = this.numMark;
@@ -447,7 +527,7 @@ class LhcOrSscListView extends Component {
                 if (response.msg == 0) {
                     let datalistArray = response.data;
                     if (datalistArray && datalistArray.length > 0) {
-
+                        console.log(datalistArray);
 
                         let dataBlog = [];
                         let i = 0;
@@ -501,9 +581,6 @@ class LhcOrSscListView extends Component {
                         this.setState({loadingText: "上拉加载数据..."});
                     }
                 }
-
-
-
             })
             .catch(err => {
                 this.setState({isRefreshing: false, isShowLoad:false});

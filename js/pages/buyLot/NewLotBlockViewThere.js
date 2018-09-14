@@ -233,22 +233,22 @@ class NewLotBlockViewThere extends Component {
             return;
         }
         //足彩入口
-        else if (info.item.js_tag === 'sport_key')
-        {
-            //  //进入体彩的入口
-            this.props.navigator.navigate('FootballGame',  {
-                gameId: info.item.game_id,
-                backAction: this.props.backAction
-            })
-        }
-        else
-        {
-            global.isInBuyLotVC = true;
-            this.props.navigator.navigate('BuyLotDetail', {
-                gameId: info.item.game_id,
-                indexList: info.index,
-            })
-        }
+        // else if (info.item.js_tag === 'sport_key')
+        // {
+        //     //  //进入体彩的入口
+        //     this.props.navigator.navigate('FootballGame',  {
+        //         gameId: info.item.game_id,
+        //         backAction: this.props.backAction
+        //     })
+        // }
+        // else
+        // {
+        //     global.isInBuyLotVC = true;
+        //     this.props.navigator.navigate('BuyLotDetail', {
+        //         gameId: info.item.game_id,
+        //         indexList: info.index,
+        //     })
+        // }
     }
 
 

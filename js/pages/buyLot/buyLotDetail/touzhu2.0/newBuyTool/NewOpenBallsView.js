@@ -13,7 +13,29 @@ import {
 import Moment from 'moment'; //日期计算控件
 import GetBallStatus from './GetBallStatus';
 const commentBallImage = require('../img/ic_buyLot_newballs.png');      //通用的号码球图片路径
+//K3的号码球图片
 let k3Image = [require('../img/ic_buyLot_touzi1.png'), require('../img/ic_buyLot_touzi2.png'), require('../img/ic_buyLot_touzi3.png'), require('../img/ic_buyLot_touzi4.png'), require('../img/ic_buyLot_touzi5.png'), require('../img/ic_buyLot_touzi6.png')];
+//幸运农场的号码球图片
+let XYNCImageArr = [require('../../../img/axyncImg/lucky_ball_01.png'),require('../../../img/axyncImg/lucky_ball_02.png'),require('../../../img/axyncImg/lucky_ball_03.png'),require('../../../img/axyncImg/lucky_ball_04.png'),
+    require('../../../img/axyncImg/lucky_ball_05.png'),require('../../../img/axyncImg/lucky_ball_06.png'),require('../../../img/axyncImg/lucky_ball_07.png'),require('../../../img/axyncImg/lucky_ball_08.png'),
+    require('../../../img/axyncImg/lucky_ball_09.png'),require('../../../img/axyncImg/lucky_ball_10.png'),require('../../../img/axyncImg/lucky_ball_11.png'),require('../../../img/axyncImg/lucky_ball_12.png'),
+    require('../../../img/axyncImg/lucky_ball_13.png'),require('../../../img/axyncImg/lucky_ball_14.png'),require('../../../img/axyncImg/lucky_ball_15.png'),require('../../../img/axyncImg/lucky_ball_16.png'),
+    require('../../../img/axyncImg/lucky_ball_17.png'),require('../../../img/axyncImg/lucky_ball_18.png'),require('../../../img/axyncImg/lucky_ball_19.png'),require('../../../img/axyncImg/lucky_ball_20.png')];
+
+//幸运扑克的号码球图片
+let XYPokerA = [require('../pkImg/pkA_1.png'),require('../pkImg/pkA_2.png'),require('../pkImg/pkA_3.png'),require('../pkImg/pkA_4.png')];
+let XYPoker2 = [require('../pkImg/pk2_1.png'),require('../pkImg/pk2_2.png'),require('../pkImg/pk2_3.png'),require('../pkImg/pk2_4.png')];
+let XYPoker3 = [require('../pkImg/pk3_1.png'),require('../pkImg/pk3_2.png'),require('../pkImg/pk3_3.png'),require('../pkImg/pk3_4.png')];
+let XYPoker4 = [require('../pkImg/pk4_1.png'),require('../pkImg/pk4_2.png'),require('../pkImg/pk4_3.png'),require('../pkImg/pk4_4.png')];
+let XYPoker5 = [require('../pkImg/pk5_1.png'),require('../pkImg/pk5_2.png'),require('../pkImg/pk5_3.png'),require('../pkImg/pk5_4.png')];
+let XYPoker6 = [require('../pkImg/pk6_1.png'),require('../pkImg/pk6_2.png'),require('../pkImg/pk6_3.png'),require('../pkImg/pk6_4.png')];
+let XYPoker7 = [require('../pkImg/pk7_1.png'),require('../pkImg/pk7_2.png'),require('../pkImg/pk7_3.png'),require('../pkImg/pk7_4.png')];
+let XYPoker8 = [require('../pkImg/pk8_1.png'),require('../pkImg/pk8_2.png'),require('../pkImg/pk8_3.png'),require('../pkImg/pk8_4.png')];
+let XYPoker9 = [require('../pkImg/pk9_1.png'),require('../pkImg/pk9_2.png'),require('../pkImg/pk9_3.png'),require('../pkImg/pk9_4.png')];
+let XYPoker10 = [require('../pkImg/pk10_1.png'),require('../pkImg/pk10_2.png'),require('../pkImg/pk10_3.png'),require('../pkImg/pk10_4.png')];
+let XYPokerJ = [require('../pkImg/pkJ_1.png'),require('../pkImg/pkJ_2.png'),require('../pkImg/pkJ_3.png'),require('../pkImg/pkJ_4.png')];
+let XYPokerQ = [require('../pkImg/pkQ_1.png'),require('../pkImg/pkQ_2.png'),require('../pkImg/pkQ_3.png'),require('../pkImg/pkQ_4.png')];
+let XYPokerK = [require('../pkImg/pkK_1.png'),require('../pkImg/pkK_2.png'),require('../pkImg/pkK_3.png'),require('../pkImg/pkK_4.png')];
 
 export default class NewOpenBallsView extends Component {
 
@@ -110,6 +132,15 @@ export default class NewOpenBallsView extends Component {
                 } else if (this.state.js_tag == 'lhc') {
                     arcDomNumArr = this._returnArcBallArr(7, 49, false, 1, true);
                 }
+                else if (this.state.js_tag == 'xync') {
+                    arcDomNumArr = this._returnArcBallArr(8, 20, false, 1, true);
+                }
+                else if (this.state.js_tag == 'xypk') {
+                    arcDomNumArr = this._returnArcBallArr(3, 52, false, 0, true);
+                }
+                else if (this.state.js_tag == 'qxc'){
+                    arcDomNumArr = this._returnArcBallArr(4, 10, true, 0, false);
+                }
 
                 //刷新随机状态为可以禁止刷新
                 global.random = false;
@@ -153,7 +184,7 @@ export default class NewOpenBallsView extends Component {
                 }
                 tpmpView = <View style={{flexDirection: 'row', alignItems: 'center'}}>{pcddBallsView}</View>
 
-            } else if (this.state.js_tag == 'ssc' || this.state.js_tag == '11x5') {
+            } else if (this.state.js_tag == 'ssc' || this.state.js_tag == '11x5' || this.state.js_tag == 'qxc') {
                 var ssc_11x5BallsView = [];
                 for (let i = 0; i < ballsArr.length; i++) {
                     ssc_11x5BallsView.push(
@@ -215,6 +246,95 @@ export default class NewOpenBallsView extends Component {
                     );
                 }
                 tpmpView = <View style={{flexDirection: 'row', marginLeft: 4}}>{lhcBallsView}</View>;
+            }
+            else if (this.state.js_tag == 'xync'){
+
+                let xyncViewArrs = [];  //视图数组
+
+                for (let i = 0; i < ballsArr.length; i++){
+
+                    xyncViewArrs.push(<Image key={i} source={XYNCImageArr[ballsArr[i] - 1]} style = {{width:Adaption.Width(30),height:Adaption.Width(30), resizeMode:'stretch'}}/>)
+                }
+
+                tpmpView = <View style={{flexDirection: 'row', marginLeft: 10}}>{xyncViewArrs}</View>;
+            }
+            else if (this.state.js_tag == 'xypk'){
+
+                let pokerImg1 = '';  //扑克1的图片路径
+                let pokerImg2 = '';  //扑克2的图片路径
+                let pokerImg3 = '';  //扑克3的图片路径
+                for (let i = 0 ; i < ballsArr.length; i++){
+
+                    let balls = parseInt(ballsArr[i], 10);
+                    let pokers = parseInt((balls/4) + 1);
+                    let pokerColorIdx = (balls%4);
+                    let pokerArr = [];
+
+                    switch (pokers){
+                        case 1:
+                            pokerArr = XYPokerA;
+                            break;
+                        case 2:
+                            pokerArr = XYPoker2;
+                            break;
+                        case 3:
+                            pokerArr = XYPoker3;
+                            break;
+                        case 4:
+                            pokerArr = XYPoker4;
+                            break;
+                        case 5:
+                            pokerArr = XYPoker5;
+                            break;
+                        case 6:
+                            pokerArr = XYPoker6;
+                            break;
+                        case 7:
+                            pokerArr = XYPoker7;
+                            break;
+                        case 8:
+                            pokerArr = XYPoker8;
+                            break;
+                        case 9:
+                            pokerArr = XYPoker9;
+                            break;
+                        case 10:
+                            pokerArr = XYPoker10;
+                            break;
+                        case 11:
+                            pokerArr = XYPokerJ;
+                            break;
+                        case 12:
+                            pokerArr = XYPokerQ;
+                            break;
+                        case 13:
+                            pokerArr = XYPokerK;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    switch (i){
+                        case 0:
+                            pokerImg1 = pokerArr[pokerColorIdx];
+                            break;
+                        case 1:
+                            pokerImg2 = pokerArr[pokerColorIdx];
+                            break;
+                        case 2:
+                            pokerImg3 = pokerArr[pokerColorIdx];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                tpmpView = <View style = {{flexDirection:'row'}}>
+                            <Image style = {{width:30,height:30, marginLeft:10, resizeMode:'contain'}} source = {pokerImg1}/>
+                            <Image style = {{width:30,height:30, marginLeft:5, resizeMode:'contain'}} source = {pokerImg2}/>
+                            <Image style = {{width:30,height:30, marginLeft:5, resizeMode:'contain'}} source = {pokerImg3}/>
+                        </View>
+
             }
 
             if (isUserArcBallsView) {

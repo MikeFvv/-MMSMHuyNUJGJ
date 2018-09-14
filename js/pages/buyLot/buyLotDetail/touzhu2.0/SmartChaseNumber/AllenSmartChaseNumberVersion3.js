@@ -1838,7 +1838,7 @@ export default class SmartChaseNumber extends Component {
         // });
 
         let  haha = this.state.datas[this.state.selsectNameIdx];
-        let singePrice = haha.value.singlePrice;   //一注基本倍数
+        let singePrice = haha.value.singlePrice * haha.value.zhushu;   //一注基本倍数
         let totalMoney = 0;
         let qishibeishu = parseInt(this.state.fanbeiqishibeishu);  //上一期倍数
         for (let i = 0; i < this.state.fanbeizhuihaoqishu; i++)

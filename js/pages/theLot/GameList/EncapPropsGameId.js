@@ -14,6 +14,7 @@ import {
  import RefreshListView, { RefreshState } from 'react-native-refresh-list-view'
  import BaseNetwork from '../../../skframework/component/BaseNetwork';
  import TheStyles from '../TheLotStyles';
+ import AllImg from "../TheLotStyleImg";
 
  let Pk10Hader = require('./Pk10Hader');
 
@@ -22,6 +23,13 @@ import {
  const screenHight = height;
 
  let   othercolor = 'rgba(85,85,85,1)';
+
+ const KAdaptionWith = width / 414;
+const KAdaptionHeight = height / 736;
+
+const blankWidth = 4 * KAdaptionWith; //间距
+const circleWidth = 28 * KAdaptionWith; //圆大小
+
 
  class EncapPropsGameId extends Component{
   
@@ -84,13 +92,15 @@ _fetchPreferentialData(isReload) {
     var promise = BaseNetwork.sendNetworkRequest(params);
     promise
       .then(response => {
-            
+          
+       
         if(requesMask!=this.numMark){
           return;
         }
   
         if (response.msg == 0) {
           let datalistArray = response.data;
+          console.log('页数',this.moreTime,'数据',response.data);
           if (datalistArray && datalistArray.length > 0) {
   
             let dataBlog = [];
@@ -317,6 +327,9 @@ _fetchPreferentialData(isReload) {
                   )
             
           }else if (this.state.js_tag == 'k3'){ 
+
+            let flexArrNum = [0.15,0.40,0.1,0.1,0.1,0.25];
+            let titleArrtext = [`${jiequQishu}期`,imageBall != '' ? haoBall :' 正在开奖...',imageBall != ''? addNum : '--',imageBall != ''? addStr : '--',imageBall != ''? singleStr : '--',imageBall != ''? allState  : '--']; 
           return  (
             <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
             <View style={{flex:0.15,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5,}}>
@@ -341,6 +354,11 @@ _fetchPreferentialData(isReload) {
                 )
 
           } else if (this.state.js_tag == '3d'){
+       
+            let flexArrNumO = [0.15,0.40,0.11,0.11,0.11,0.11,0.11];
+            let titleArrO = [`${jiequQishu}期`,imageBall != '' ? haoBall :' 正在开奖...',imageBall != ''? addNum  : '--',imageBall != ''? kudu   : '--',imageBall != ''? (bigBits+bitsSingle) : '--',
+            imageBall != ''? (bigTen+tenSingle) : '--',imageBall != ''? (bigBaiwei+baiweiSingle) : '--'];
+            
             return(
               <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
               <View style={{flex:0.15,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
@@ -475,6 +493,8 @@ _fetchPreferentialData(isReload) {
                   let samll11x5 = results % 2 != 0 ? '单' : '双';
                 
         return(
+
+
               <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
               <View style={{flex:0.18,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
                   <CusBaseText style={{fontSize: this.qishuFontSize,color:othercolor}}>{jiequQishu}期</CusBaseText>  
@@ -494,8 +514,315 @@ _fetchPreferentialData(isReload) {
                   </View>
               )
 
+              } else if (this.state.js_tag == 'tzyx'){
+ 
+                return(
+                  <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
+
+                     <View style={{flex:0.4,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                      <CusBaseText style={{fontSize: this.qishuFontSize,color:othercolor}}>{jiequQishu}期</CusBaseText>  
+                      </View>
+
+                      <View style={{flex:0.6,alignItems: 'center',flexDirection: 'row', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                        { value.balls != '' ? this._jdTZView(value.balls):this._kspksText() }        
+                      </View>
+
+                      </View>
+                  )
+                } else if (this.state.js_tag == 'xypk'){
+
+                
+                  let xypkBallArr = value.balls.split('+');
+                  ballStatus = this._pokerNumStatus(xypkBallArr);
+                  return(
+                  <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
+
+                     <View style={{flex:0.2,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                      <CusBaseText style={{fontSize: this.qishuFontSize,color:othercolor}}>{jiequQishu}期</CusBaseText>  
+                      </View>
+                      <View style={{flex:0.5,alignItems: 'center',flexDirection: 'row', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                        { value.balls != '' ? this._xingyunPK(xypkBallArr):this._kspksText() }        
+                      </View>
+                     <View style={{flex:0.3,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                      <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{xypkBallArr != '' ? ballStatus :'--'}</CusBaseText>  
+                      </View>
+                      </View>
+                  )
+
+              }  else if (this.state.js_tag == 'qxc'){
+
+                let imageBall = value.balls.split('+');
+                let haoBall = imageBall.join('  ')
+
+                let results = 0;
+              
+                for (var i = 0; i < imageBall.length; i++)
+                      {
+                        results += (Number.parseInt || parseInt)(imageBall[i]);//和值计算
+                      } 
+
+                      let qianBall= `${parseInt(imageBall[0]) <= 4 ? '小' : '大'}${parseInt(imageBall[0]) % 2 == 0 ? '双' : '单'}`;
+                      let baiBall= `${parseInt(imageBall[1]) <= 4 ? '小' : '大'}${parseInt(imageBall[1]) % 2 == 0 ? '双' : '单'}`;
+                      let shiBall= `${parseInt(imageBall[2]) <= 4 ? '小' : '大'}${parseInt(imageBall[2]) % 2 == 0 ? '双' : '单'}`;
+                      let geBall= `${parseInt(imageBall[3]) <= 4 ? '小' : '大'}${parseInt(imageBall[3]) % 2 == 0 ? '双' : '单'}`;
+                      let danshuan = results % 2 == 0 ? '双' : '单';
+                      let resultsSingle = results <= 17 ? '小' : '大';
+
+                return (
+                  <View style = {{flexDirection: 'row',height:40,width:width,flex:1}}>
+  
+                   <View style={{flex:0.14,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.qishuFontSize,color:othercolor}}>{jiequQishu}期</CusBaseText>  
+                    </View>
+  
+                    <View style={{flex:0.21,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{color:'red',fontSize: this.baseFontSize}}>{imageBall != '' ? haoBall :'正在开奖...'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? qianBall :'--'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? baiBall :'--'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? shiBall :'--'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? geBall :'--'}</CusBaseText> 
+                    </View> 
+
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? results :'--'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? resultsSingle :'--'}</CusBaseText> 
+                    </View> 
+  
+                    <View style={{flex:0.1,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
+                    <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != '' ? danshuan :'--'}</CusBaseText> 
+                    </View> 
+
+
+                  </View>
+                  )
               } 
         }
+
+
+
+   _allFlexTextUIView(flexArrNumAll,titleArrAll){
+   
+
+   }
+
+
+ 
+
+    //扑克牌开奖号码状态
+    _pokerNumStatus(ballsArr){
+
+        let ballStatues = '';  //开奖后的状态
+        let pokerArr = [];  //扑克解析后数组
+        console.log('扑克',ballsArr);
+        if (ballsArr.length == 3){ //开奖号码长度为3时才能进来
+
+           //浅拷贝
+           let temArray = [];
+           ballsArr.map(dict => {
+               temArray.push(dict)
+           })
+
+           //对数组进行从小到大的排序
+           temArray = this._sort(temArray);
+
+            for (let i = 0; i < temArray.length; i++){
+
+                let balls = parseInt(temArray[i], 10);
+                let pokers = parseInt((balls/4) + 1);
+                let pokerColorIdx = (balls%4);
+                pokerArr.push({pokerNum:pokers, pokerIdx:pokerColorIdx});
+            }
+
+
+                  //特殊的判断,A,Q,K也是顺子
+                  if (pokerArr[0].pokerNum == 1 && pokerArr[1].pokerNum == 12 && pokerArr[2].pokerNum == 13){  //顺子的状态
+
+                    //ballsArr = ['51', '47', '3']; Q,K,A,同花顺
+    
+                    if (pokerArr[0].pokerIdx == pokerArr[1].pokerIdx && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                        ballStatues = '同花顺';
+                    }
+                    else {
+                        ballStatues = '顺子';
+                    }
+                }
+                else {
+    
+                    //非Q,K,A的判断
+    
+                    if (pokerArr[1].pokerNum == pokerArr[0].pokerNum + 1 && pokerArr[2].pokerNum == pokerArr[1].pokerNum + 1 && pokerArr[0].pokerIdx == pokerArr[1].pokerIdx && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                        ballStatues = '同花顺';
+                    }
+                    else if (pokerArr[0].pokerNum == pokerArr[1].pokerNum && pokerArr[1].pokerNum == pokerArr[2].pokerNum) {
+                        ballStatues = '豹子';
+                    }
+                    else if (pokerArr[0].pokerIdx == pokerArr[1].pokerIdx  && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                        ballStatues = '同花';
+                    }
+                    else if (pokerArr[1].pokerNum == pokerArr[0].pokerNum + 1 && pokerArr[2].pokerNum == pokerArr[1].pokerNum + 1){
+                        ballStatues = '顺子';
+                    }
+                    else if (pokerArr[0].pokerNum == pokerArr[1].pokerNum || pokerArr[0].pokerNum == pokerArr[2].pokerNum || pokerArr[1].pokerNum == pokerArr[2].pokerNum){
+                        ballStatues = '对子';
+                    }
+                    else if (pokerArr[0].pokerNum != pokerArr[1].pokerNum && pokerArr[0].pokerNum != pokerArr[2].pokerNum && pokerArr[1].pokerNum != pokerArr[2].pokerNum){
+                        ballStatues = '单张';
+                    }
+                }
+            }
+    
+            return ballStatues;
+        }
+
+
+            // 数组排序
+  _sort(ballsAr) {
+      for (let a = 0; a < ballsAr.length; a++) {
+          for (let b = a + 1; b < ballsAr.length; b++) {
+              if (parseInt(ballsAr[a]) > parseInt(ballsAr[b])) {
+                  let temp = ballsAr[a];
+                  ballsAr[a] = ballsAr[b];
+                  ballsAr[b] = temp;
+              }
+          }
+      }
+      return ballsAr;
+  }
+
+  //幸运扑克
+  _xingyunPK(allBalls){
+   
+   let imgPk1= ''; let imgPK2= ''; let imgPK3= ''; let xyViewPk10 = [];
+
+   for (let i = 0 ; i < allBalls.length; i++){
+
+       let ballText = parseInt(allBalls[i], 10);
+       let numText = parseInt((ballText/4) + 1);
+       let numColorIdx = (ballText%4);
+       let numAllArr = [];
+
+       switch (numText){
+           case 1:
+           numAllArr = AllImg.pokerAImgArr;
+               break;
+           case 2:
+           numAllArr = AllImg.poker2ImgArr;
+               break;
+           case 3:
+           numAllArr = AllImg.poker3ImgArr;
+               break;
+           case 4:
+           numAllArr = AllImg.poker4ImgArr;
+               break;
+           case 5:
+           numAllArr = AllImg.poker5ImgArr;
+               break;
+           case 6:
+           numAllArr = AllImg.poker6ImgArr;
+               break;
+           case 7:
+           numAllArr = AllImg.poker7ImgArr;
+               break;
+           case 8:
+           numAllArr = AllImg.poker8ImgArr;
+               break;
+           case 9:
+           numAllArr = AllImg.poker9ImgArr;
+               break;
+           case 10:
+           numAllArr = AllImg.poker10ImgArr;
+               break;
+           case 11:
+           numAllArr = AllImg.pokerJImgArr;
+               break;
+           case 12:
+           numAllArr = AllImg.pokerQImgArr;
+               break;
+           case 13:
+           numAllArr = AllImg.pokerKImgArr;
+               break;
+           default:
+               break;
+       }
+
+       switch (i){
+           case 0:
+               imgPk1 = numAllArr[numColorIdx];
+               break;
+           case 1:
+               imgPk2 = numAllArr[numColorIdx];
+               break;
+           case 2:
+               imgPk3 = numAllArr[numColorIdx];
+               break;
+           default:
+               break;
+       }
+   }
+
+   xyViewPk10 = <View style = {{flexDirection:'row',marginTop:1}}>
+                            <Image style = {{width:35,height:35,resizeMode:'contain'}} source = {imgPk1}/>
+                            <Image style = {{width:35,height:35, marginLeft:3, resizeMode:'contain'}} source = {imgPk2}/>
+                            <Image style = {{width:35,height:35, marginLeft:3, resizeMode:'contain'}} source = {imgPk3}/>     
+      </View>
+    return xyViewPk10;
+
+  }
+
+        _jdTZView(balls){
+
+          console.log('ball',balls);
+          let ballArr = balls.split('+');
+                 
+          let ladderCount = parseInt(ballArr[1],10) == 0 ? '3' : '4';
+      
+          let  leftRight = parseInt(ballArr[0],10) == 0 ? '左' :'右';
+          let  singleStr = parseInt(ballArr[2],10) == 0 ? '单' :'双';
+          let  singleStrColor = parseInt(ballArr[2],10) != 0 ? '#00a0e9' :'#e33939';
+          return (
+           <View style = {{alignItems: 'center',flexDirection: 'row', justifyContent:'center',}}>
+
+            <View style = {{ width: 30, height: 30,backgroundColor:'#dcdcdc', borderRadius:30* 0.5,}}>
+                <CusBaseText style={[TheStyles.textRound,{color:'#626262',marginTop:6}]}>
+                  {leftRight}
+                </CusBaseText>
+              </View>
+  
+               <View style = {{ width: 30,
+              height: 30,backgroundColor:'#626262', borderRadius:30* 0.5,marginLeft:15}}>
+                <CusBaseText style={[TheStyles.textRound,{color:'white',marginTop:6}]}>
+                  {ladderCount}
+                </CusBaseText>
+              </View>
+  
+               <View style = {{ width:30,
+              height:30,backgroundColor:singleStrColor, borderRadius:35* 0.5,marginLeft:15}}>
+                <CusBaseText style={[TheStyles.textRound,{color:'white',marginTop:6}]}>
+                  {singleStr}
+                </CusBaseText>
+  
+              </View>
+              </View>
+
+          );
+        
+        }
+
 
 
 
@@ -558,7 +885,6 @@ _fetchPreferentialData(isReload) {
                 </View>
               )
           }
-
         }
 
     _kspksText() {

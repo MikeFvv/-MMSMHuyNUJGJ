@@ -32,7 +32,7 @@ export default class DateTimePicker extends Component {
       choose1: "",
       hide: true,
       tipTextColor: '#333333',
-      aHeight: iphoneX ? 310 : 440,
+      aHeight: iphoneX ? 310 : 460,
     };
     this.entityList = [];//数据源
     this.callback = function () {
@@ -239,7 +239,7 @@ export default class DateTimePicker extends Component {
        }else if (len === 3) {
          this.setState({title: title, choose0: entityList[0], choose1: entityList[1], hide: false, tipTextColor: tipTextColor, aHeight:245}, this.in);
        }else if (len === 4) {
-         this.setState({title: title, choose0: entityList[0], choose1: entityList[1], hide: false, tipTextColor: tipTextColor, aHeight:290}, this.in);
+         this.setState({title: title, choose0: entityList[0], choose1: entityList[1], hide: false, tipTextColor: tipTextColor, aHeight:300}, this.in);
        }
      }
    }

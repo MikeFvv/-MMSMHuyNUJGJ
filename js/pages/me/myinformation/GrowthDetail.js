@@ -349,7 +349,7 @@ export default class GrowthDetail extends Component {
                     <CusBaseText style={{color:'#565656',fontSize:itemFontsize}}>{'LV.'+item.vip}</CusBaseText>
                 </View>
                 <View style={{flex:0.2,alignItems:'center'}}>
-                    <CusBaseText style={{color:'#565656',fontSize:itemFontsize}}>{item.exp}</CusBaseText>
+                    <CusBaseText style={{color:'#565656',fontSize:itemFontsize}}>{this._AccurateToTrillions(item.exp)}</CusBaseText>
                 </View>
                 <View style={{flex:0.2,alignItems:'center'}}>
                     <CusBaseText style={{color:'#565656',fontSize:itemFontsize}}>{item.level_reward}</CusBaseText>
@@ -362,6 +362,23 @@ export default class GrowthDetail extends Component {
                 </View>
             </View>
         );
+    }
+
+
+    //成长值 防呆设置 万 亿 by Allen
+    // 34 0000000
+    _AccurateToTrillions(exp){
+
+        let expStr = exp+'';
+         if (expStr.length >= 9){
+             let realExp = expStr.substring(0,expStr.length -7);
+            return realExp.substr(0,realExp.length -1) + '.' + realExp.substr(realExp.length -1,1) + '亿';
+        }else if (expStr.length >= 5){
+             let realExp = expStr.substring(0,expStr.length -3);
+            return realExp.substr(0,realExp.length -1) + '.' + realExp.substr(realExp.length -1,1) + '万';
+        }
+        return expStr
+
     }
 
 }

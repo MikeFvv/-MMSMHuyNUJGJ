@@ -531,6 +531,93 @@ function returnSelectBalls(params) {
         // 五连肖 || 5连尾
         arcNumArr = returnArcBallArr(5, len);
       }
+
+    } else if (js_tag == 'xypk') {
+      if (playid == 8) {
+        // 任选二
+        arcNumArr = returnArcBallArr(2, len);
+
+      } else if (playid == 9) {
+        // 任选三
+        arcNumArr = returnArcBallArr(3, len);
+
+      } else if (playid == 10) {
+        // 任选四
+        arcNumArr = returnArcBallArr(4, len);
+
+      } else if (playid == 11) {
+        // 任选五
+        arcNumArr = returnArcBallArr(5, len);
+
+      } else if (playid == 12) {
+        // 任选六
+        arcNumArr = returnArcBallArr(6, len);
+      }
+    
+    } else if (js_tag == 'xync') {
+      if (playid == 1) {
+        // 双面盘
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 9);
+        }
+        arcNumArr = (tempArcInt == idx) ? returnArcBallArr(1, 8) : [];
+        arcNumArr = arcNumArr.length > 0 ? [arcNumArr[0] + tempArcInt * 8]: [];
+      }
+    
+    } else if (js_tag == 'qxc') {
+      if (playid == 1) {
+        // 一定位
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        arcNumArr = tempArcInt == idx ? returnArcBallArr(1, len) : [];
+
+      } else if (playid == 2) {
+        // 二定复式，选择两个位
+        if (idx == 0) {
+          tempArcInt = returnArcBallArr(2, 4).join('-');
+        }
+        let tempArcIntArr = tempArcInt.split('-');
+        if (tempArcIntArr.includes((idx).toString())) {
+          arcNumArr = returnArcBallArr(1, len);
+        } else {
+          arcNumArr = [];
+        }
+
+      } else if (playid == 3) {
+        // 三定复式， 选择三个位
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        arcNumArr = (tempArcInt != idx) ? returnArcBallArr(1, len) : [];
+
+      } else if (playid == 5) {
+        // 二字现
+        arcNumArr = returnArcBallArr(2, len);
+
+      } else if (playid == 6) {
+        // 三字现
+        arcNumArr = returnArcBallArr(3, len);
+
+      } else if (playid == 7) {
+        // 和值组选
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 2);
+        }
+        arcNumArr = (tempArcInt == idx) ? returnArcBallArr(1, 4) : [];
+        arcNumArr = arcNumArr.length > 0 ? [arcNumArr[0] + tempArcInt * 4]: [];
+
+      } else if (playid == 8) {
+        // 定位大小单双
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        arcNumArr = tempArcInt == idx ? returnArcBallArr(1, len) : [];
+
+      } else {
+        arcNumArr = returnArcBallArr(1, len);
+        tempArcArr = idx == 1 ? [...tempArcArr, ...arcNumArr] : arcNumArr;
+      }
     }
 
 
@@ -552,10 +639,11 @@ function returnSelectBalls(params) {
         // 特肖、平特一肖 || 合肖 || 五行 || 二三四五连肖 下标从1开始
         let lhcIdxFrom1 = js_tag == 'lhc' && (tpl == '6' || tpl == '7' || tpl == '8' || tpl == '14');
         let k3th = js_tag == 'k3' && playid == '7'; // 二同号 标从1开始
+        let xypkrx = js_tag == 'xypk' || js_tag == 'xync' || js_tag == 'tzyx'; // 幸运扑克 / 幸运农场 / 经典梯子
 
         // 用于判断那些ball是中文的，
         let preg = /^([\d]|[\d][\d])$/; // [\d] === [0-9] 查找数字
-        isChinese = !preg.test(ballsArr[j].ball) || k3hz || k3th || lhcIdxFrom1; // true:为中文
+        isChinese = !preg.test(ballsArr[j].ball) || k3hz || k3th || lhcIdxFrom1 || xypkrx; // true:为中文
         isPeilv = params.ballsArr[j].peilv != null; // true:有赔率
 
         rdmSltBlArr.push(`${ballsArr[j].ball}`);
@@ -573,10 +661,15 @@ function returnSelectBalls(params) {
           }
         }
 
+        let xyncSMP = js_tag == 'xync' && playid == 1;  // 幸运农场 双面盘
         // 中文
         if (isChinese) {
           if (lhcIdxFrom1 || k3th) {
             rdmSltBlNumArr.push((j+1).toString()); // 下标从1开始
+
+          } else if (xyncSMP) {
+            rdmSltBlNumArr.push((j % 8).toString());
+
           } else {
             rdmSltBlNumArr.push(j.toString()); // 下标从0开始
           }

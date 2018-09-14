@@ -378,6 +378,25 @@ class NewBalls0_9Peilv extends Component {
         }
         arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
       }  
+    
+    } else if (js_tag == 'qxc') {
+      if (playid == 7) {
+        // 和值组选
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 2);
+        }
+        arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
+        
+      } else if (playid == 8) {
+        // 定位大小单双
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
+
+      } else {
+        arcNumArr = this._returnArcBallArr(1);
+      }
     }
 
     // 小到大排序

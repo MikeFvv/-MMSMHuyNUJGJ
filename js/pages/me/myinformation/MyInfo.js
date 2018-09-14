@@ -34,6 +34,8 @@ var options = {
     }
 };
 
+// navigate('MyInfo',{switchSegment:true});
+
 export default class MyInfo extends Component {
 
     static navigationOptions = ({navigation}) => ({
@@ -98,6 +100,11 @@ export default class MyInfo extends Component {
             myInfoNavPress:this._showInfo,
             segmentedPosition:0,
         });
+        //是不是要切换Segment到等级头衔
+        if (this.props.navigation.state.params && this.props.navigation.state.params.switchSegment) {
+            this.switchSegment = this.props.navigation.state.params.switchSegment;
+            this.switchSegment ?  this._showInfo(1) : null;
+        }
     }
 
     //切换segment

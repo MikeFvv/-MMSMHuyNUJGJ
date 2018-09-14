@@ -78,8 +78,21 @@
 
         numberArrFlex = [0.18,0.43,0.12,0.25,0.25,];
         titleArrName  = ['期号','开奖号码','跨度','重号个数','总和值'];
-    }
 
+    }  else if (this.state.alljs_tag == 'qxc'){ //海南七星彩
+
+        numberArrFlex = [0.14,0.21,0.1,0.1,0.1,0.1,0.1,0.1,0.1];
+        titleArrName = ['期号','开奖号码','千位','百位','十位','个位','总和','大小','单双'];
+
+    }  else if (this.state.alljs_tag == 'tzyx'){  //经典梯子
+
+        numberArrFlex = [0.4,0.6];
+        titleArrName = ['期号','开奖号码'];
+    } else if (this.state.alljs_tag == 'xypk'){
+
+        numberArrFlex = [0.2,0.5,0.3];
+        titleArrName = ['期号','开奖号码','状态'];
+    }
         var arrayTitle =[];
         for (let i = 0; i< numberArrFlex.length; i++){
 

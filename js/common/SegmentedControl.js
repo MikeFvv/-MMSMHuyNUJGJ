@@ -40,13 +40,9 @@ export default class SegmentedControl extends Component {
 	 }
 
 	 _renderSegmente(){
-
 	 	let viewsArr = [];
-
 	 	this.props.values.map((value,position)=>{
-
 	 		viewsArr.push(
-
 	 			<TouchableHighlight
 			    	key={position}
 			    	activeOpacity={1}
@@ -64,28 +60,28 @@ export default class SegmentedControl extends Component {
 	 		);
 
 	 	});
-
 	 	return viewsArr;
 	 }
 
-
 	 _itemW = () => {
-
 	 	if (this.props.style && this.props.style.width) {
 	 		return this.props.style.width/this.props.values.length;
 	 	}
-
 	 	return segmentW;
 	 }
 
 	 _itemH = () => {
-
 	 	if (this.props.style && this.props.style.height) {
 	 		return this.props.style.height;
 	 	}
-
 	 	return segmentH;
 	 }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            selectedIndex: nextProps.selectedIndex,
+		});
+    }
 
 }
 

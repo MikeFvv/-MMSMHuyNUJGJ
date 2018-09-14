@@ -12,6 +12,11 @@
  import FC3DCaculMethod from './caculator/FC3DCaculator';  //福彩3D计算注数的方法
  import PCDDCaculMethod from './caculator/PCDDCaculator';  //PCDD计算注数的方法
  import LHCCaculMethod from './caculator/LHCCaculator';  //六合彩计算注数的方法
+ import QXCCalculation from './caculator/QXCCalculation';  // 七星彩注数
+ import XyncCalculation from './caculator/XyncCalculation'; // 幸运农场注数
+ import XypkCalculation from './caculator/XypkCalculation'; // 幸运扑克注数
+ import XytzCaculation from './caculator/XytzCaculation';  //经典梯子
+ import PkniuniuCaculation from './caculator/PkNiuniuCaculation';  //pk牛牛
  import GetBallStatus from './touzhu2.0/newBuyTool/GetBallStatus'; // 用于拿六合彩生肖对应的号码
 
 export default {
@@ -323,12 +328,17 @@ function handleTouZhuBalls(params) {
   let pcddHH = (js_tag == 'pcdd' && playid == 3) || (js_tag == 'k3' && playid == 15); // pcdd混合 || K3三同号 // 按双面盘的拼接
   let pk10GYH = js_tag == 'pk10' && playid == 7; // 冠亚和
   let d3dHZ = js_tag == '3d' && (playData.tpl == 2 || playData.tpl == 3 || playData.tpl == 4); // 直选和值、组三和值、组六和值
+  let qxcHZZX = js_tag == 'qxc' && playid == 7;  // 和值组选
+  let xypkBX = js_tag == 'xypk' && playid == 1;  // 幸运扑克包选
+  let xyncNQ = js_tag == 'xync' && (playid == 2 || playid == 3 || playid == 4 || playid == 5 || playid == 6 || playid == 7 || playid == 8 || playid == 9); // 第一球 〜 第八球
+  let xytzJD = js_tag == 'tzyx';
+  let pkniuniu = js_tag == 'pkniuniu';
   // 牛牛
   let isNiuniu = playData.playname.includes('牛牛');
   // 双面盘(PK10除外) 或者 龙虎斗
-  let isSMP_LHD = (playData.playname.includes('双面盘') && js_tag != 'pk10') || playData.playname.includes('龙虎斗');
+  let isSMP_LHD = (playData.playname.includes('双面盘') && js_tag != 'pk10' && js_tag != 'xync') || playData.playname.includes('龙虎斗');
 
-  if (k3HZ || sscTSH || pcddTM || d3dHZ || isNiuniu) {
+  if (k3HZ || sscTSH || pcddTM || d3dHZ || xypkBX || xyncNQ || isNiuniu || xytzJD) {
     // 号码分开投注的（单注模式，每个号码的赔率都不同的）
 
     let title = params.titles[0];  // 这样的 titles只有一个值的，直接拿第0个下标就好了。
@@ -414,7 +424,7 @@ function handleTouZhuBalls(params) {
       shopCarModelArr.push({value:shopCarModel});
     }
 
-  } else if (isSMP_LHD || pcddHH || pk10GYH) {
+  } else if (isSMP_LHD || pcddHH || pk10GYH || qxcHZZX) {
     // 双面盘 / 龙虎斗
     let peilvArr = playPeilv.split('|'); 
     let titlesArr = params.titles;
@@ -478,7 +488,9 @@ function handleTouZhuBalls(params) {
     let x11x5BallQZ = js_tag == '11x5' && (playid == 29 || playid == 52); // 定位胆、定位大小单双
     let pcddBallQZ = js_tag == 'pcdd' && (playid == 6 || playid == 7); // 定位胆、定位大小单双
     let d3dBallQZ = js_tag == '3d' && (playid == 12 || playid == 24); // 定位胆、定位大小单双
-    if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ) {
+    let qxcBallQZ = js_tag == 'qxc' && (playid == 1 || playid == 2 || playid == 3 || playid == 4 || playid == 8);  // 一定位、二、三、四定复式、定位大小单双
+    let xyncBallQZ = js_tag == 'xync' && playid == 1;  // 双面盘
+    if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ || qxcBallQZ || xyncBallQZ) {
       selectBallsNum = addBallsQZ(params.titles, selectTitles, selectBallsNum);
     }
 
@@ -542,7 +554,7 @@ function handleTouZhuBalls(params) {
       })
 
 
-      if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ) {
+      if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ || qxcBallQZ || xyncBallQZ) {
         ballsStr = ''; // 这些要拼前缀的，要重新拼ballsStr。因为它前面多了一个前缀号
         for (let i = 0; i < selectBallsNum.length; i++) {
           let rowBallNumStr = selectBallsNum[i].join('|');
@@ -620,10 +632,12 @@ function calcAllPlayGame(parameter) {
     let x11x5BallQZ = js_tag == '11x5' && (playid == 29 || playid == 52); // 定位胆、定位大小单双
     let pcddBallQZ = js_tag == 'pcdd' && (playid == 6 || playid == 7);  // 定位胆、定位大小单双
     let d3dBallQZ = js_tag == '3d' && (playid == 12 || playid == 24); // 定位胆、定位大小单双
+    let qxcBallQZ = js_tag == 'qxc' && (playid == 1 || playid == 2 || playid == 3 || playid == 4 || playid == 8);  // 一定位、二、三、四定复式、定位大小单双
     let lhcLmBallQZ = js_tag == 'lhc' && (tpl == '7' || tpl == '12');  // 合肖、自选不中
     let lhcLmLx = js_tag == 'lhc' && (tpl == '13' || tpl == '14' || tpl == '15'); //六合彩 连码 连肖
     let pcddHH = (js_tag == 'pcdd' && playid == 3) || (js_tag == 'k3' && playid == 15) || (playData.wanfa.includes('龙虎斗')); // pcdd混合 || K3三同号  || 龙虎斗
-    if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ) {
+    let qxcHZZX = js_tag == 'qxc' && playid == 7;  // 和值组选
+    if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ || qxcBallQZ) {
       selectBallsArr = addBallsQZ(titles, selectBallsKey, selectBallsArr);
     }
 
@@ -631,7 +645,7 @@ function calcAllPlayGame(parameter) {
     let caculateZhuShuArr = [];
     let balls = '';
 
-    if (parameter.playData.playname.includes('双面盘') || pcddHH) {
+    if (parameter.playData.playname.includes('双面盘') || pcddHH || qxcHZZX) {
       // 双面盘。 所有彩种的双面盘注数直接在这里计算，然后直接返回注数。
       for (let b in selectBallsArr) {
 
@@ -699,7 +713,7 @@ function calcAllPlayGame(parameter) {
 
           } else {
             // 有拼 前缀的。一排算一注的。
-            if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ) {
+            if (sscBallQZ || pk10BallQZ || x11x5BallQZ || pcddBallQZ || d3dBallQZ || qxcBallQZ) {
               for (let i = 0; i< selectBallsArr.length; i ++) {
                 balls = '';
                 for (let j = 0; j < selectBallsArr[i].length; j++) {
@@ -773,6 +787,21 @@ function calcAllPlayGame(parameter) {
       else if (js_tag == 'lhc' && !lhcLmLx) {
         let dict = LHCCaculMethod.getLHCNumberMethod(playid, caculateZhuShuArr);
         zhushu = dict.zhushu;
+      }
+      else if (js_tag == 'qxc') {
+        zhushu = QXCCalculation.getQXCNumMethod(playid, caculateZhuShuArr);
+
+      } else if (js_tag == 'xync') {
+        zhushu = XyncCalculation.getXyncNumMethod(playid, caculateZhuShuArr);
+
+      } else if (js_tag == 'xypk') {
+        zhushu = XypkCalculation.getXypkNumMethod(playid, caculateZhuShuArr);
+      }
+      else if (js_tag == 'tzyx'){
+        zhushu = XytzCaculation.getXytzNumMethod(playid, caculateZhuShuArr);
+      }
+      else if (js_tag == 'pkniuniu'){
+          zhushu = PkniuniuCaculation.getPkniuniuNumMethod(playid, caculateZhuShuArr);
       }
 
       return zhushu;

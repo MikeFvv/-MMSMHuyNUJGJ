@@ -44,7 +44,7 @@ global.GLOBALisRNParameters = true;
 global.SwitchRoute = 1;
 
 // 版本号    版本号的格式：v<主版本号>.<副版本号>.<发布号>
-global.VersionNum = 'v2.56.1';
+global.VersionNum = 'v2.57.0';
 // --------------------
 
 // 业主请求URL 每个App的请求域名(每个App都不一样) 会返回不同的域名及状态
@@ -163,6 +163,7 @@ global.UserLoginObject = {
     'fp_3d': '', // 3D
     'fp_11x5': '', // 11选5
     'fp_lhc': '', // 六合彩
+    'fp_other':'', //其他彩种的返点
     'user_Name': '', //用户名称
     'user_Pwd': '',  //用户密码
     'rise_lock': '', //每日加奖是否跳动

@@ -134,33 +134,8 @@ export default class ShopCarDetail extends Component {
         this.props.navigation.setParams({
             clearShopCar: this._clearShopCar,
         })
-
-        //接受倒计时通知,弹出是否清空购物车界面
-        // this.subscription = PushNotification.addListener('CountTimeDeadLine1', () => {
-        //
-        //     //已经选了内容的
-        //     if (isRemindJieZhi == false && this.state.dataSource.length != 0 && global.isInShopCarVC == true && global.isInBuyLotVC == false) {
-        //         //自定义弹窗
-        //         this.refs.RNAlert && this.refs.RNAlert.show();
-        //         this.refs.RNAlert && this.refs.RNAlert.dissmiss(3);
-        //         isRemindJieZhi = true;
-        //     }
-        //
-        //     //延迟30秒设置为False,防止 通知过快重复弹窗
-        //     setTimeout(() => {
-        //         isRemindJieZhi = false;
-        //     }, 30000);
-        //
-        // });
     }
-
-    // componentWillUnmount() {
-    //
-    //     if (typeof (this.subscription) == 'object') {
-    //         this.subscription && this.subscription.remove(); //移除通知
-    //     }
-    // }
-
+    
     //清空购物车的方法, 箭头函数，导航栏按钮的方法
     _clearShopCar = () => {
 
@@ -995,12 +970,6 @@ export default class ShopCarDetail extends Component {
                     </Modal>
                     <LoadingView ref='LoadingView' />
                     <Toast ref="Toast" position='center' />
-                    <RNAlert comformBtnTitle={'确定'} cancleBtnTitle={'取消'} comformClik={() => {
-                        this._reasetShopCar();
-                        isRemindJieZhi = false;
-                    }} dissmissClick={() => {
-                        isRemindJieZhi = false;
-                    }} ref='RNAlert' alertTitle={'提示'} alertContent={'本期倒计时截止' + '\n' + '是否清空购物车'} />
                 </View>
                 <AllenKeyboard ref='AllenKeyBoard' spitout={(textValue1) => {
                     // this.setState({textValue1})

@@ -133,6 +133,10 @@ class NewLotBlockView extends Component {
                 {
                     this.shiyixuanwuList.push(item)
                 }
+                else if(item.js_tag === 'sport_key')
+                {
+                    // this.shiyixuanwuList.push(item)
+                }
                 else
                 {
                     this.otherList.push(item)
@@ -258,7 +262,7 @@ class NewLotBlockView extends Component {
                                   automaticallyAdjustContentInsets={false}
                                   scrollEnabled={false}
                                   alwaysBounceHorizontal={false}
-                                  data={[{title: '时时彩'}, {title: '快三'},{title: 'PK拾'},{title: '六合彩'},{title: '11选5'},{title: 'PC蛋蛋'},{title: '3D'}]}
+                                  data={[{title: '时时彩'}, {title: '快三'},{title: 'PK拾'},{title: '六合彩'},{title: '11选5'},{title: 'PC蛋蛋'},{title: '3D'},{title: '其它'}]}
                                   renderItem={(item) => this._renderItemView(item)}
                                   horizontal={false}
                                   numColumns={1}

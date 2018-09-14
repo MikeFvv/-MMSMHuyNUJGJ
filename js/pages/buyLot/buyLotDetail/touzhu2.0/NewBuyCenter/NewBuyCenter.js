@@ -196,6 +196,9 @@ export default class NewBuyCenter extends Component {
     } else if (this.props.js_tag == 'pk10') {
       return this._pk10CreateViews(Values);
 
+    } else if (this.props.js_tag == 'qxc') {
+      return this._qxcCreateViews(Values); // 海南七星彩
+
     } else if (this.props.js_tag == 'lhc') {
       return this.props.wanfaindex == 0 ? this._lhcCreateViews(Values) : this._lhcOptionViews(Values);
     }
@@ -299,13 +302,13 @@ export default class NewBuyCenter extends Component {
   }
 
   // 创建Balls0_9Peilv的视图  H:80 NoPeilv H:65   
-  _balls09PeilvCreateView(values, balls, isShowTitlt, viewHeight, numColumn) {
+  _balls09PeilvCreateView(values, balls, isShowTitlt, viewHeight, numColumn, contents) {
 
     if (balls.length <= 0) {
       return [];
     }
     
-    let contentArr = values.content.includes('+') ? values.content.split('+') : [values.playname];
+    let contentArr = contents && contents.length > 0 ? contents : (values.content.includes('+') ? values.content.split('+') : [values.playname]);
     let peilvArr = this._getPeilvWithPlayid(values.playid).split('|'); 
     this.state.BallAsrr = [];
 
@@ -327,8 +330,9 @@ export default class NewBuyCenter extends Component {
     let x11x5LHD = this.props.js_tag == '11x5' && values.playid == 54; // 11x5龙虎斗
     let sscLHD = this.props.js_tag == 'ssc' && values.playid == 129; // ssc龙虎斗
     let pk10GYH = this.props.js_tag == 'pk10' && values.playid == 7; // pk10冠亚和
+    let qxcHZZX = this.props.js_tag == 'qxc' && values.playid == 7; // qxc和值组选
 
-    if (sscSMP || pk10SMP || x11x5SMP || d3dSMP || k3SMP || pcddHH || d3dLHD || x11x5LHD || sscLHD || pk10GYH) {
+    if (sscSMP || pk10SMP || x11x5SMP || d3dSMP || k3SMP || pcddHH || d3dLHD || x11x5LHD || sscLHD || pk10GYH || qxcHZZX) {
       
       if (sscSMP) {
         contentArr = ['总和值', '后二和值', '万位', '千位', '百位', '十位', '个位'];
@@ -475,6 +479,14 @@ export default class NewBuyCenter extends Component {
           balls[b] = { key: idx, ball: balls[b], ballNum: idx, peilv: peilvArr[idx] };
         } 
         this.state.TitlesArr = ['冠亚和'];
+        this.state.BallAsrr = [...this.state.BallAsrr, ...balls];
+
+      }  else if (qxcHZZX) {
+        balls = i == 0 ? ['大', '小', '单', '双'] : ['大单', '小单', '大双', '小双'];
+        for (let b = 0; b < balls.length; b++) {
+          let idx = i*4+b;
+          balls[b] = { key: idx, ball: balls[b], ballNum: idx, peilv: peilvArr[idx] ? peilvArr[idx] : '0.0' };
+        }  
         this.state.BallAsrr = [...this.state.BallAsrr, ...balls];
       }
 
@@ -1101,6 +1113,49 @@ export default class NewBuyCenter extends Component {
     return this._balls09PeilvCreateView(values, balls, isShowTitlt, viewHeight);
   }
 
+  _qxcCreateViews(values) {
+    let playid = values.playid;
+    var viewHeight = 90;
+    var isShowTitlt = false;
+    var numColumn = 4;
+    var balls = [];
+    var contents = [];
+    
+
+    if (playid == 7) {
+      // 和值组选
+      balls = ['大', '小', '单', '双'];
+      contents = ['和值', '组合'];
+      viewHeight = 110;
+
+    } else if (playid == 8) {
+      // 定位
+      balls = ['大', '小', '单', '双'];
+      contents = ['千位', '百位', '十位', '个位'];
+
+    } else if (playid == 9) {
+      // 前二
+      balls = ['大', '小', '单', '双'];
+      contents = ['千位', '百位'];
+
+    } else if (playid == 10) {
+      // 前三
+      balls = ['大', '小', '单', '双'];
+      contents = ['千位', '百位', '十位'];
+      
+    } else if (playid == 11) {
+      // 后二
+      balls = ['大', '小', '单', '双'];
+      contents = ['十位', '个位'];
+      
+    } else if (playid == 12) {
+      // 后三
+      balls = ['大', '小', '单', '双'];
+      contents = ['百位', '十位', '个位'];
+    }
+    return this._balls09PeilvCreateView(values, balls, isShowTitlt, viewHeight, numColumn, contents);
+  }
+
   _lhcCreateViews(values) {
     var isShowTitlt = false;
     var balls = [];
@@ -1557,6 +1612,10 @@ export default class NewBuyCenter extends Component {
     } else if (this.props.js_tag == 'lhc' && playData.tpl == 12) {
       // 自选不中
       showSelectPlay = false;
+
+    } else if (this.props.js_tag == 'qxc') {
+      // 七星彩
+      showSelectPlay = true;
     }
 
     if (isChangeWanfa) {

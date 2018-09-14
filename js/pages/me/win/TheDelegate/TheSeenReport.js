@@ -144,6 +144,12 @@ export default class TheSeenReport extends React.Component {
            isNoData:false,
          });
          this._fetchPreferentialData(true,false);
+
+         nextuIdArray.push(this.props.navigation.state.params.next_uidName)
+         // // 缓存数据
+          let datas = JSON.stringify(nextuIdArray);
+          AsyncStorage.setItem('DailiId', datas, (error) => { });      
+
        }
 
 
@@ -206,7 +212,7 @@ export default class TheSeenReport extends React.Component {
     
            if (response.msg == 0) {
              let nextArray = response.data;
-
+               console.log(response.data);
               if (nextArray && nextArray.length>0){
                let josnBlogArr = [];
                let i = 0;
@@ -301,7 +307,7 @@ export default class TheSeenReport extends React.Component {
     
      } else{
 
-      if (item.item.value.next_count != 0 ) {  //active_count //换取字段的人数
+      if (item.item.value.next_daili != 0 ) {  //active_count //换取字段的人数
         selectedArr = [item.item.value.username,"查看报表","返回上级","查看下级"];
       }else {
         selectedArr = [item.item.value.username,"查看报表","返回上级"];
@@ -352,31 +358,11 @@ export default class TheSeenReport extends React.Component {
   
                     } else {
                       
-                      if (nextuIdArray != null && nextuIdArray.length > 0){
-
-                        nextuIdArray = [];
-                        //  重新缓存数据
-                         let datas = JSON.stringify(nextuIdArray);
-                        AsyncStorage.setItem('DailiId', datas, (error) => {});
-                        console.log("11123123123它的第一个子级页面的ID",backNullId);   
-                          //拿到最后的值 去请求上一级代理的数据
-                      this.setState({
-                        next_uidName:backNullId,
-                        searchId:'',
-                        });
-                       this.moreTime=0;
-                       this._fetchPreferentialData(false,false);
-                      } else {
-
-                        nextuIdArray = [];
-                        //  重新缓存数据
-                         let datas = JSON.stringify(nextuIdArray);
-                        AsyncStorage.setItem('DailiId', datas, (error) => {}); 
-                         goBack();
-
-                      }
-                      
-                            
+                      nextuIdArray = [];
+                      //  重新缓存数据
+                       let datas = JSON.stringify(nextuIdArray);
+                      AsyncStorage.setItem('DailiId', datas, (error) => {}); 
+                       goBack();
               }
                    
            break;
@@ -417,7 +403,7 @@ export default class TheSeenReport extends React.Component {
                  <View style={{flexDirection:'row',alignItems:'center', justifyContent: 'center',}}>
                  <CusBaseText  allowFontScaling={false} style={{color:'#5CACEE',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.username}</CusBaseText>
                  <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.actype}</CusBaseText>
-                 <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.next_count}</CusBaseText>
+                 <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.next_daili}</CusBaseText>
                 <View style={{justifyContent:'center',height:48*KAdaptionHeight,width:SCREEN_WIDTH/4,}}>
                  <CusBaseText allowFontScaling={false} style={{color:'orange',textAlign:'center',backgroundColor:'white'}}>{dailiFandian}</CusBaseText>
                  </View>

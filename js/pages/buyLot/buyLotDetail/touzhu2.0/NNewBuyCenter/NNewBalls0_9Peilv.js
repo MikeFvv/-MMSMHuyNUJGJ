@@ -391,6 +391,49 @@ export default class NNewBalls0_9Peilv extends Component {
         }
         arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
       }
+
+    } else if (js_tag == 'qxc') {
+      if (playid == 1) {
+        // 一定位
+        if (idx == 0) {
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
+
+      } else if (playid == 2) {
+        // 二定复式，选择两个位
+        if (idx == 0) {
+          // 第一个进来先随机两个数，确定在哪一排
+          tempArcInt = this._returnArcBallArr(2, 4).join('-');
+        }
+        let tempArcIntArr = tempArcInt.split('-');
+        // 分隔了 再判断这个数组是否包含idx-1
+        if (!tempArcIntArr.includes((idx).toString())) {
+          arcNumArr = this._returnArcBallArr(1);
+        }
+
+      } else if (playid == 3) {
+        // 三定复式， 选择三个位
+        if (idx == 0) {
+          // 第一个进来先随机一个数，确定在哪一排
+          tempArcInt = Math.floor(Math.random() * 4);
+        }
+        if (tempArcInt != idx) {
+          arcNumArr = this._returnArcBallArr(1);
+        }
+
+      } else if (playid == 5) {
+        // 二字现
+        arcNumArr = this._returnArcBallArr(2);
+
+      } else if (playid == 6) {
+        // 三字现
+        arcNumArr = this._returnArcBallArr(3);
+
+      } else {
+        arcNumArr = this._returnArcBallArr(1);
+        tempArcArr = idx == 1 ? [...tempArcArr, ...arcNumArr] : arcNumArr; // 防止机选重复
+      }
     }
 
     // 小到大排序

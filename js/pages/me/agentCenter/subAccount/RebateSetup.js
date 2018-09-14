@@ -24,7 +24,6 @@ export default class RebateSetup extends Component {
 
 			storageIP: null,
 			visible: false,
-
 			lotTypetObjct: {
 				fp_sscValue: defaultNum, // 时时彩
 				fp_pcddValue: defaultNum, // PC蛋蛋
@@ -33,6 +32,13 @@ export default class RebateSetup extends Component {
 				fp_3dValue: defaultNum, // 3D
 				fp_11x5Value: defaultNum, // 11选5
 				fp_lhcValue: defaultNum, // 六合彩
+				
+				// fp_tzyxValue :defaultNum, // 经典梯子
+				// fp_xypkValue :defaultNum, // 幸运PK
+				// fp_qxcValue :defaultNum, // 七星彩
+				// fp_pkniuniuValue :defaultNum, // 幸运PK牛牛
+				// fp_xyncValue :defaultNum, // 幸运农场
+				fp_otherValue:defaultNum, //其他彩种
 			},
 		}
 		this.allDataArray = [];  // 请求返点赔率表第一个类型数据
@@ -48,6 +54,14 @@ export default class RebateSetup extends Component {
 			fp_3dValue: 'fc3d', // 3D
 			fp_11x5Value: 'sh11x5', // 11选5
 			fp_lhcValue: 'xglhc', // 六合彩
+			fp_otherValue:'fp_other', //其他彩种
+
+			// fp_tzyxValue :'tzyx', // 经典梯子
+			// fp_xypkValue :'xypk', // 幸运扑克
+			// fp_qxcValue :'qxc', // 七星彩
+			// fp_pkniuniuValue :'pkniuniu', // 幸运PK牛牛
+			// fp_xyncValue :'xync', // 幸运农场
+
 		}
 
 		this.loginObject = null;
@@ -64,18 +78,32 @@ export default class RebateSetup extends Component {
 
 		this.loginObject = global.UserLoginObject;
 
+		console.log('代理',global.UserLoginObject);
+
 		// 更新数据
 		this.setState({
 			lotTypetObjct: {
-				fp_sscValue: this.loginObject.fp_ssc, // 时时彩
-				fp_pcddValue: this.loginObject.fp_pcdd, // PC蛋蛋
-				fp_k3Value: this.loginObject.fp_k3, // 快3
-				fp_pk10Value: this.loginObject.fp_pk10, // PK10
-				fp_3dValue: this.loginObject.fp_3d, // 3D
-				fp_11x5Value: this.loginObject.fp_11x5, // 11选5
-				fp_lhcValue: this.loginObject.fp_lhc, // 六合彩
+				fp_sscValue: this.loginObject.fp_ssc == '' ? '0' :this.loginObject.fp_ssc, // 时时彩
+				fp_pcddValue: this.loginObject.fp_pcdd == '' ? '0' :this.loginObject.fp_pcdd, // PC蛋蛋
+				fp_k3Value: this.loginObject.fp_k3 == '' ? '0': this.loginObject.fp_k3, // 快3
+				fp_pk10Value: this.loginObject.fp_pk10 == '' ? '0': this.loginObject.fp_pk10, // PK10
+				fp_3dValue: this.loginObject.fp_3d == '' ? '0': this.loginObject.fp_3d, // 3D
+				fp_11x5Value: this.loginObject.fp_11x5 == '' ? '0': this.loginObject.fp_11x5, // 11选5
+				fp_lhcValue: this.loginObject.fp_lhc== '' ? '0' :this.loginObject.fp_lhc, // 六合彩	
+				fp_otherValue: this.loginObject.fp_other,
+
+			
+						
+
+				// fp_tzyxValue :this.loginObject.fp_tzyx == 'undefined' ? '0': this.loginObject.fp_tzyx , // 经典梯子
+			    // fp_xypkValue :this.loginObject.fp_xypk == 'undefined' ? '0': this.loginObject.fp_xypk, // 幸运扑克
+			    // fp_qxcValue :this.loginObject.fp_qxc == 'undefined' ? '0': this.loginObject.fp_qxc,// 七星彩
+			    // fp_pkniuniuValue :this.loginObject.fp_pkniuniu == 'undefined' ? '0': this.loginObject.fp_pkniuniu, // 幸运PK牛牛
+			    // fp_xyncValue :this.loginObject.fp_xync == 'undefined' ? '0': this.loginObject.fp_xync, // 幸运农场
 			},
 		})
+
+	    console.log('其他',this.loginObject.fp_other);
 		this._fetchDomainList();
 	}
 
@@ -171,6 +199,37 @@ export default class RebateSetup extends Component {
 				num = this._count(countType, lotTypetObjct.fp_lhcValue, this.loginObject.fp_lhc)
 				lotTypetObjct.fp_lhcValue = num
 				break;
+
+			
+				
+
+			// case 'fp_tzyx':
+			// 	num = this._count(countType, lotTypetObjct.fp_tzyxValue, this.loginObject.fp_tzyx)
+			// 	lotTypetObjct.fp_tzyxValue = num
+			// 	break;
+			// case 'fp_xypk':
+			// 	num = this._count(countType, lotTypetObjct.fp_xypkValue, this.loginObject.fp_xypk)
+			// 	lotTypetObjct.fp_xypkValue = num
+			// 	break;
+			// case 'fp_qxc':
+			// 	num = this._count(countType, lotTypetObjct.fp_qxcValue, this.loginObject.fp_qxc)
+			// 	lotTypetObjct.fp_qxcValue = num
+			// 	break;
+			// case 'fp_pkniuniu':
+			// 	num = this._count(countType, lotTypetObjct.fp_pkniuniuValue, this.loginObject.fp_pkniuniu)
+			// 	lotTypetObjct.fp_pkniuniuValue = num
+			// 	break;
+			// case 'fp_xync':
+			// 	num = this._count(countType, lotTypetObjct.fp_xyncValue, this.loginObject.fp_xync)
+			// 	lotTypetObjct.fp_xyncValue = num
+			// 	break;
+
+		case 'fp_other':
+			num = this._count(countType, lotTypetObjct.fp_otherValue, this.loginObject.fp_other)
+			lotTypetObjct.fp_otherValue = num
+			break;			
+
+
 			default:
 				break;
 		}
@@ -243,6 +302,37 @@ export default class RebateSetup extends Component {
 			return;
 		}
 
+		
+
+
+		
+		
+		// if (!Regex(this.state.lotTypetObjct.fp_tzyxValue, "number")) {
+		// 	Alert.alert('【经典梯子】请输入有效的数值类型!');
+		// 	return;
+		// }
+		// if (!Regex(this.state.lotTypetObjct.fp_xypkValue, "number")) {
+		// 	Alert.alert('【幸运扑克】请输入有效的数值类型!');
+		// 	return;
+		// }
+		// if (!Regex(this.state.lotTypetObjct.fp_qxcValue, "number")) {
+		// 	Alert.alert('【幸运七星】请输入有效的数值类型!');
+		// 	return;
+		// }
+		// if (!Regex(this.state.lotTypetObjct.fp_pkniuniuValue, "number")) {
+		// 	Alert.alert('【幸运PK牛牛】请输入有效的数值类型!');
+		// 	return;
+		// }
+		// if (!Regex(this.state.lotTypetObjct.fp_xyncValue, "number")) {
+		// 	Alert.alert('【幸运农场】请输入有效的数值类型!');
+		// 	return;
+		// }
+
+		if (!Regex(this.state.lotTypetObjct.fp_otherValue, "number")) {
+			Alert.alert('【其他】请输入有效的数值类型!');
+			return;
+		}
+
 		this._createInvitationCode();
 	}
 
@@ -265,6 +355,16 @@ export default class RebateSetup extends Component {
 		params.append("v3d", this.state.lotTypetObjct.fp_3dValue); // 福彩3D返点设置
 		params.append("v11x5", this.state.lotTypetObjct.fp_11x5Value); // 11选5返点设置
 		params.append("vlhc", this.state.lotTypetObjct.fp_lhcValue); // 六合彩返点设置
+		
+		
+		
+		// params.append("vtzyx",this.state.lotTypetObjct.fp_tzyxValue);
+		// params.append("vxync",this.state.lotTypetObjct.fp_xyncValue);
+		// params.append("vxypk",this.state.lotTypetObjct.fp_xypkValue);
+		// params.append("vpkniuniu",this.state.lotTypetObjct.fp_pkniuniuValue);
+		// params.append("vqxc",this.state.lotTypetObjct.fp_qxcValue);
+
+		params.append("vother", this.state.lotTypetObjct.fp_otherValue); // 其他返点设置
 
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
@@ -506,7 +606,7 @@ export default class RebateSetup extends Component {
 						<View style={styles.boxViewStyle}>
 							<View style={styles.leftViewSytle}>
 								<Image style={styles.leftImg} source={{ uri: GlobalConfig.cpicon() + this.lotTypetImageObjct.fp_3dValue + ".png" }} />
-								<Text style={styles.shishiCaiStyle}>福彩3D</Text>
+								<Text style={styles.shishiCaiStyle}>3D</Text>
 							</View>
 
 							<View style={styles.rightViewSytle}>
@@ -695,6 +795,280 @@ export default class RebateSetup extends Component {
 								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_lhc : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_lhc : defaultNum}</Text>
 							</View>
 						</View>
+
+
+                    {/* 8 七星彩 */}
+						{/* <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/qxc.png')} />
+								<Text style={styles.shishiCaiStyle}>七星彩</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_qxcValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_qxcValue = text;
+										}}
+									/> */}
+
+									{/* 两个按钮 */}
+									{/* <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_qxc')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_qxc')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_qxc : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_qxc : defaultNum}</Text>
+							</View>
+						</View> */}
+
+
+
+                    {/* 9 幸运农场 */}
+						{/* <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/xync.png')} />
+								<Text style={styles.shishiCaiStyle}>幸运农场</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_xyncValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_xyncValue = text;
+										}}
+									/> */}
+
+									{/* 两个按钮 */}
+									{/* <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_xync')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_xync')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_xync : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_xync : defaultNum}</Text>
+							</View>
+						</View> */}
+
+
+
+                        {/* 10 PK牛牛 */}
+						{/* <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/pkniuniu.png')} />
+								<Text style={styles.shishiCaiStyle}>PK拾牛牛</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_pkniuniuValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_pkniuniuValue = text;
+										}}
+									/> */}
+
+									{/* 两个按钮 */}
+									{/* <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_pkniuniu')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_pkniuniu')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_pkniuniu : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_pkniuniu : defaultNum}</Text>
+							</View>
+						</View> */}
+
+
+                    
+					{/* 11 PK牛牛 */}
+					{/* <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/xypk.png')} />
+								<Text style={styles.shishiCaiStyle}>幸运扑克</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_xypkValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_xypkValue = text;
+										}}
+									/> */}
+
+									{/* 两个按钮 */}
+									{/* <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_xypk')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_xypk')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_xypk : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_xypk : defaultNum}</Text>
+							</View>
+						</View> */}
+
+                    
+						{/* 12 经典梯子 */}
+						{/* <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/tzyx.png')} />
+								<Text style={styles.shishiCaiStyle}>经典梯子</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_tzyxValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_tzyxValue = text;
+										}}
+									/> */}
+
+									{/* 两个按钮 */}
+									{/* <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_tzyx')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_tzyx')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_tzyx : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_tzyx : defaultNum}</Text>
+							</View>
+						</View> */}
+
+
+
+							{/* 12 经典梯子 */}
+						 <View style={styles.boxViewStyle}>
+							<View style={styles.leftViewSytle}>
+								<Image style={styles.leftImg} source={require('../img/Other.png')} />
+								<Text style={styles.shishiCaiStyle}>其他</Text>
+							</View>
+
+							<View style={styles.rightViewSytle}>
+								<View style={styles.rightTopViewSytle}>
+									<TextInput
+										returnKeyType="done"
+										underlineColorAndroid='transparent'
+										style={styles.inputText}
+										keyboardType='numeric'
+										defaultValue={this.state.lotTypetObjct.fp_otherValue.toString()}
+										onChangeText={(text) => {
+											this.state.lotTypetObjct.fp_otherValue = text;
+										}}
+									/> 
+
+									{/* 两个按钮 */}
+									 <View style={styles.arrowButtomStyle}>
+										<View style={styles.leftArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(0, 'fp_other')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subLeft.png')}></Image>
+											</TouchableOpacity>
+										</View>
+
+										<View style={styles.verLineStyle} />
+										<View style={styles.rightArrow}>
+											<TouchableOpacity style={styles.touchStyle} activeOpacity={0.3} onPress={() => {
+												this._additionOrsubtract(1, 'fp_other')
+											}}>
+												<Image style={styles.bottomLeftImageView} source={require('../../img/subAccount/ic_subRight.png')}></Image>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								<Text style={styles.subTextStyle}>自身返点{this.loginObject ? this.loginObject.fp_other : defaultNum}可为下级设置返点0-{this.loginObject ? this.loginObject.fp_other : defaultNum}</Text>
+							</View>
+						</View> 
 
 
 					</View>

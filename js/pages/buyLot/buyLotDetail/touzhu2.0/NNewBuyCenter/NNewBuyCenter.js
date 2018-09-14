@@ -22,6 +22,7 @@ import GetBallStatus from '../newBuyTool/GetBallStatus';
 import NewBalls0_9Peilv from './NNewBalls0_9Peilv';
 import SingleInputView from './NSingleInputView';
 import NSquareBallsView from './NNSquareBallsView';
+import NPokerView from './NPokerView';
 
 export default class NNewBuyCenter extends Component {
 
@@ -106,6 +107,15 @@ export default class NNewBuyCenter extends Component {
 
         } else if (this.props.js_tag == 'lhc') {
             return this._lhcCreateViews(Values);
+
+        } else if (this.props.js_tag == 'qxc') {
+            return this._qxcCreateViews(Values); // 海南七星彩
+
+        } else if (this.props.js_tag == 'xync') {
+            return this._xyncCreateViews(Values); // 幸运农场
+
+        } else if (this.props.js_tag == 'xypk') {
+            return this._xypkCreateViews(Values); // 幸运扑克
         }
     }
 
@@ -190,13 +200,13 @@ export default class NNewBuyCenter extends Component {
     }
 
     // 创建Balls0_9Peilv的视图  H:80 NoPeilv H:65   
-    _balls09PeilvCreateView(values, balls, numColumn) {
+    _balls09PeilvCreateView(values, balls, numColumn, contents) {
 
         if (balls.length <= 0) {
             return [];
         }
 
-        let contentArr = values.content.includes('+') ? values.content.split('+') : [values.playname];
+        let contentArr = contents && contents.length > 0 ? contents : (values.content.includes('+') ? values.content.split('+') : [values.playname]);
         let peilvArr = this._getPeilvWithPlayid(values.playid).split('|');
         this.state.BallAsrr = [];
 
@@ -281,9 +291,12 @@ export default class NNewBuyCenter extends Component {
             }
         }
 
-        if (this.props.js_tag == 'xync') {
-            let playid = values.playid;
-
+        let playid = values.playid;
+        let xyncSMP = this.props.js_tag == 'xync' && playid == 1;
+        if (xyncSMP) {
+            if (xyncSMP) {
+                contentArr = ['总和', '第一球', '第二球', '第三球', '第四球', '第五球', '第六球', '第七球', '第八球'];
+            }
 
         } else {
             // 拼好balls需要的数据,
@@ -314,8 +327,13 @@ export default class NNewBuyCenter extends Component {
         var blockViews = [];
         for (let i = 0; i < contentArr.length; i++) {
 
-            if (this.props.js_tag == 'xync') {
+            if (xyncSMP) {
+                balls = i == 0 ? ['总和大', '总和小', '总和单', '总和双', '总和尾大', '总和尾小', '龙', '虎'] : ['大', '小', '单', '双', '尾大', '尾小', '合数单', '合数双'];
 
+                for (let b = 0; b < balls.length; b++) {
+                    balls[b] = { key: b, ball: balls[b] };
+                }
+                this.state.BallAsrr = [...this.state.BallAsrr, ...balls];
             }
 
             blockViews.push(
@@ -344,6 +362,55 @@ export default class NNewBuyCenter extends Component {
                     }}
                 >
                 </NSquareBallsView>
+            )
+        }
+        return blockViews;
+    }
+
+    // 扑克
+    _pokerCreateView(values, balls, numColumn, itemHeight, spaceWidth) {
+        if (balls.length <= 0) { return [] }
+
+        let contentArr = values.content.length > 0 ? values.content.split('+') : [values.playname];
+        let peilvArr = this._getPeilvWithPlayid(values.playid).split('|');
+
+        // 拼好balls需要的数据,
+        for (let i = 0; i < balls.length; i++) {
+            balls[i] = { key: i, ball: balls[i] };
+            if (peilvArr.length > 1) {
+                balls[i].peilv = peilvArr[i];
+            }
+        }
+        this.state.BallAsrr = balls;
+        this.state.TitlesArr = contentArr;
+
+        var blockViews = [];
+        for (let i = 0; i < contentArr.length; i++) {
+            blockViews.push(
+                <NPokerView key={i} style={{ width: SCREEN_WIDTH }}
+                    balls={balls}
+                    title={contentArr[i]}
+                    numColumn={numColumn}
+                    itemHeight={itemHeight}
+                    spaceWidth={spaceWidth}
+                    isBallsChange={this.state.isBallsChange ? true : false} // 是否随机
+                    clearAllBalls={this.state.clearAllBalls ? true : false} // 是否清空号码
+                    singlePeilv={peilvArr.length == 1 && peilvArr[0].length > 0 ? peilvArr[0] : null} // 顶部显示赔率
+                    js_tag={this.props.js_tag}
+                    tpl={values.tpl}
+                    playid={values.playid}
+                    ballClick={(selectBalls) => {
+                        let val = { leftTitles: contentArr, playid: values.playid, tpl: values.tpl };
+                        let dict = this._ballsHandle(selectBalls, val);
+                        this.props.ballsClick ? this.props.ballsClick(dict, this.props.currentPlayData, this.state.TitlesArr, this.state.BallAsrr) : null;
+                        // 选了号码回来了，要重新设为false。
+                        this.setState({
+                            isBallsChange: false,
+                            clearAllBalls: false,
+                        })
+                    }}
+                >
+                </NPokerView>
             )
         }
         return blockViews;
@@ -638,6 +705,7 @@ export default class NNewBuyCenter extends Component {
         return this._balls09PeilvCreateView(values, balls, 5);
     }
 
+
     _lhcCreateViews(values) {
         var balls = [];
         var numColumn = 4;
@@ -723,6 +791,91 @@ export default class NNewBuyCenter extends Component {
         }
 
         return this._ballsSquareCreateView(values, balls, numColumn, itemHeight, spaceWidth);
+    }
+
+    _qxcCreateViews(values) {
+        let playid = values.playid;
+        var balls = [];
+        var contents = [];
+
+        if (playid == 1 || playid == 2 || playid == 3 || playid == 4) {
+            // 一定位 / 二定复式 / 三定复式 / 四定复式
+            for (var i = 0; i < 10; i++) {
+                balls.push({ key: i, ball: i })
+            }
+            contents = ['千位', '百位', '十位', '个位'];
+
+        } else if (playid == 5 || playid == 6) {
+            // 二字现 / 三字现
+            for (var i = 0; i < 10; i++) {
+                balls.push({ key: i, ball: i })
+            }
+        }
+        return this._balls09PeilvCreateView(values, balls, 5, contents);
+    }
+
+
+    _xyncCreateViews(values) {
+        var numColumn = 4;
+        var balls = [];
+
+        if (values.playid == 1) {
+            // 双面盘  
+            balls = ['大', '小', '单', '双', '尾大', '尾小', '合数单', '合数双'];
+
+        } else {
+            // 第？球
+            balls = ['1号', '2号', '3号', '4号', '5号', '6号', '7号', '8号', '9号', '10号', '11号', '12号', '13号', '14号', '15号', '16号',
+                '17号', '18号', '19号', '20号', '大', '小', '单', '双', '尾大', '尾小', '合数单', '合数双', '东', '南', '西', '北', '中', '发', '白'];
+        }
+        return this._ballsSquareCreateView(values, balls, numColumn);
+    }
+
+    _xypkCreateViews(values) {
+        var numColumn = 4;
+        var itemHeight = 0;
+        var spaceWidth = 0;
+        var balls = [];
+
+        if (values.playid == 1) {
+            // 包选
+            balls = ['对子', '顺子', '同花', '豹子', '同花顺'];
+            numColumn = 3;
+            itemHeight = 110;
+
+        } else if (values.playid == 4) {
+            // 单选顺子
+            balls = ['A23', '234', '345', '456', '567', '678', '789', '8910', '91011', '10JQ', 'JQK', 'QKA'];
+            numColumn = 3;
+            itemHeight = 80;
+
+        } else if (values.playid == 6) {
+            // 单选同花顺
+            balls = ['黑桃', '红桃', '梅花', '方块'];
+            spaceWidth = 30;
+
+        } else if (values.playid == 2) {
+            // 单选豹子
+            balls = ['AAA', '222', '333', '444', '555', '666', '777', '888', '999', '101010 ', 'JJJ', 'QQQ', 'KKK'];
+            numColumn = 3;
+            itemHeight = 80;
+
+        } else if (values.playid == 3) {
+            // 单选对子
+            balls = ['AA', '22', '33', '44', '55', '66', '77', '88', '99', '1010', 'JJ', 'QQ', 'KK'];
+            itemHeight = 80;
+
+        } else if (values.playid == 5) {
+            // 单选同花
+            balls = ['黑桃', '红桃', '梅花', '方块'];
+            spaceWidth = 30;
+
+        } else {
+            // 任选一
+            balls = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            itemHeight = 80;
+        }
+        return this._pokerCreateView(values, balls, numColumn, itemHeight, spaceWidth);
     }
 
     // 根据playid 取到赔率

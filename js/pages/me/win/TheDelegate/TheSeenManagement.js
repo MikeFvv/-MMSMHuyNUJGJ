@@ -130,6 +130,11 @@ export default class TheSeenManagement extends React.Component {
 
       this._fetchPreferentialData(true,false);
 
+      nextuIdArrayGL.push(this.props.navigation.state.params.next_uidName)
+      // // 缓存数据
+       let datas = JSON.stringify(nextuIdArrayGL);
+       AsyncStorage.setItem('DailiIdGL', datas, (error) => { });     
+
     }
 //头部刷新
   onHeaderRefresh = () => {
@@ -323,30 +328,12 @@ export default class TheSeenManagement extends React.Component {
 
                   } else {
                     
-                    if (nextuIdArrayGL != null && nextuIdArrayGL.length > 0){
-
-                      nextuIdArrayGL = [];
-                      //  重新缓存数据
-                       let datas = JSON.stringify(nextuIdArrayGL);
-                      AsyncStorage.setItem('DailiId', datas, (error) => {});
-                      console.log("11123123123它的第一个子级页面的ID",backNullIdGL);   
-                        //拿到最后的值 去请求上一级代理的数据
-                    this.setState({
-                      next_uidName:backNullIdGL,
-                      searchId:'',
-                      });
-                     this.moreTime=0;
-                     this._fetchPreferentialData(false,false);
-                    } else {
-
-                      nextuIdArrayGL = [];
+                    nextuIdArrayGL = [];
                       //  重新缓存数据
                        let datas = JSON.stringify(nextuIdArrayGL);
                       AsyncStorage.setItem('DailiIdGL', datas, (error) => {}); 
                       goBack();
-
-                    }           
-            }
+                }
 
                  break;
                  case 3:

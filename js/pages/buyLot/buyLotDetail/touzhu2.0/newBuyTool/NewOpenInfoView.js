@@ -21,7 +21,28 @@ import Moment from 'moment'; //日期计算控件
 import GetBallStatus from './GetBallStatus'; // 获得号码球的状态， 什么颜色、生肖
 import NewOpenBallsView from '../newBuyTool/NewOpenBallsView'
 
+//K3的号码球图片
 let k3Image = [require('../img/ic_buyLot_touzi1.png'), require('../img/ic_buyLot_touzi2.png'), require('../img/ic_buyLot_touzi3.png'), require('../img/ic_buyLot_touzi4.png'), require('../img/ic_buyLot_touzi5.png'), require('../img/ic_buyLot_touzi6.png')];
+//幸运农场的号码球图片
+let XYNCImageArr = [require('../../../img/axyncImg/lucky_ball_01.png'),require('../../../img/axyncImg/lucky_ball_02.png'),require('../../../img/axyncImg/lucky_ball_03.png'),require('../../../img/axyncImg/lucky_ball_04.png'),
+    require('../../../img/axyncImg/lucky_ball_05.png'),require('../../../img/axyncImg/lucky_ball_06.png'),require('../../../img/axyncImg/lucky_ball_07.png'),require('../../../img/axyncImg/lucky_ball_08.png'),
+    require('../../../img/axyncImg/lucky_ball_09.png'),require('../../../img/axyncImg/lucky_ball_10.png'),require('../../../img/axyncImg/lucky_ball_11.png'),require('../../../img/axyncImg/lucky_ball_12.png'),
+    require('../../../img/axyncImg/lucky_ball_13.png'),require('../../../img/axyncImg/lucky_ball_14.png'),require('../../../img/axyncImg/lucky_ball_15.png'),require('../../../img/axyncImg/lucky_ball_16.png'),
+    require('../../../img/axyncImg/lucky_ball_17.png'),require('../../../img/axyncImg/lucky_ball_18.png'),require('../../../img/axyncImg/lucky_ball_19.png'),require('../../../img/axyncImg/lucky_ball_20.png')];
+//幸运扑克的号码球图片
+let XYPokerA = [require('../pkImg/pkA_1.png'),require('../pkImg/pkA_2.png'),require('../pkImg/pkA_3.png'),require('../pkImg/pkA_4.png')];
+let XYPoker2 = [require('../pkImg/pk2_1.png'),require('../pkImg/pk2_2.png'),require('../pkImg/pk2_3.png'),require('../pkImg/pk2_4.png')];
+let XYPoker3 = [require('../pkImg/pk3_1.png'),require('../pkImg/pk3_2.png'),require('../pkImg/pk3_3.png'),require('../pkImg/pk3_4.png')];
+let XYPoker4 = [require('../pkImg/pk4_1.png'),require('../pkImg/pk4_2.png'),require('../pkImg/pk4_3.png'),require('../pkImg/pk4_4.png')];
+let XYPoker5 = [require('../pkImg/pk5_1.png'),require('../pkImg/pk5_2.png'),require('../pkImg/pk5_3.png'),require('../pkImg/pk5_4.png')];
+let XYPoker6 = [require('../pkImg/pk6_1.png'),require('../pkImg/pk6_2.png'),require('../pkImg/pk6_3.png'),require('../pkImg/pk6_4.png')];
+let XYPoker7 = [require('../pkImg/pk7_1.png'),require('../pkImg/pk7_2.png'),require('../pkImg/pk7_3.png'),require('../pkImg/pk7_4.png')];
+let XYPoker8 = [require('../pkImg/pk8_1.png'),require('../pkImg/pk8_2.png'),require('../pkImg/pk8_3.png'),require('../pkImg/pk8_4.png')];
+let XYPoker9 = [require('../pkImg/pk9_1.png'),require('../pkImg/pk9_2.png'),require('../pkImg/pk9_3.png'),require('../pkImg/pk9_4.png')];
+let XYPoker10 = [require('../pkImg/pk10_1.png'),require('../pkImg/pk10_2.png'),require('../pkImg/pk10_3.png'),require('../pkImg/pk10_4.png')];
+let XYPokerJ = [require('../pkImg/pkJ_1.png'),require('../pkImg/pkJ_2.png'),require('../pkImg/pkJ_3.png'),require('../pkImg/pkJ_4.png')];
+let XYPokerQ = [require('../pkImg/pkQ_1.png'),require('../pkImg/pkQ_2.png'),require('../pkImg/pkQ_3.png'),require('../pkImg/pkQ_4.png')];
+let XYPokerK = [require('../pkImg/pkK_1.png'),require('../pkImg/pkK_2.png'),require('../pkImg/pkK_3.png'),require('../pkImg/pkK_4.png')];
 var isFreshOpenTime = false;  //是否刷新
 const wenZiColor = '#535353';  //字体颜色
 const CommentBackColor = "white";  //背景白色
@@ -148,17 +169,16 @@ class NewOpenInfoView extends Component {
         if (((ballsArr.length == 0 || ballsArr.length == 1) && isFreshOpenTime == false)) {
             //如果开奖号码为''字符串并且刷新了，则延迟之后再次进来。防止每秒钟都在刷。
 
-            let expire  = 0;
             isFreshOpenTime = true;
-
-            this.state.tag.includes('ff') ? expire = 5 : expire = 15;
+            let fastLottery = this.state.tag.includes('ff') || this.state.tag == 'jdxypk' || this.state.tag == 'xyqxc'; //幸运扑克和幸运七星彩都是分分钟开奖
+            let duration = fastLottery ? 5 : 20;
 
              setTimeout(() => {
 
                 isFreshOpenTime = false;
                 this._fetchOpenInfoData(this.state.tag);
 
-            }, expire * 1000);
+            }, duration * 1000);
         }
 
         let isOpening = (ballsArr.length ==0 || ballsArr.length == 1) ? true : false;
@@ -241,12 +261,14 @@ class NewOpenInfoView extends Component {
         } else if (this.state.js_tag == 'ssc') {
 
             var cellTitArr = [];
+
             if (!isOpening) {
                 for (ba of ballsArr) {
                     let ball = parseInt(ba);
                     let ballStatus = `${ball <= 4 ? '小' : '大'}${ball % 2 == 0 ? '双' : '单'}`;
                     cellTitArr.push(ballStatus);
                 }
+
                 cellTitArr.push(this._sscQianSanStatus([parseInt(ballsArr[0]), parseInt(ballsArr[1]), parseInt(ballsArr[2])]));
             } else {
                 cellTitArr = ['-', '-', '-', '-', '-', '-'];
@@ -267,6 +289,7 @@ class NewOpenInfoView extends Component {
 
         } else if (this.state.js_tag == '11x5') {
 
+            //浅拷贝,防止改变数据源
             let temArray = [];
             ballsArr.map(dict => {
                 temArray.push(dict)
@@ -331,6 +354,104 @@ class NewOpenInfoView extends Component {
             }
             return <View style = {{flexDirection:'row'}}>{views}</View>
         }
+        else if (this.state.js_tag == 'qxc'){
+
+            var cellTitArr = [];
+
+            if (!isOpening) {
+
+                let ballSum = 0; //总和值
+                let daxiao = '';  //大小
+                let danshuang = ''; //单双
+
+                for (ba of ballsArr) {
+                    let ball = parseInt(ba);
+                    ballSum += ball;
+                    let ballStatus = `${ball <= 4 ? '小' : '大'}${ball % 2 == 0 ? '双' : '单'}`;
+                    cellTitArr.push(ballStatus);
+                }
+
+                daxiao = ballSum > 17 ? '大' : '小';
+                danshuang = ballSum % 2 == 0 ? '双' : '单';
+                cellTitArr = [...cellTitArr,...[ballSum,daxiao,danshuang]];
+
+            } else {
+                cellTitArr = ['-', '-', '-', '-', '-', '-', '-'];
+            }
+
+            var views = [];
+            for (let i = 0; i < cellTitArr.length; i++) {
+                views.push(
+                    <View key={i} style = {{backgroundColor:CommentBackColor, justifyContent:'center', alignItems:'center', width:Adaption.Width(35), height:Adaption.Font(25, 22), borderRadius:2, marginLeft:Adaption.Width(i == 4 ? 10 : 5)}}>
+                        <CusBaseText style = {{color:CommentTextColor, fontSize:Adaption.Font(14, 11)}}>
+                            {cellTitArr[i]}
+                        </CusBaseText>
+                    </View>
+                );
+            }
+            return <View style = {{flexDirection:'row'}}>{views}</View>
+        }
+        else if (this.state.js_tag == 'xync'){
+
+           let ballSum = 0;  //总和
+           let ballDS = '';  //单双
+           let ballTail = ''; // 尾小
+           let longhu = '';  //龙虎
+           let sumds = ''; //总和大小
+           let cellTitArr = [];
+
+           if (!isOpening) {
+
+               for (let ball of ballsArr) {
+                   ballSum += parseInt(ball, 10);
+               }
+
+               ballDS = ballSum % 2 == 0 ? '双' : '单';
+               ballTail = parseInt(ballsArr[ballsArr.length - 1], 10) > 10 ? '尾大' : '尾小';
+               longhu = parseInt(ballsArr[0], 10) > parseInt(ballsArr[ballsArr.length - 1], 10) ? '龙' : '虎';
+               sumds = ballSum > 84 ? '大' : '小';
+
+              cellTitArr = [
+                   `${ballSum}`,
+                   sumds,
+                   ballDS,
+                   ballTail,
+                   longhu,
+               ];
+           }
+           else {
+               cellTitArr = ['-','-','-','-','-'];
+           }
+
+            var views = [];
+            for (let i = 0; i < cellTitArr.length; i++) {
+                let isLast = i == cellTitArr.length - 2;
+                views.push(
+                    <View key={i} style={{ marginLeft: Adaption.Width(isLast ? 30 : 8), width:Adaption.Width(isLast ? 40 : 35), height:Adaption.Font(25, 22), backgroundColor:CommentBackColor, justifyContent:'center', alignItems:'center'}}>
+                        <CusBaseText style={{color:CommentTextColor, backgroundColor:'rgba(0,0,0,0)', fontSize:Adaption.Font(15,13)}}>{cellTitArr[i]}</CusBaseText>
+                    </View>
+                );
+            }
+            return <View style = {{flexDirection:'row'}}>{views}</View>
+        }
+        else if (this.state.js_tag == 'xypk'){
+
+            let ballStatus = '';
+
+            if (!isOpening){
+                ballStatus = this._pokerNumStatus(ballsArr);
+            }
+            else {
+                ballStatus = '-';
+            }
+
+            return <View style = {{flexDirection:'row'}}>
+                <View style = {{flex:0.85}}/>
+                <View style={{ marginRight: 15, width:Adaption.Width(60), height:Adaption.Font(25, 22), backgroundColor:CommentBackColor, justifyContent:'center', alignItems:'center'}}>
+                <CusBaseText style={{color:CommentTextColor, backgroundColor:'rgba(0,0,0,0)', fontSize:Adaption.Font(14,11)}}>{!isOpening ? ballStatus : '-'}</CusBaseText>
+            </View>
+            </View>
+        }
     }
 
     //开奖列表头部视图
@@ -361,6 +482,18 @@ class NewOpenInfoView extends Component {
         } else if (this.state.js_tag == 'pk10') {
             flexArr = [0.2, 0.6, 0.2];
             titleArr = ['期号', '开奖号码', '冠亚军和'];
+        }
+        else if (this.state.js_tag == 'xypk'){
+            flexArr = [0.3,0.4,0.3];
+            titleArr = ['期号','开奖号码','形态'];
+        }
+        else if (this.state.js_tag == 'xync'){
+            flexArr = [0.15, 0.48, 0.37];
+            titleArr = ['期号','开奖号码','总和'];
+        }
+        else if (this.state.js_tag == 'qxc'){
+            flexArr = [0.16, 0.2, 0.11, 0.11, 0.11, 0.11, 0.2];
+            titleArr = ['期号', '开奖号码', '千位', '百位', '十位', '十位', '总和'];
         }
 
         var views = [];
@@ -551,9 +684,220 @@ class NewOpenInfoView extends Component {
                 !isOpen ? '-  -  -' : `${sum}  ${dxStr}  ${dsStr}`,
             ];
         }
+        else if (this.state.js_tag == 'qxc'){
+            flexArr = [0.16, 0.2, 0.11, 0.11, 0.11, 0.11, 0.2];
+
+            cellTitArr = [
+                openQiShu,
+                !isOpen ? '正在开奖' : item.item.value.balls.replace(/\+/g, ','), //替换字符串的方法
+            ];
+
+            let sumBall = 0;  //总和值
+            let danShuang = '';  //单双
+            let daxiao = '';  //大小
+
+            if (isOpen) {
+                for (ba of ballsArr) {
+                    let ball = parseInt(ba);
+                    sumBall += ball;
+                    let ballStatus = `${ball <= 4 ? '小' : '大'}${ball % 2 == 0 ? '双' : '单'}`;
+                    cellTitArr.push(ballStatus);
+                }
+
+                danShuang = sumBall % 2 == 0 ? '双' : '单';
+                daxiao = sumBall > 17 ? '大' : '小';
+
+                cellTitArr.push(`${sumBall} ${daxiao} ${danShuang}`);
+
+            } else {
+                cellTitArr = [...cellTitArr, ...['-', '-', '-', '-', '-', '-']]
+            }
+        }
+        else if (this.state.js_tag == 'xypk'){
+
+            flexArr = [0.3, 0.4, 0.3];
+            let pokerImg1 = '';  //扑克1的图片路径
+            let pokerImg2 = '';  //扑克2的图片路径
+            let pokerImg3 = '';  //扑克3的图片路径
+            for (let i = 0 ; i < ballsArr.length; i++){
+
+                let balls =  parseInt(ballsArr[i], 10);
+                let pokers = parseInt((balls/4) + 1);
+                let pokerColorIdx = (balls%4);
+                let pokerArr = [];
+
+                switch (pokers){
+                    case 1:
+                        pokerArr = XYPokerA;
+                        break;
+                    case 2:
+                        pokerArr = XYPoker2;
+                        break;
+                    case 3:
+                        pokerArr = XYPoker3;
+                        break;
+                    case 4:
+                        pokerArr = XYPoker4;
+                        break;
+                    case 5:
+                        pokerArr = XYPoker5;
+                        break;
+                    case 6:
+                        pokerArr = XYPoker6;
+                        break;
+                    case 7:
+                        pokerArr = XYPoker7;
+                        break;
+                    case 8:
+                        pokerArr = XYPoker8;
+                        break;
+                    case 9:
+                        pokerArr = XYPoker9;
+                        break;
+                    case 10:
+                        pokerArr = XYPoker10;
+                        break;
+                    case 11:
+                        pokerArr = XYPokerJ;
+                        break;
+                    case 12:
+                        pokerArr = XYPokerQ;
+                        break;
+                    case 13:
+                        pokerArr = XYPokerK;
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (i){
+                    case 0:
+                        pokerImg1 = pokerArr[pokerColorIdx];
+                        break;
+                    case 1:
+                        pokerImg2 = pokerArr[pokerColorIdx];
+                        break;
+                    case 2:
+                        pokerImg3 = pokerArr[pokerColorIdx];
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            let ballStatues = this._pokerNumStatus(ballsArr);
+
+            cellTitArr = [openQiShu,
+                !isOpen ? '正在开奖' : '',
+                !isOpen ? '- - -' : ballStatues];
+
+            let cellViews = [];
+            for (let i = 0; i < flexArr.length; i++) {
+
+                if (i == 1){
+
+                    if (!isOpen){
+                        cellViews.push(
+                            <View key={i} style={{flex: flexArr[i], alignItems: 'center', justifyContent: 'center'}}>
+                                <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center',color: i == 1 ? '#eb3349' : wenZiColor }}>
+                                    {cellTitArr[i]}
+                                </CusBaseText>
+                            </View>
+                        );
+                    }
+                    else {
+                        cellViews.push(<View key = {i} style = {{flex: flexArr[i], flexDirection:'row', alignItems: 'center', justifyContent: 'center'}}>
+                            <Image style = {{width:25,height:25,resizeMode:'contain'}} source = {pokerImg1}/>
+                            <Image style = {{width:25,height:25,resizeMode:'contain'}} source = {pokerImg2}/>
+                            <Image style = {{width:25,height:25,resizeMode:'contain'}} source = {pokerImg3}/>
+                        </View>)
+                    }
+                }
+                else  {
+
+                    cellViews.push(
+                        <View key={i} style={{flex: flexArr[i], alignItems: 'center', justifyContent: 'center'}}>
+                            <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center',color: i == 1 ? '#eb3349' : wenZiColor }}>
+                                {cellTitArr[i]}
+                            </CusBaseText>
+                        </View>
+                    );
+                }
+            }
+
+            return <View style={{flexDirection: 'row', height: 30,  width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{cellViews}</View>
+        }
+        else if (this.state.js_tag == 'xync'){
+            flexArr = [0.15, 0.48, 0.37];
+
+            let ballSum = 0;  //总和
+            let ballDS = '';  //单双
+            let ballTail = ''; // 尾小
+            let longhu = '';  //龙虎
+            let sumds = '';  //总和的大小
+
+            for (let ball of ballsArr){
+                ballSum += parseInt(ball, 10);
+            }
+
+            ballDS = ballSum % 2 == 0 ? '双' : '单';
+            ballTail = parseInt(ballsArr[ballsArr.length - 1],10) > 10 ? '尾大' : '尾小';
+            longhu = parseInt(ballsArr[0],10) > parseInt(ballsArr[ballsArr.length - 1],10) ? '龙' : '虎';
+            sumds = ballSum > 84 ? '大' : '小';
+            let balldesc = `${ballSum} ${sumds} ${ballDS} ${ballTail} ${longhu}`;
+
+            cellTitArr = [openQiShu,
+                !isOpen ? '正在开奖...' : '',
+                !isOpen ?  '- - - ' : balldesc];
+
+            let cellViews = [];
+            for (let i = 0; i < flexArr.length; i++) {
+
+                if (i == 1){
+
+                    if (!isOpen){
+                        cellViews.push(
+                            <View key={i} style={{flex: flexArr[i], alignItems: 'center', justifyContent: 'center'}}>
+                                <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center',color: i == 1 ? '#eb3349' : wenZiColor }}>
+                                    {cellTitArr[i]}
+                                </CusBaseText>
+                            </View>
+                        );
+                    }
+                    else {
+
+                        cellViews.push(<View key={i}
+                                             style={{flex: flexArr[i], flexDirection: 'row', alignItems: 'center'}}>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[0] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[1] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[2] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[3] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[4] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[5] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[6] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[7] - 1]}/>
+                            <Image style={styles.XYNCImageStyle} source={XYNCImageArr[ballsArr[8] - 1]}/>
+                        </View>)
+                    }
+                }
+                else  {
+
+                    cellViews.push(
+                        <View key={i} style={{flex: flexArr[i], alignItems: 'center', justifyContent: 'center'}}>
+                            <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center',color: i == 1 ? '#eb3349' : wenZiColor }}>
+                                {cellTitArr[i]}
+                            </CusBaseText>
+                        </View>
+                    );
+                }
+            }
+
+            return <View style={{flexDirection: 'row', height: 30,  width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{cellViews}</View>
+        }
 
         var cellViews = [];
         for (let i = 0; i < flexArr.length; i++) {
+
             cellViews.push(
                 <View key={i} style={{flex: flexArr[i], alignItems: 'center', justifyContent: 'center'}}>
                     <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center',color: i == 1 ? '#eb3349' : wenZiColor }}>
@@ -561,6 +905,7 @@ class NewOpenInfoView extends Component {
                     </CusBaseText>
                 </View>
             );
+
         }
         return <View style={{flexDirection: 'row', height: this.state.js_tag == 'lhc' ? 45 : 30,  width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{cellViews}</View>
 
@@ -586,6 +931,72 @@ class NewOpenInfoView extends Component {
                     </CusBaseText>
                </View>
 
+    }
+
+    //扑克牌开奖号码状态
+    _pokerNumStatus(ballsArr){
+
+        let ballStatues = '';  //开奖后的状态
+        let pokerArr = [];  //扑克解析后数组
+
+        if (ballsArr.length == 3){ //开奖号码长度为3时才能进来
+
+            //浅拷贝
+            let temArray = [];
+            ballsArr.map(dict => {
+                temArray.push(dict)
+            })
+
+            //对数组进行从小到大的排序
+            temArray = this._sort(temArray);
+
+            //开奖号码转成扑克和花色
+            for (let i = 0; i < temArray.length; i++){
+
+                let balls = parseInt(temArray[i], 10);
+                let pokers = parseInt((balls/4) + 1);
+                let pokerColorIdx = (balls%4);
+                pokerArr.push({pokerNum:pokers, pokerIdx:pokerColorIdx});
+            }
+
+            //特殊的判断,A,Q,K也是顺子
+            if (pokerArr[0].pokerNum == 1 && pokerArr[1].pokerNum == 12 && pokerArr[2].pokerNum == 13){  //顺子的状态
+
+                //ballsArr = ['51', '47', '3']; Q,K,A,同花顺
+
+                if (pokerArr[0].pokerIdx == pokerArr[1].pokerIdx && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                    ballStatues = '同花顺';
+                }
+                else {
+                    ballStatues = '顺子';
+                }
+            }
+            else {
+
+                //非Q,K,A的判断
+
+                if (pokerArr[1].pokerNum == pokerArr[0].pokerNum + 1 && pokerArr[2].pokerNum == pokerArr[1].pokerNum + 1 && pokerArr[0].pokerIdx == pokerArr[1].pokerIdx && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                    ballStatues = '同花顺';
+                }
+                else if (pokerArr[0].pokerNum == pokerArr[1].pokerNum && pokerArr[1].pokerNum == pokerArr[2].pokerNum) {
+                    ballStatues = '豹子';
+                }
+                else if (pokerArr[0].pokerIdx == pokerArr[1].pokerIdx  && pokerArr[1].pokerIdx == pokerArr[2].pokerIdx){
+                    ballStatues = '同花';
+                }
+                else if (pokerArr[1].pokerNum == pokerArr[0].pokerNum + 1 && pokerArr[2].pokerNum == pokerArr[1].pokerNum + 1){
+                    ballStatues = '顺子';
+                }
+                else if (pokerArr[0].pokerNum == pokerArr[1].pokerNum || pokerArr[0].pokerNum == pokerArr[2].pokerNum || pokerArr[1].pokerNum == pokerArr[2].pokerNum){
+                    ballStatues = '对子';
+                }
+                else if (pokerArr[0].pokerNum != pokerArr[1].pokerNum && pokerArr[0].pokerNum != pokerArr[2].pokerNum && pokerArr[1].pokerNum != pokerArr[2].pokerNum){
+                    ballStatues = '单张';
+                }
+            }
+        }
+
+        return ballStatues;
     }
 
     // SSC前三号码状态
@@ -805,7 +1216,7 @@ class NewOpenInfoView extends Component {
 
         //重新加载数据
 
-        if (this.timer ) {
+        if (this.timer) {
             return;
         }
 
@@ -828,31 +1239,15 @@ class NewOpenInfoView extends Component {
                  PushNotification.emit('BuyLotDetailCountDown');  //倒计时结束发出通知
             }
 
-            // 已封盘 倒计时数组已经用到最后一期了。请先去请求了。不等到最后一个数据用完才请求
-            if (this.state.nextJieZhi == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 1) {
+            // 已封盘 倒计时数组已经用到最后一期了。请先去请求了。不等到最后一个数据用完才请求, this.state.nextQiShu != 0 判断是否请求到了期数。如果没有期数会一直请求。挡住重复请求
+            if (this.state.nextJieZhi == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 2 && this.state.nextQiShu != 0) {
                 if (this.isRequsetCplogList == true) {
                     this._fetchCountDownData(this.state.tag);
                     this.isRequsetCplogList = false;
                 }
             }
 
-            // if (this.state.nextFengPan == 0 && this.state.nextQiShu != 0) {  //走一次就好了。之前判断会一直走。存在未知的问题
-            //
-            //     let lockTime = this.state.nextJieZhi;
-            //
-            
-            //
-            //     this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(true) : null;
-            //
-            //     //设置锁定时间(封盘时间) //再进行正常的倒计时
-            //     setTimeout(() => {
-            //
-            //         this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(false) : null;
-            //
-            //     }, lockTime * 1000)
-            // }
-
-            // global.random = true;
+             global.random = true;
 
             let currOpen = 0, currStop = 0;
 
@@ -933,8 +1328,6 @@ class NewOpenInfoView extends Component {
                             return;  //请求回来跟要请求的开奖期数不一致。就不刷新界面
                         }
 
-                        //开奖后刷新金额
-                        this._refreshUserLessMoney();
 
                         this.isActiveFromBack = false;
 
@@ -943,6 +1336,13 @@ class NewOpenInfoView extends Component {
 
                         if (typeof(ballStr) == 'string'){
                             splitArr = ballStr.split('+');
+                        }
+
+                        //必须开奖后才会去刷新用户余额,有时候开奖号码为['']的数组
+                        if (splitArr.length > 1){
+
+                            //开奖后刷新金额
+                            this._refreshUserLessMoney();
                         }
 
                         this.setState({
@@ -1152,6 +1552,12 @@ const styles = StyleSheet.create({
         backgroundColor:'#ffffff',
         alignItems:'center',
     },
+
+    //幸运农场图片样式
+    XYNCImageStyle:{
+        width: Adaption.Width(25),
+        height: Adaption.Width(26),
+    }
 
 });
 

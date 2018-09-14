@@ -268,7 +268,7 @@ this._fetchPreferentialData(true);
  
        } else{
 
-        if (item.item.value.next_count != 0 ) {   //active_count //换取字段的人数
+        if (item.item.value.next_daili != 0 ) {   //active_count //换取字段的人数
           selectedArr = [item.item.value.username,"查看报表","查看下级"];
         }else {
             selectedArr = [item.item.value.username,"查看报表"];
@@ -317,7 +317,7 @@ this._fetchPreferentialData(true);
                  <View style={{flexDirection:'row',alignItems:'center', justifyContent: 'center',}}>
                  <CusBaseText  allowFontScaling={false} style={{color:'#5CACEE',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.username}</CusBaseText>
                  <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.actype}</CusBaseText>
-                 <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.next_count}</CusBaseText>
+                 <CusBaseText allowFontScaling={false} style={{color:'#696969',width:SCREEN_WIDTH/4,textAlign:'center',backgroundColor:'white'}}>{item.item.value.next_daili}</CusBaseText>
 
                 <View style={{justifyContent:'center',height:48*KAdaptionHeight,width:SCREEN_WIDTH/4,}}>
                  <CusBaseText allowFontScaling={false} style={{color:'orange',textAlign:'center',backgroundColor:'white'}}>{dailiFandian}</CusBaseText>

@@ -123,6 +123,14 @@ export default class NNSquareBallsView extends Component {
                 // 五连肖 || 5连尾
                 arcNumArr = this._returnArcBallArr(5);
             }
+
+        } else if (js_tag == 'xync') {
+            if (playid == 1) {
+                if (idx == 0) {
+                    tempArcInt = Math.floor(Math.random() * 9);
+                }
+                arcNumArr = tempArcInt == idx ? this._returnArcBallArr(1) : [];
+            }
         }
 
 

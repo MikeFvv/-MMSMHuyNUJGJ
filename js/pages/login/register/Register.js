@@ -145,12 +145,29 @@ export default class Register extends Component {
                     this.refs.LoadingView && this.refs.LoadingView.showLoading('正在注册'); //注册成功
 
                     let isNeedInvitedCode = this.state.isNeedInviteCode == '' ? true : false;
+                    let appendInvitedCode = ''; //需要提交的邀请码
+
+                    if (isNeedInvitedCode == true){
+                        //需要邀请码时则直接等于输入的邀请码。默认的gobal.invCode已经赋值了
+                        appendInvitedCode = this.state.inputInviteCode.trim();
+                    }
+                    else {
+                        //不需要邀请码模式
+                        if (global.invCode != ''){
+                            //优先传入业主设置的invCode.
+                            appendInvitedCode = global.invCode;
+                        }
+                        else {
+                            //业主设置的invCode为空。则提交总后台设置的bind_param
+                            appendInvitedCode = GlobalConfig.userData.bind_param;
+                        }
+                    }
 
                     let params = new FormData();  //创建请求数据表单
                     params.append("ac", "regUser");
                     params.append("username", this.state.inputUserName);
                     params.append("password", this.state.inputPWD);
-                    params.append("tg_code", isNeedInvitedCode ? this.state.inputInviteCode.trim() : (GlobalConfig.userData.bind_param ? GlobalConfig.userData.bind_param : '')); //非邀请码模式默认传后台返回的邀请码
+                    params.append("tg_code", appendInvitedCode); //非邀请码模式默认传后台返回的邀请码
                     params.append("vcode", '6666');
                     params.append("vid", 'b97ec930-7c7c-11e8-acae-0242ac190002');
                     params.append("edition", global.VersionNum);
@@ -269,6 +286,7 @@ export default class Register extends Component {
                     'fp_3d': response.data.fp_3d, // 3D
                     'fp_11x5': response.data.fp_11x5, // 11选5
                     'fp_lhc': response.data.fp_lhc, // 六合彩
+                    'fp_other':response.data.fp_other, //其他彩种的返点
                     'user_Name': this.state.inputUserName, //用户名称
                     'user_Pwd': this.state.inputPWD,  //用户密码
                     'codePWD' : response.data.code,  //加密登录

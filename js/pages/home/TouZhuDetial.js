@@ -12,16 +12,17 @@ const { width, height } = Dimensions.get("window");
 const KAdaptionWith = width / 414;
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../skframework/tools/Adaption"; //字体适配
+import AllImg from "../theLot/TheLotStyleImg";
 
 export default class TouZhuDetial extends Component {
   static navigationOptions = ({ navigation }) => ({
 
-      header: (
-          <CustomNavBar
-              centerText = {"详情"}
-              leftClick={() =>  navigation.goBack() }
-          />
-      ),
+    header: (
+      <CustomNavBar
+        centerText={"详情"}
+        leftClick={() => navigation.goBack()}
+      />
+    ),
 
 
   });
@@ -30,13 +31,183 @@ export default class TouZhuDetial extends Component {
     super(props);
     this.state = {
       detialArray: {}, //详情数据
-      backupCpicon:false,//是否启用备用彩种地址
+      backupCpicon: false,//是否启用备用彩种地址
     };
   }
   componentWillMount() {
     this.setState({
       detialArray: this.props.navigation.state.params.detialArray,
     })
+  }
+
+  _kaiJiangHaoMa() {
+   
+    let kaiJiangBallsArr = this.state.detialArray.value.kj_balls.split(' ')
+    
+    // if (this.state.detialArray.value.game_name == '幸运农场') {
+    //   return (
+    //     this._fruitSvegetables(kaiJiangBallsArr)
+    //   )
+    // } else
+    if (this.state.detialArray.value.game_name == '经典梯子') {
+      return (
+        this._tzyxTiZiView(kaiJiangBallsArr)
+      )
+    } else if (this.state.detialArray.value.game_name == '幸运扑克') {
+      return (
+        this._xingyunPK(kaiJiangBallsArr)
+      )
+
+    }else {
+      let phase28Lable = 0;
+      if (this.state.detialArray.value.game_name.includes('28')) {
+        let ballsArr = this.state.detialArray.value.kj_balls.split(' ');
+        ballsArr.splice(1, 0, '+');
+        ballsArr.splice(3, 0, '+');
+        ballsArr.splice(5, 0, '=');
+        phase28Lable = ballsArr.join(' ');
+      } else {
+        phase28Lable = this.state.detialArray.value.kj_balls;
+      }
+      return(
+       <CusBaseText style={{ fontSize: Adaption.Font(14, 13), color: 'red', textAlign: 'left' }}>
+           {phase28Lable}
+       </CusBaseText>
+      );
+    }
+  }
+  //幸运扑克
+  _xingyunPK(kaiJiangBallsArr) {
+   
+    let imgPk1 = ''; let imgPK2 = ''; let imgPK3 = ''; let xyViewPk10 = [];
+
+    for (let i = 0; i < kaiJiangBallsArr.length; i++) {
+
+      let ballText = parseInt(kaiJiangBallsArr[i], 10);
+      let numText = parseInt((ballText / 4) + 1);
+      let numColorIdx = (ballText % 4);
+      let numAllArr = [];
+
+      switch (numText) {
+        case 1:
+          numAllArr = AllImg.pokerAImgArr; 1
+          break;
+        case 2:
+          numAllArr = AllImg.poker2ImgArr;
+          break;
+        case 3:
+          numAllArr = AllImg.poker3ImgArr;
+          break;
+        case 4:
+          numAllArr = AllImg.poker4ImgArr;
+          break;
+        case 5:
+          numAllArr = AllImg.poker5ImgArr;
+          break;
+        case 6:
+          numAllArr = AllImg.poker6ImgArr;
+          break;
+        case 7:
+          numAllArr = AllImg.poker7ImgArr;
+          break;
+        case 8:
+          numAllArr = AllImg.poker8ImgArr;
+          break;
+        case 9:
+          numAllArr = AllImg.poker9ImgArr;
+          break;
+        case 10:
+          numAllArr = AllImg.poker10ImgArr;
+          break;
+        case 11:
+          numAllArr = AllImg.pokerJImgArr;
+          break;
+        case 12:
+          numAllArr = AllImg.pokerQImgArr;
+          break;
+        case 13:
+          numAllArr = AllImg.pokerKImgArr;
+          break;
+        default:
+          break;
+      }
+
+      switch (i) {
+        case 0:
+          imgPk1 = numAllArr[numColorIdx];
+          break;
+        case 1:
+          imgPk2 = numAllArr[numColorIdx];
+          break;
+        case 2:
+          imgPk3 = numAllArr[numColorIdx];
+          break;
+        default:
+          break;
+      }
+    }
+
+    xyViewPk10 = <View style={{ flexDirection: 'row'}}>
+      <Image style={{ width: Adaption.Width(32), height: Adaption.Width(32), marginLeft:3,  resizeMode: 'contain' }} source={imgPk1} />
+      <Image style={{ width: Adaption.Width(32), height: Adaption.Width(32), marginLeft:3,  resizeMode: 'contain' }} source={imgPk2} />
+      <Image style={{ width: Adaption.Width(32), height: Adaption.Width(32), marginLeft:3,  resizeMode: 'contain' }} source={imgPk3} />
+    </View>
+    return xyViewPk10;
+
+  }
+  _fruitSvegetables(kaiJiangBallsArr) {
+
+    var viewArr = [];
+    for (var i = 0; i < kaiJiangBallsArr.length; i++) {
+      viewArr.push(
+        <Image style={{ height: 25, width: 25 }} source={AllImg.lucky_ballArray[parseInt(kaiJiangBallsArr[i]) - 1]}></Image>
+      );
+    }
+    return viewArr;
+  }
+  _tzyxTiZiView(kaiJiangBallsArr) {
+
+    let ladderCount = parseInt(kaiJiangBallsArr[1], 10) == 0 ? '3' : '4';
+
+    let leftRight = parseInt(kaiJiangBallsArr[0], 10) == 0 ? '左' : '右';
+    let singleStr = parseInt(kaiJiangBallsArr[2], 10) == 0 ? '单' : '双';
+    let singleStrColor = parseInt(kaiJiangBallsArr[2], 10) == 0 ? '#e33939' : '#00a0e9';
+
+    return (
+      <View style={{ flexDirection: 'row', }}>
+
+        <View style={{
+          width: 35 * KAdaptionWith,
+          height: 35 * KAdaptionWith, backgroundColor: '#dcdcdc', borderRadius: 35 * KAdaptionWith * 0.5,
+          alignItems:'center', justifyContent:'center'
+        }}>
+          <CusBaseText style={{ color: '#626262' }}>
+            {leftRight}
+          </CusBaseText>
+        </View>
+
+        <View style={{
+          width: 35 * KAdaptionWith,
+          height: 35 * KAdaptionWith, backgroundColor: '#626262', borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith,
+            alignItems:'center', justifyContent:'center'
+        }}>
+          <CusBaseText style={{ color: 'white' }}>
+            {ladderCount}
+          </CusBaseText>
+        </View>
+
+        <View style={{
+          width: 35 * KAdaptionWith,
+          height: 35 * KAdaptionWith, backgroundColor: singleStrColor, borderRadius: 35 * KAdaptionWith * 0.5, marginLeft: 15 * KAdaptionWith,
+            alignItems:'center', justifyContent:'center'
+        }}>
+          <CusBaseText style={{ color: 'white' }}>
+            {singleStr}
+          </CusBaseText>
+        </View>
+
+      </View>
+    );
   }
   //头部视图
   _createHeaderView() {
@@ -45,32 +216,33 @@ export default class TouZhuDetial extends Component {
     let notWingLable = '';
 
     let kaijiang = '';
-    if (this.state.detialArray.value.status == "0" ) {
+    if (this.state.detialArray.value.status == "0") {
       phaseLable = '待开奖';
       notWingLable = '待开奖';
     } else if (this.state.detialArray.value.status == "2") {
-      if(this.state.detialArray.value.game_name.includes('28')){
+      if (this.state.detialArray.value.game_name.includes('28')) {
         let ballsArr = this.state.detialArray.value.kj_balls.split(' ');
         ballsArr.splice(1, 0, '+');
         ballsArr.splice(3, 0, '+');
         ballsArr.splice(5, 0, '=');
         phaseLable = ballsArr.join(' ');
-      }else {
-      phaseLable = this.state.detialArray.value.kj_balls;
+      } else {
+        phaseLable = this.state.detialArray.value.kj_balls;
       }
       notWingLable = '未中奖';
     } else if (this.state.detialArray.value.status == "3") {
       phaseLable = '';
       notWingLable = '已撤单';
     } else if (this.state.detialArray.value.status == "1") {
-      if(this.state.detialArray.value.game_name.includes('28')){
+      if (this.state.detialArray.value.game_name.includes('28')) {
         let ballsArr = this.state.detialArray.value.kj_balls.split(' ');
         ballsArr.splice(1, 0, '+');
         ballsArr.splice(3, 0, '+');
         ballsArr.splice(5, 0, '=');
         phaseLable = ballsArr.join(' ');
-      }else {
-      phaseLable = this.state.detialArray.value.kj_balls;
+      }
+      else {
+        phaseLable = this.state.detialArray.value.kj_balls;
       }
       notWingLable = '已中奖,赢' + this.state.detialArray.value.win + '元';
     }
@@ -79,9 +251,9 @@ export default class TouZhuDetial extends Component {
     return (
       <View style={{ width: width, height: 90, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
         <View style={{ flex: 0.2 }}>
-          <Image style={{ width: 60*KAdaptionWith, height: 60*KAdaptionWith, marginLeft: 15 }}
-            source={{uri:this.state.detialArray.value.icon}}
-           >
+          <Image style={{ width: 60 * KAdaptionWith, height: 60 * KAdaptionWith, marginLeft: 15 }}
+            source={{ uri: this.state.detialArray.value.icon }}
+          >
           </Image>
         </View>
         <View style={{ flex: 0.8, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
@@ -97,9 +269,10 @@ export default class TouZhuDetial extends Component {
             <CusBaseText style={{ fontSize: Adaption.Font(15, 14), color: 'gray', textAlign: 'left' }}>
               开奖号码:
             </CusBaseText>
-            <CusBaseText style={{ fontSize: Adaption.Font(14, 13), color: 'red', textAlign: 'left'}}>
+            {this.state.detialArray.value.status == "1"||this.state.detialArray.value.status == "2"?this._kaiJiangHaoMa():
+            <CusBaseText style={{ fontSize: Adaption.Font(14, 13), color: 'red', textAlign: 'left' }}>
               {phaseLable}
-            </CusBaseText>
+            </CusBaseText>}
           </View>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <CusBaseText style={{ fontSize: Adaption.Font(15, 14), color: 'rgb(0,109,0)', textAlign: 'left' }}>
@@ -120,7 +293,7 @@ export default class TouZhuDetial extends Component {
       kaijiang = '未中奖';
     } else if (this.state.detialArray.value.status == "3") {
       kaijiang = '已撤单';
-    } else if (this.state.detialArray.value.status == "1" ) {
+    } else if (this.state.detialArray.value.status == "1") {
       kaijiang = '已中奖';
     }
 
@@ -145,11 +318,11 @@ export default class TouZhuDetial extends Component {
     } else if (this.state.detialArray.value.status == "3") {
       kaijiangshijian = this.state.detialArray.value.js_time;
     } else if (this.state.detialArray.value.status == "4") {
-       kaijiangshijian = '--';
+      kaijiangshijian = '--';
     } else if (this.state.detialArray.value.status == "2") {
       kaijiangshijian = this.state.detialArray.value.js_time;
 
-    }else if (this.state.detialArray.value.status == '1'){   //开奖显示开奖时间
+    } else if (this.state.detialArray.value.status == '1') {   //开奖显示开奖时间
       kaijiangshijian = this.state.detialArray.value.js_time;
     }
 
@@ -169,42 +342,42 @@ export default class TouZhuDetial extends Component {
 
     this.refs.LoadingView && this.refs.LoadingView.showLoading('撤单中');
 
-        //请求参数
-        let params = new FormData();
-        params.append("ac", "cancelTouzhu");
-        params.append("uid", global.UserLoginObject.Uid);
-        params.append("token", global.UserLoginObject.Token);
-        params.append("idlist", this.state.detialArray.value.guid);
-        params.append("gameid", this.state.detialArray.value.gameid);
-        params.append("sessionkey", global.UserLoginObject.session_key);
+    //请求参数
+    let params = new FormData();
+    params.append("ac", "cancelTouzhu");
+    params.append("uid", global.UserLoginObject.Uid);
+    params.append("token", global.UserLoginObject.Token);
+    params.append("idlist", this.state.detialArray.value.guid);
+    params.append("gameid", this.state.detialArray.value.gameid);
+    params.append("sessionkey", global.UserLoginObject.session_key);
 
-        var promise = BaseNetwork.sendNetworkRequest(params);
+    var promise = BaseNetwork.sendNetworkRequest(params);
 
-        promise
-          .then(response => {
-            this.refs.LoadingView && this.refs.LoadingView.cancer()
-            if (response.msg == "0") {
+    promise
+      .then(response => {
+        this.refs.LoadingView && this.refs.LoadingView.cancer()
+        if (response.msg == "0") {
 
-              Alert.alert(
-                '提示',
-                '成功撤单'+response.data.price+'元',
-                [
-                  { text: '确定', onPress: () => { this.props.navigation.state.params.callback(), this.props.navigation.goBack() } },
-                ]
-              )
+          Alert.alert(
+            '提示',
+            '成功撤单' + response.data.price + '元',
+            [
+              { text: '确定', onPress: () => { this.props.navigation.state.params.callback(), this.props.navigation.goBack() } },
+            ]
+          )
 
 
-            } else {
-              Alert.alert(
-                '提示',
-                response.param,
-                [
-                  { text: '确定', onPress: () => { } },
-                ]
-              )
-            }
-          })
-          .catch(err => { });
+        } else {
+          Alert.alert(
+            '提示',
+            response.param,
+            [
+              { text: '确定', onPress: () => { } },
+            ]
+          )
+        }
+      })
+      .catch(err => { });
   }
   _onAcitveClickZaiLaiYiZhu(indexIn, navigate) {
     if (indexIn == 0) {
@@ -219,20 +392,20 @@ export default class TouZhuDetial extends Component {
             },
           ]
         )
-      }else {
-      this._fetchCheDanData();
+      } else {
+        this._fetchCheDanData();
       }
     } else {
 
       //如果是从投注页面进入投注详情。则点击再来一注返回投注页。不推出新页面。防止界面没销毁导致期数错乱。
-      if (global.isInBuyLotVC == true){
-          PushNotification.emit('goBackBuyLotFromTouZhuDetailVCNotification', this.state.detialArray.value.gameid);
-          this.props.navigation.goBack(this.props.navigation.state.params.buyLotPushVCKey);
+      if (global.isInBuyLotVC == true) {
+        PushNotification.emit('goBackBuyLotFromTouZhuDetailVCNotification', this.state.detialArray.value.gameid);
+        this.props.navigation.goBack(this.props.navigation.state.params.buyLotPushVCKey);
       }
       else {
         //正常进入投注详情页面点击再来一注进入投注页面
-          global.isInBuyLotVC = true;
-          navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
+        global.isInBuyLotVC = true;
+        navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
       }
     }
   }
@@ -241,7 +414,7 @@ export default class TouZhuDetial extends Component {
     const { navigate } = this.props.navigation;
     let _againUIBtton = '';
     let indexButton = 0;
-    if (this.state.detialArray.value.status == "0" ) {
+    if (this.state.detialArray.value.status == "0") {
       indexButton = 0;
       _againUIBtton = '撤单';
 
@@ -250,7 +423,7 @@ export default class TouZhuDetial extends Component {
       _againUIBtton = '再来一注'
     }
     return (
-      <TouchableOpacity activeOpacity={1} style={{ marginTop: 20, backgroundColor:COLORS.appColor, height: 40, marginLeft: 35, width: width - 70, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}
+      <TouchableOpacity activeOpacity={1} style={{ marginTop: 20, backgroundColor: COLORS.appColor, height: 40, marginLeft: 35, width: width - 70, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}
         onPress={() => this._onAcitveClickZaiLaiYiZhu(indexButton, navigate)}>
         <CusBaseText style={{ fontSize: 16, color: 'white', textAlign: 'center' }}>
           {_againUIBtton}
@@ -319,7 +492,7 @@ export default class TouZhuDetial extends Component {
             投注赔率:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
-          {this.state.detialArray.value.peilv}
+            {this.state.detialArray.value.peilv}
           </CusBaseText>
         </View>
 
@@ -328,7 +501,7 @@ export default class TouZhuDetial extends Component {
             投注时间:
         </CusBaseText>
           <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
-          {this.state.detialArray.value.tz_time}
+            {this.state.detialArray.value.tz_time}
           </CusBaseText>
         </View>
         {this.on_shifouKaiJiang()}
@@ -351,12 +524,12 @@ export default class TouZhuDetial extends Component {
         </View>
 
         {/* <View style={{ width: width, height: 100, backgroundColor: 'white', alignItems: 'center', flexDirection: 'row' }}> */}
-          <CusBaseText style={{ fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left', marginLeft: width / 8,marginTop:10 }}>
-            {this.state.detialArray.value.xiangqing}
-          </CusBaseText>
+        <CusBaseText style={{ fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left', marginLeft: width / 8, marginTop: 10 }}>
+          {this.state.detialArray.value.xiangqing}
+        </CusBaseText>
         {/* </View> */}
         {this.onZaiLaiYiZhu()}
-          <LoadingView ref = 'LoadingView'/>
+        <LoadingView ref='LoadingView' />
       </ScrollView>
     );
   }
