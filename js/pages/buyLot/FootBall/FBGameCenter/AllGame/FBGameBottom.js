@@ -172,7 +172,7 @@ export default class FBGameBottom extends Component {
                                 } else if (parseInt(this.state.singlePrice) > this.max_stake) {
                                     Alert.alert('温馨提示', `最高下注金额为${this.max_stake}元`, [{ text: '确定', onPress: () => { } }])
 
-                                } else {
+                                } else if (this.props.sltBallData.length > 0 && this.props.sltBallData[0].d_key != null) {
                                     let paramData = this._handleTouZhuParams();
                                     this.props.xiaZhuClick ? this.props.xiaZhuClick(paramData) : null;
                                 }

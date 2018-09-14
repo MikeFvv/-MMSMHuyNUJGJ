@@ -24,7 +24,7 @@ static NSInteger const kSwitchRoute = 0;      // ⭕️   上架默认0   -（RN
 // 是否是使用 RN马甲开发  ⭕️
 // 0   否
 // 1   是
-static NSInteger const isAppRNDevelopment = 1;      // ⭕️  不是RN开发勿修改 默认 0
+static NSInteger const isAppRNDevelopment = 0;      // ⭕️  不是RN开发勿修改 默认 0
 
 
 #endif /* AppMacros_h */

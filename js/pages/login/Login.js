@@ -13,15 +13,12 @@ import { Keyboard, AsyncStorage } from 'react-native'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import Adaption from "../../skframework/tools/Adaption";
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
-import SwitchURLLogin from '../../skframework/common/SwitchURLClass';
 import AllenNavStyle from '../home/AllenNavStyle';
-import GetSetStorge from '../../skframework/component/GetSetStorge';
-import Moment from 'moment';
+import LocalVcode from '../me/safeCenter/LocalValidation';  //本地验证
 
 import Regex from '../../skframework/component/Regex'
 
 var isNetWorkConnected = true;
-var CryptoJS = require("crypto-js");  //加密的库
 var registerKey = ''; //注册的秘钥
 
 export default class Login extends Component {
@@ -31,22 +28,26 @@ export default class Login extends Component {
         this.state = {
             userText: '',
             pwdText: '',
-            veriyCode: this._showCode(),
+            veriyCode: '',  //本地的验证码
             imgConformCode: '', //后台返回的Base64验证码
             inputCode: '',  //输入的验证码
         }
-        this.requestNum = 2;//默认如果一直失败,一共请求3次(包括原本的一次)
     }
+
+    // isBuy: this.props.navigation.state.params.isBuy
 
     //接收上一个页面传过来的title显示出来
     static navigationOptions = ({ navigation }) => ({
         header: (
             <AllenNavStyle
 
-
                 centerText={navigation.state.params.title}
 
-                leftClick={() => navigation.goBack()}
+                // leftClick={() => navigation.goBack()}
+                leftClick={() => navigation.state.params.loginClick == true ? setTimeout(
+                    () => { navigation.state.params.loginClick = false;},
+                    1000
+                ): navigation.goBack()}
             />
         ),
         title: navigation.state.params.title,
@@ -65,6 +66,7 @@ export default class Login extends Component {
             </TouchableOpacity>
         ),
     });
+
 
     componentDidMount() {
 
@@ -117,8 +119,9 @@ export default class Login extends Component {
         else if (this.state.inputCode.length == 0) {
             this._showInfo('验证码不能为空');
             return;
-        } else if (!Regex(this.state.inputCode, "vcode")) {
-            this._showInfo('验证码格式不正确');
+        }
+        else if (this.state.inputCode != this.state.veriyCode){
+            this._showInfo('验证码不正确');
             return;
         }
         else {
@@ -128,8 +131,8 @@ export default class Login extends Component {
             params.append("username", this.state.userText);  //去掉首尾空格
             params.append("password", this.state.pwdText);
             params.append("edition", global.VersionNum);
-            params.append("vcode", this.state.inputCode);
-            params.append("vid", registerKey);
+            params.append("vcode", '6666');
+            params.append("vid", 'b97ec930-7c7c-11e8-acae-0242ac190002');
 
             var mainUrl = global.GlobalConfig.baseURL;
             if (mainUrl.includes('http://')) {
@@ -145,7 +148,7 @@ export default class Login extends Component {
                     this.refs.LoadingView && this.refs.LoadingView.cancer(0);
                     //请求成功
                     if (response.msg == 0 && response.data) {
-                        
+
                         this.refs.LoadingView && this.refs.LoadingView.showSuccess('登录成功');
 
                         this.props.navigation.state.params.indexR == 0;
@@ -157,28 +160,28 @@ export default class Login extends Component {
                             HomeYinDao = 1;
                             let homeyindaoObjcet = {
                                 homeYinDao: 1,
-                           }
-      
-                           let homeYinDaoValue = JSON.stringify(homeyindaoObjcet);
-      
-                           let key = 'HomeYinDaoObjcet';
-                           UserDefalts.setItem(key, homeYinDaoValue, (error) => {
-                               if (!error) {
-                               }
-                           });
-        
+                            }
+
+                            let homeYinDaoValue = JSON.stringify(homeyindaoObjcet);
+
+                            let key = 'HomeYinDaoObjcet';
+                            UserDefalts.setItem(key, homeYinDaoValue, (error) => {
+                                if (!error) {
+                                }
+                            });
+
                         }else {
                             let homeyindaoObjcet = {
                                 homeYinDao: 0,
-                           }
-      
-                           let homeYinDaoValue = JSON.stringify(homeyindaoObjcet);
-      
-                           let key = 'HomeYinDaoObjcet';
-                           UserDefalts.setItem(key, homeYinDaoValue, (error) => {
-                               if (!error) {
-                               }
-                           });
+                            }
+
+                            let homeYinDaoValue = JSON.stringify(homeyindaoObjcet);
+
+                            let key = 'HomeYinDaoObjcet';
+                            UserDefalts.setItem(key, homeYinDaoValue, (error) => {
+                                if (!error) {
+                                }
+                            });
                         }
 
                         let loginObject = {
@@ -235,7 +238,7 @@ export default class Login extends Component {
 
                         // 从投注界面进来的。
                         if (this.props.navigation.state.params.isBuy == true) {
-                           // global.ShouYeYinDao=1;
+                            // global.ShouYeYinDao=1;
                             PushNotification.emit('RefreshBalls');
                         }
 
@@ -258,10 +261,6 @@ export default class Login extends Component {
                                 this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                             }
                         }
-
-                        setTimeout(() => {
-                            this._showCode();
-                        }, 1000);
                     }
                 })
                 .catch(err => {
@@ -276,6 +275,10 @@ export default class Login extends Component {
                         else {
                             errStr = '网络请求失败';
                         }
+                    }
+                    else if (errStr.startsWith('JSON')){
+
+                        this.refs.LoadingView && this.refs.LoadingView.showFaile('服务器错误,登录失败!');
                     }
 
                     this.refs.LoadingView && this.refs.LoadingView.showFaile(errStr);
@@ -294,8 +297,8 @@ export default class Login extends Component {
     }
 
 
-     //注册成功后进行加密登录
-     _encodeLoginAuto(code, uid){
+    //注册成功后进行加密登录
+    _encodeLoginAuto(code, uid){
 
         let params = new FormData();
         params.append("ac", "encodeLogin");
@@ -314,17 +317,17 @@ export default class Login extends Component {
                 }
 
                 let loginObject = {
-                              'session_key': response.data.session_key,
-                        'Uid': response.data.uid,
+                    'session_key': response.data.session_key,
+                    'Uid': response.data.uid,
 
-                        'Token': response.data.token,
-                        'TotalMoney': response.data.price.toString(),
-                        'UserName': response.data.username,
-                        'UserHeaderIcon': headerIcon,
-                        'TKPrice': response.data.last_get_price.toString(),
-                        'Level': response.data.level,//代理判断
-                        'is_Guest': response.data.test,//判断是否是试玩账号 test 0=正式 ，1=测试 ，2=试玩
-                        'codePWD': response.data.code,  //加密登录
+                    'Token': response.data.token,
+                    'TotalMoney': response.data.price.toString(),
+                    'UserName': response.data.username,
+                    'UserHeaderIcon': headerIcon,
+                    'TKPrice': response.data.last_get_price.toString(),
+                    'Level': response.data.level,//代理判断
+                    'is_Guest': response.data.test,//判断是否是试玩账号 test 0=正式 ，1=测试 ，2=试玩
+                    'codePWD': response.data.code,  //加密登录
                 };
 
                 global.UserLoginObject = loginObject;
@@ -338,7 +341,7 @@ export default class Login extends Component {
 
                 // 从投注界面进来的。
                 if (this.props.navigation.state.params.isBuy == true) {
-                   // global.ShouYeYinDao=1;
+                    // global.ShouYeYinDao=1;
                     PushNotification.emit('RefreshBalls');
                 }
 
@@ -388,10 +391,6 @@ export default class Login extends Component {
                     if (response.param) {
                         this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                     }
-
-                    setTimeout(() => {
-                        this._showCode();
-                    }, 1000);
                 }
             })
             .catch(err => {
@@ -413,36 +412,6 @@ export default class Login extends Component {
 
     }
 
-    //验证码随机数的方法
-    _showCode() {
-
-        //请求参数
-        let params = new FormData();
-        params.append("ac", "getVerifyImage");
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-        promise
-            .then(response => {
-
-                if (response.msg == 0) {
-
-                    if (response.data) {
-
-                        this.setState({
-                            imgConformCode: response.data.img,    
-                        });
-                        registerKey = response.data.vid;
-
-                    }
-
-                }
-                else {
-                    this.refs.toast.show(response.param, 1000);
-                }
-            })
-            .catch(err => {
-                this.refs.toast.show(err);
-            });
-    }
 
     render() {
         const { navigate } = this.props.navigation;
@@ -467,9 +436,18 @@ export default class Login extends Component {
                 </View>
 
                 <View style={[styles.container_inPutTextView, { marginTop: 20 }]}>
-                    <Image style={styles.container_inPutTextView_Image} source={require('./img/ic_verCode.png')} /> 
+                    <Image style={styles.container_inPutTextView_Image} source={require('./img/ic_verCode.png')} />
                     <TextInput returnKeyType="done" autoCapitalize={'none'} onChangeText={(text) => this.setState({ inputCode: text })} placeholder='请输入验证码' keyboardType = {'number-pad'}  underlineColorAndroid='transparent' style={{ marginLeft: 10, marginRight: 10, flex: 1, fontSize: 15, padding: 0 }} />
-                    <TouchableOpacity activeOpacity={1} onPress={() => this.setState({ veriyCode: this._showCode() })}><Image style={{ width: 85, height: 43, marginRight: 2 }} source={this.state.imgConformCode != ""  ? { uri: this.state.imgConformCode } : (require('./img/ic_refreshCode.png'))} /></TouchableOpacity>
+                    <LocalVcode
+                        type={'number'}
+                        maxDeg={5}
+                        minDeg={-5}
+                        maxFont={20}
+                        minFont={18}
+                        fontWeightArr={['normal']}
+                        fontArr={['normal']}
+                        getValue={(vcode) => this.state.veriyCode = vcode}
+                    />
                 </View>
 
                 <View style={{ marginLeft: 15, marginRight: 15, flexDirection: 'row', marginTop: 20 }}>
@@ -490,7 +468,7 @@ export default class Login extends Component {
                         navigate('ChatService', { callback: () => { }, title: '在线客服' })
                     }
                     }
-                        style={{ flex: 0.24 }}>
+                                      style={{ flex: 0.24 }}>
                         <CusBaseText style={{ fontSize: Adaption.Font(16, 14), color: 'black' }}>在线客服</CusBaseText>
                     </TouchableOpacity>
                 </View>

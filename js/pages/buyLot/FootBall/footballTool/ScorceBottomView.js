@@ -81,16 +81,26 @@ export default class ScorceBottomView extends Component {
             promise
                 .then((responseData) => {
 
+                   if (Object.keys(this.state.pickDataDict).length == 0){ //用户可能选择后取消。数据请求延迟导致界面显示错误。还能投注
+
+                       return;
+                   }
+
                   if (responseData.msg == 0 && responseData.data){
 
-                      let newPeilvArr = [];
+                    let newPeilvArr = [];   //新的赔率数组
+                    let isNeedRender = false; //是否需要刷新render
 
                     if (sportModel.playMethod == 'HC'){
                         //让球会出现多个
 
                         newPeilvArr  = responseData.data[0].bet_data[sportModel.playMethod][sportModel.isHVXO.toUpperCase()];
                         let idx = sportModel.data.equal ? sportModel.data.equal : 0; //如果不存在多个盘则取第0个
-                        sportModel.p = newPeilvArr[idx].p;
+
+                        if (sportModel.p != newPeilvArr[idx].p){
+                            sportModel.p = newPeilvArr[idx].p;
+                            isNeedRender = true;
+                        }
                     }
                     else if (sportModel.playMethod == 'GL'){
                         //大小也会出现多个
@@ -98,25 +108,50 @@ export default class ScorceBottomView extends Component {
                         let keyStr = isHost ? 'OV' : 'UN';
                         newPeilvArr = responseData.data[0].bet_data[sportModel.playMethod][keyStr];
                         let idx = sportModel.data.equal ? sportModel.data.equal : 0; //如果不存在多个盘则取第0个
-                        sportModel.p = newPeilvArr[idx].p;
 
+                        if (sportModel.p != newPeilvArr[idx].p){
+                            sportModel.p = newPeilvArr[idx].p;
+                            isNeedRender = true;
+                        }
                     }
                     else {
 
-                        let peilvArr = responseData.data[0].bet_data[sportModel.playMethod];
+                        //如果请求的bet_data 存在
+                        if (responseData.data[0].bet_data) {
 
-                        for (model of peilvArr){
+                            let peilvArr = [];  //拿到最新的赔率数组
 
-                            if (model.k == sportModel.k){
-                                sportModel.p = model.p;
-                                break;
+                            if (sportModel.playMethod == 'TCS' || sportModel.playMethod == 'HTCS'){
+                                peilvArr  = responseData.data[0].bet_data[sportModel.playMethod][sportModel.isHVXO.toUpperCase()];
                             }
-                        }
+                            else if (sportModel.playMethod == 'HFT' || sportModel.playMethod == 'TG'){
+                                peilvArr  = responseData.data[0].bet_data[sportModel.playMethod];
+                            }
+
+                            let isNeedRender = false;
+
+                            if (peilvArr.length != 0){
+
+                                for (model of peilvArr){
+
+                                    if (model.k == sportModel.k){
+
+                                        if (sportModel.p != model.p){
+                                            sportModel.p = model.p;
+                                            isNeedRender = true;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                         }
+                      }
+
+                      //是否需要刷新render
+                      if (isNeedRender == true){
+                          this.setState({pickDataDict:{[sportKey]:sportModel}});
+                      }
                     }
-
-                    this.setState({pickDataDict:{[sportKey]:sportModel}});
-                  }
-
                 })
                 .catch((err) => {
 
@@ -289,10 +324,8 @@ export default class ScorceBottomView extends Component {
 
                 peilvStr = `@${model.p}`;
 
-                let isHCAndGL = (model.playMethod == 'HC' || model.playMethod == 'GL') ? true : false;
-
                 //如果是让分或者大小盈利不减去本金
-                if (isHCAndGL){
+                if (model.playMethod == 'HC' || model.playMethod == 'GL' || model.playMethod == 'HHC' || model.playMethod == 'HGL') {
                     currentPeilv = parseFloat(model.p, 10);
                 }
                 else {

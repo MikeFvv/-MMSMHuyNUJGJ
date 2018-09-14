@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   Image,
   View,
   Dimensions,
-  Platform,
   TouchableOpacity,
   ActivityIndicator,
-  StatusBar,
-  TouchableHighlight,
-  Button,
   FlatList,
   Modal,
-  ImageBackground
 } from 'react-native';
 const { width, height } = Dimensions.get("window");
 const KAdaptionWith = width / 414;
@@ -23,7 +16,6 @@ import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-vi
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../skframework/tools/Adaption"; //字体适配
 import RefreshListView, { RefreshState } from 'react-native-refresh-list-view'
-import moment from 'moment';
 import TouZhuHeaderView from './TouZhuHeaderView';
 
 

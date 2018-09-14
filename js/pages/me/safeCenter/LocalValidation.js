@@ -211,7 +211,7 @@ export default class Verification extends Component {
         let {type} = this.props
         if(type == 'number')
         {
-            return   <TouchableOpacity activeOpacity={0.8} style={[defalutStyles.randomView,{width:28*num},this.props.container]} onPress={()=>{this._startVerification(num)}}>
+            return   <TouchableOpacity activeOpacity={0.8} style={[defalutStyles.randomView,{width:28*num, height:Adaption.Width(50)},this.props.container]} onPress={()=>{this._startVerification(num)}}>
                 {this._randomView(num)}
             </TouchableOpacity>
         }

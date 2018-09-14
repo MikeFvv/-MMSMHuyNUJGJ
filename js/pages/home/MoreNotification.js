@@ -1,25 +1,13 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Image,
   FlatList,
-  ActivityIndicator,
-    StatusBar,
-    Platform,
-  Alert,
   Dimensions,
 } from "react-native";
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
-import LocalImg from "../../res/img";
-import LocalImages from "../../../publicconfig/images";
-import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
-import Adaption from "../../skframework/tools/Adaption"; //字体适配
 import moment from 'moment';
 
 export default class MoreNotification extends Component {
@@ -31,26 +19,6 @@ export default class MoreNotification extends Component {
               leftClick={() =>  navigation.goBack() }
           />
       ),
-
-     // title:'公告',
-     //
-     //
-     //
-     //  headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-     //
-     // headerTitleStyle:{color:'white',alignSelf:'center'},
-     //  //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-     //  headerRight: (
-     //      <View style={GlobalStyles.nav_blank_view} />
-     //  ),
-     // headerLeft: (
-     //        <TouchableOpacity
-     //            activeOpacity={1}
-     //            style={GlobalStyles.nav_headerLeft_touch}
-     //            onPress={() => { navigation.goBack() }}>
-     //            <View style={GlobalStyles.nav_headerLeft_view} />
-     //        </TouchableOpacity>
-     //    ),
 
   });
 

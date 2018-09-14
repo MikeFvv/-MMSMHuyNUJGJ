@@ -13,23 +13,29 @@ export default class RoadTimeView extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            stopless: props.fengPanTime,  // 封盘时间
-            openless: props.openTime,     // 开奖时间
-            qishu: global.CurrentQiShu,   // 当前期数
-        }
-
-        this.nextData = props.nextData;
+        this.nextData = props.nextData ? props.nextData : [];
         this.currentIdx = 0;  // 为防止用户要投注界面停留了几期后 才进入路图。所以idx不能固定取0
 
         if (global.CurrentQiShu > 0 && this.nextData.length > 0) {
-            for (let a = 0; a < props.nextData.length; a++) {
-                let qishu = props.nextData[a].qishu;
+            for (let a = 0; a < this.nextData.length; a++) {
+                let qishu = this.nextData[a].qishu;
                 if (global.CurrentQiShu == qishu) {
                     this.currentIdx = a;
                     break;
                 }
             }
+        }
+
+        let opentime = 0, stoptime = 0;
+        if (this.nextData.length > 0) {  // 倒计时
+            opentime = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - props.finishTime) - Math.round(new Date() / 1000);
+            stoptime = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - props.finishTime) - Math.round(new Date() / 1000);
+        }
+
+        this.state = {
+            stopless: stoptime,  // 封盘时间
+            openless: opentime,     // 开奖时间
+            qishu: global.CurrentQiShu,   // 当前期数
         }
     }
 
@@ -44,12 +50,6 @@ export default class RoadTimeView extends Component {
    
     
     _timeInterval() {
-        
-        // 进来先自减一次。
-        this.setState({
-            stopless: this.state.stopless - 1,
-            openless: this.state.openless - 1,
-        });
 
         this.fengPanTimer = setInterval(() => {
             if (this.state.openless < 1 && this.nextData.length > 0) {
@@ -59,14 +59,9 @@ export default class RoadTimeView extends Component {
 
                 if (this.currentIdx < this.nextData.length) {
 
-                    // 下一期的stopless 要减少上一期的openless。
-                    let stopTime = this.nextData[this.currentIdx].stopless - this.nextData[this.currentIdx - 1].openless;
-                    let openTime = this.nextData[this.currentIdx].openless - this.nextData[this.currentIdx - 1].openless;
                     let qishu = this.nextData[this.currentIdx].qishu;
 
                     this.setState({
-                        stopless: stopTime,  // 封盘时间
-                        openless: openTime,     // 开奖时间
                         qishu: qishu,   // 当前期数
                     });
                 }
@@ -78,9 +73,16 @@ export default class RoadTimeView extends Component {
                 this._getCplogList();
             }
 
+            let currOpen = 0, currStop = 0;
+            if (this.currentIdx < this.nextData.length) {
+                // 倒计时时间直接用opentime 减 手机系统时间。
+                currOpen = this.nextData[this.currentIdx].opentime - (this.nextData[this.currentIdx].server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                currStop = this.nextData[this.currentIdx].stoptime - (this.nextData[this.currentIdx].server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+            }
+
             this.setState({
-                stopless: this.state.stopless - 1,
-                openless: this.state.openless - 1,
+                stopless: currStop,
+                openless: currOpen > 0 ? currOpen : 0,
             });
 
         }, 1000)
@@ -100,8 +102,11 @@ export default class RoadTimeView extends Component {
                     this.nextData = response.data[0].next;
                     this.currentIdx = 0;  // 重置。
 
-                    let stopTime = this.nextData[0].stopless;
-                    let openTime = this.nextData[0].openless;
+                    this.props.finishTime = Math.round(new Date() / 1000);
+
+                    // 倒计时时间直接用opentime 减 手机系统时间。
+                    let openTime = nextModel.opentime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                    let stopTime = nextModel.stoptime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
                     let qishu = this.nextData[0].qishu;
 
                     this.setState({
@@ -134,9 +139,9 @@ export default class RoadTimeView extends Component {
     render() {
         return (
             <View style={[this.props.style]}>
-                <Text style={{ color: '#707070', fontSize: Adaption.Font(17, 14) }}>
-                    第<Text style={{color: '#e33939'}}>{this.state.qishu}</Text>期投注截止时间：
-                    <Text style={{color: '#e33939'}}>{(this.state.stopless < 0 && this.state.qishu > 0) ? '已封盘' : this._formatTime(this.state.stopless)}</Text>
+                <Text allowFontScaling={false} style={{ color: '#707070', fontSize: Adaption.Font(17, 14) }}>
+                    第<Text allowFontScaling={false} style={{color: '#e33939'}}>{this.state.qishu}</Text>期投注截止时间：
+                    <Text allowFontScaling={false} style={{color: '#e33939'}}>{(this.state.stopless < 0 && this.state.qishu > 0) ? '已封盘' : this._formatTime(this.state.stopless)}</Text>
                 </Text>
             </View>
         )

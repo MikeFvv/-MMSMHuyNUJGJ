@@ -24,12 +24,28 @@ export default class SelectGameView extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+
+    if (nextProps.isClose == true) {
+      for (let a = 0; a < global.AllPlayGameList.length; a++) {
+        let dic = global.AllPlayGameList[a];
+        if (dic.game_id == nextProps.currentGameid) {
+        this.index = a;
+        break;
+        }
+      }
+    }
+
     this.setState({
       isClose: nextProps.isClose,
     })
   }
 
   _renderItemView(item) {
+
+    if (item.index == global.AllPlayGameList.length - 1 && this.index > 26) {
+      this.refs.FlatListA && this.refs.FlatListA.scrollToEnd({ animated: true }); // 滚动到最后
+    }
+
     return(
       <TouchableOpacity activeOpacity={0.5} style = {{
         backgroundColor:this.props.currentGameid == item.item.game_id ? '#e33939':'#fff', width:SCREEN_WIDTH * 0.26, height:Adaption.Width(38), justifyContent:'center', alignItems:'center',
@@ -78,6 +94,7 @@ export default class SelectGameView extends Component {
               <Image style={{ marginLeft:Adaption.Width(10), height: Adaption.Width(1), width: SCREEN_WIDTH - Adaption.Width(40) }} source={require('../buyLot/img/ic_dottedLine.png')} />
               
               <FlatList
+                ref="FlatListA"
                 automaticallyAdjustContentInsets={false}
                 alwaysBounceHorizontal = {false}
                 data = {global.AllPlayGameList}

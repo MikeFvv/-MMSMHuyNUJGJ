@@ -44,6 +44,7 @@ export default class FBShopCarList extends Component {
         }
 
         this.xiaZhuClickWating = false;  //防止快速点击下注按钮
+        this.clearSItemId = []; // 记录删除哪条item的。
     }
 
     //接受将要改变的属性
@@ -433,6 +434,8 @@ export default class FBShopCarList extends Component {
                        this.state.dataModel.dataArr = this.state.dataSource;
                        this.state.dataModel.desc = this.state.dataSource.length != 0 ? `${this.state.dataSource.length}串1` : '';
 
+                        this.clearSItemId.push(item.item.value.sectionItemiId); // 记住删除了哪一个，添加比赛返回后刷新界面用到
+
                        this.setState({
                            dataSource: this.state.dataSource,    //删除某个数据
                            dataModel:this.state.dataModel, //重新赋值模型
@@ -569,7 +572,12 @@ export default class FBShopCarList extends Component {
                 style = {{height:60, backgroundColor:'#f3f3f3'}}
                 goBackToAddRace = {() => {
                     //发出通知清空界面
-                    this.state.dataSource.length == 0 ? PushNotification.emit('ClearFootBallGameViewBallNotification') : null;
+                    if (this.state.dataSource.length == 0) {
+                        PushNotification.emit('ClearFootBallGameViewBallNotification');  // 列表没有数据的；
+                    } else if (this.clearSItemId.length > 0) {
+                        // 删除掉某几条数据的；
+                        PushNotification.emit('RefreshFootBallGameViewBallNotification', this.clearSItemId);  // 列表没有数据的；
+                    }
                     this.props.navigation.goBack();
                 }}
                 clearShopCarList = {() => {

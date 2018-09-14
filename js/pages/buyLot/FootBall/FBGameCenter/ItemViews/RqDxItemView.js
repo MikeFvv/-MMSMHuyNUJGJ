@@ -32,7 +32,11 @@ export default class RqDxItemView extends Component {
                 seleBallDic: {},
                 seleIdx: -1,
             })
-
+        } else if (nextProps.isAllBetCallback) {
+            this.setState({
+                seleIdx: -1,  // 清除
+            });
+            
         } else {
             // 选择不是同一个区域的 && 有选择数据的 && 不是综合过关的。要清除
             if (!nextProps.lastSItemIdArr.includes(nextProps.cuntSItemId) && Object.keys(this.state.seleBallDic)[0] != null && nextProps.game_typeID != 3) {
@@ -43,16 +47,46 @@ export default class RqDxItemView extends Component {
         }
     }
 
+    // 只刷新 当前选择的，和之前有选择的。 其余的就不刷了 浪费时间。
+    shouldComponentUpdate(nextProps, nextState) {
+        let aaa = nextState.seleIdx != this.state.seleIdx; // 选择不同区域了 清除
+        let bbb = nextProps.cuntSItemId == nextProps.lastSItemId; // 这个本次选择的
+        let ccc = nextProps.cuntSItemId == nextProps.lastLastSItemIdx; // 上上次选择的，展开选择后 隐藏再展开 选不同区的号时 有用。
+        let ddd = nextProps.data != this.props.data; // 数据源不相同时
+        let eee = nextProps.isAllBetCallback == true;  // 从所有玩法 或 综合购物车 回来的
+        if (aaa || bbb || ccc || ddd || eee) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     _btn(d_key, idx) {
 
         let sltBallDic = this.state.seleBallDic[this.props.cuntSItemId];
-        let isSelect = sltBallDic && sltBallDic.playMethod == d_key && this.state.seleIdx == idx;  //&& sltBallDic.sltIdx == idx;
 
-        let data = [];
+         // 上次选择的。 主要是为了 点击收起展开时 选择状态保留住。
+         let islastSlt = false;
+         let isLast1 = this.state.seleIdx == -1;
+         if (isLast1 && this.props.lastIdxArr[0] != -1) {
+             for (let i = 0; i < this.props.lastSItemIdArr.length; i++) {
+                 if (this.props.lastSItemIdArr[i] == this.props.cuntSItemId) {
+                     if (this.props.lastIdxArr[i] == idx) {
+                         islastSlt = true;
+                     }
+                 }
+             }
+         }
+
+        let isSelect = (sltBallDic && sltBallDic.playMethod == d_key && this.state.seleIdx == idx) || (isLast1 && islastSlt);
+
+        let dataModel = {};
         if (d_key == 'HC') {
-            data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['H']], ...[this.props.data.bet_data[d_key]['V']]] : [];
+            let data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['H']], ...[this.props.data.bet_data[d_key]['V']]] : [];
+            dataModel = data[idx];
         } else if (d_key == 'GL') {
-            data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['OV']], ...[this.props.data.bet_data[d_key]['UN']]] : [];
+            let data = this.props.data.bet_data[d_key] ? [...[this.props.data.bet_data[d_key]['OV']], ...[this.props.data.bet_data[d_key]['UN']]] : [];
+            dataModel = data[idx - 2];
         }
 
         return (
@@ -65,52 +99,52 @@ export default class RqDxItemView extends Component {
                     backgroundColor: isSelect ? '#fafffa' : 'rgba(0,0,0,0)',
                 }}
                 onPress={() => {
-                    if (data[idx] == null && data[idx].p == null && data[idx].p == '/' && data[idx].p == '') {
+                    if (dataModel == null || dataModel.p == null || dataModel.p == '/' || dataModel.p == '') {
                         return;
                     }
 
                     let dict = {};
                     if (isSelect) {
-                        this.state.seleIdx = -1;
+                        // this.state.seleIdx = -1;
                     } else {
-                        this.state.seleIdx = idx;
+                        // this.state.seleIdx = idx;
 
-                        let ballD = { 'playMethod': d_key, isHVXO: idx == 0 ? 'h' : 'v', sltIdx: idx };
+                        let ballD = { 'playMethod': d_key, isHVXO: idx - (d_key == 'HC' ? 0 : 2) == 0 ? 'h' : 'v', sltIdx: idx };
                         if (d_key == 'HC') {
                             ballD['kTit'] = idx == 0 ? '主' : '客';
                         } else if (d_key == 'GL') {
-                            ballD['kTit'] = idx == 0 ? '大' : '小';
+                            ballD['kTit'] = (idx - 2 == 0) ? '大' : '小';
                         }
 
-                        Object.assign(ballD, data[idx]);
+                        Object.assign(ballD, dataModel);
                         dict[this.props.cuntSItemId] = ballD;
                     }
                     this.props.ballsClick ? this.props.ballsClick(dict) : null;
                     this.setState({
-                        // seleIdx: this.state.seleIdx,
+                        seleIdx: isSelect ? -1 : idx,
                         seleBallDic: dict,
                     });
 
                 }}
             >
-                {d_key == 'HC' && data[idx] != null && data[idx].p != null && data[idx].p != '/' && data[idx].p != ''
+                {d_key == 'HC' && dataModel != null && dataModel.p != null && dataModel.p != '/' && dataModel.p != ''
                     ? <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                            {data[idx].k.indexOf('-') == 0 ? <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{`${data[idx].k}`.substr(1, `${data[idx].k}`.length - 1)}</Text> : null}
-                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{data[idx].p}</Text>
+                            {dataModel.k.indexOf('-') == 0 ? <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{`${dataModel.k}`.substr(1, `${dataModel.k}`.length - 1)}</Text> : null}
+                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{dataModel.p}</Text>
                         </View>
-                        {data[idx].t != null && data[idx].t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={data[idx].t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
+                        {dataModel.t != null && dataModel.t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={dataModel.t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
                     </View>
 
                     // 大小
-                    : d_key == 'GL' && data[idx] != null && data[idx].p != null && data[idx].p != '/' && data[idx].p != ''
+                    : d_key == 'GL' && dataModel != null && dataModel.p != null && dataModel.p != '/' && dataModel.p != ''
                         ? <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{idx == 0 ? '大' : '小'}</Text>
+                            <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{idx - 2 == 0 ? '大' : '小'}</Text>
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginLeft: Adaption.Width(3) }}>
-                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{data[idx].k}</Text>
-                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{data[idx].p}</Text>
+                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: '#22AC38' }}>{dataModel.k}</Text>
+                                <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: isSelect ? '#e33939' : '#676767' }}>{dataModel.p}</Text>
                             </View>
-                            {data[idx].t != null && data[idx].t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={data[idx].t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
+                            {dataModel.t != null && dataModel.t != 'e' ? <Image resizeMode={'contain'} style={{ width: Adaption.Width(13), height: Adaption.Width(13) }} source={dataModel.t == 'd' ? require('../../img/PlDown.png') : require('../../img/PlUp.png')} /> : null}
                         </View>
 
                         : <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -162,8 +196,8 @@ export default class RqDxItemView extends Component {
                         {this._btn('HC', 1)}
                     </View>
                     <View style={{ width: Adaption.Width(88) }}>
-                        {this._btn('GL', 0)}
-                        {this._btn('GL', 1)}
+                        {this._btn('GL', 2)}
+                        {this._btn('GL', 3)}
                     </View>
 
                 </View>

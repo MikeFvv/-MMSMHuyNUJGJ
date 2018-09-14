@@ -40,6 +40,18 @@ export default class ScorceSpecailBottomView extends Component {
             this.setState({pickDataDict:null})
 
         });
+
+        // 综合过关 有删除过item后点添加比赛返回的
+        this.subscription3 = PushNotification.addListener('RefreshFootBallGameViewBallNotification', (clearSItemId) => {
+            // 其实回调到这里，pickDataDict的值已经改了。为防止出错还是还来一下delete。
+            
+            for (let a = 0; a < clearSItemId.length; a++) {
+                delete this.state.pickDataDict[clearSItemId[a]];  // 删除掉在购物车里面删除的货；
+            }
+            this.setState({
+                pickDataDict: this.state.pickDataDict,
+            });
+        });
     }
 
     //移除组件
@@ -47,6 +59,9 @@ export default class ScorceSpecailBottomView extends Component {
 
         if (typeof(this.subscription1) == 'object'){
             this.subscription1 && this.subscription1.remove();
+        }
+        if (typeof(this.subscription3) == 'object') {
+            this.subscription3 && this.subscription3.remove();
         }
     }
 

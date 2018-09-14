@@ -1,29 +1,14 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Image,
-  FlatList,
-  ActivityIndicator,
-  StatusBar,
-  Platform,
-  Alert,
   Dimensions,
-  ScrollView,
-  Modal,
 } from "react-native";
 const { width, height } = Dimensions.get("window");
-const KAdaptionWidth = width / 414;
-const KAdaptionHeight = height / 736;
-import LocalImg from "../../res/img";
-import LocalImages from "../../../publicconfig/images";
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
-import Adaption from "../../skframework/tools/Adaption"; //字体适配
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
-import SegmentedControl from "../../common/SegmentedControl";
 import Moment from 'moment';
 import RefreshListView, { RefreshState } from 'react-native-refresh-list-view'
 

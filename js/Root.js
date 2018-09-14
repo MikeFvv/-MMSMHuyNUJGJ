@@ -97,6 +97,7 @@ export default class Root extends Component {
         this.LaunchImageUrlArray = [global.LaunchImageUrl];
         this.NewOldVersion = 2;
         this.plistIndex = 0;
+        this.domainNameMm = '';
 
     }
 
@@ -105,6 +106,7 @@ export default class Root extends Component {
 
         global.RouterIndex = this.props['router'];
         GlobalConfig.baseURL = this.props['mmUrl'];
+        this.domainNameMm = this.props['mmUrl'];
         global.GLOBALmmRainbow = this.props['mmRainbow'];
 
         if (GLOBALisRNParameters == false) {
@@ -149,8 +151,8 @@ export default class Root extends Component {
                     ipHttp = ipUrl;
                 }
 
-                global.GlobalLineIPArray.splice(0, 0, ipHttp);  // 将主域名添加到数组开始位置
-                GlobalConfig.lineIPArray.splice(0, 0, ipHttp);  // 将主域名添加到数组开始位置
+                // global.GlobalLineIPArray.splice(0, 0, ipHttp);  // 将主域名添加到数组开始位置
+                // GlobalConfig.lineIPArray.splice(0, 0, ipHttp);  // 将主域名添加到数组开始位置
             }
         }
 
@@ -284,6 +286,7 @@ export default class Root extends Component {
             if (Platform.OS === 'ios') {
                 if (GLOBALisRNParameters) {
                     let url = SwitchURLRoot(SwitchURLIndex);
+                    this.domainNameMm = url;
                     this._getSysInfo(url);
                     return;
                 }
@@ -309,6 +312,7 @@ export default class Root extends Component {
         if (Platform.OS === 'ios') {
 
             let url = SwitchURLRoot(SwitchURLIndex);
+            this.domainNameMm = url;
             this._getSysInfo(url);
 
         }
@@ -324,12 +328,13 @@ export default class Root extends Component {
             if (!error) {
                 if (result !== '' && result !== null) {
 
-                    let userURL = JSON.parse(result);
-                    GlobalConfig.baseURL = userURL;  // 保存url
+                    let userEnterURL = JSON.parse(result);
 
-                    let userURLOk = this._replaceOldDomainName(userURL);
+                    // GlobalConfig.baseURL = userURL;  // 保存url
+                    // let userURLOk = this._replaceOldDomainName(userURL);
                     // 需要每次启动更新这里的信息 ，里面包含邀请码设置
-                    this._getSysInfo(userURLOk);
+                    // this._getSysInfo(userURLOk);
+                    this._getByInterfaceReturnDomainName(userEnterURL)
 
                 } else {
                     this.setState({
@@ -362,7 +367,7 @@ export default class Root extends Component {
             }
         })
 
-        let key = 'USERBASEURL';
+        let key = 'LINEURL';
         AsyncStorage.getItem(key, (error, result) => {
             if (!error) {
                 if (result !== '' && result !== null) {
@@ -397,6 +402,7 @@ export default class Root extends Component {
 
 
 
+
     // 验证 url 是否正确
     _getSysInfo(userEnterUrl) {
 
@@ -419,7 +425,9 @@ export default class Root extends Component {
         //请求参数
         let params = new FormData();
         params.append("ac", "getSysInfo");
-        params.append("enom", userEnterUrl);
+        // params.append("enom", userEnterUrl);
+        params.append("enom", this.domainNameMm ? this.domainNameMm : userEnterUrl);
+
 
         let baseURL = '';
         // 用户输入带http:// 或者不带http:// 都可以
@@ -428,7 +436,7 @@ export default class Root extends Component {
         } else {
             baseURL = userEnterUrl;
         }
-        let phoneApiUrl = baseURL + '/request/getSysInfo';
+        let phoneApiUrl = baseURL + '/request';
         var promise = GlobalBaseNetwork.sendNetworkRequest(params, null, phoneApiUrl);
         promise
             .then(response => {
@@ -447,16 +455,21 @@ export default class Root extends Component {
                     }
 
 
-                    GetSetStorge.setStorgeAsync('USERBASEURL', JSON.stringify(baseURL))
+
+                    if (this.state.isShowEnterUrlPage == true) {
+                        GetSetStorge.setStorgeAsync('USERBASEURL', JSON.stringify(baseURL))
+                    }
+                    GetSetStorge.setStorgeAsync('LINEURL', JSON.stringify(baseURL))
                     GetSetStorge.setStorgeAsync('SysInfo', JSON.stringify(response.data))
 
                     GlobalConfig.baseURL = baseURL;  // 保存url
                     GlobalConfig.userData = response.data;  // 保存系统信息
 
-                    if (this.state.isShowEnterUrlPage == true) {
-                        global.GlobalLineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
-                        GlobalConfig.lineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
-                    }
+                    
+                    // if (this.state.isShowEnterUrlPage == true) {
+                    //     global.GlobalLineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
+                    //     GlobalConfig.lineIPArray.splice(0, 0, baseURL);  // 将主域名添加到数组开始位置
+                    // }
 
 
                     GetSetStorge.setStorgeAsync('iSNeedInviteCode', JSON.stringify(response.data.bind_param));
@@ -474,7 +487,7 @@ export default class Root extends Component {
                     }
                     isSystemMaintain = true;
 
-                    this.getDataRequestReturnData(data)
+                    this.getDataRequestReturnData(false)
 
                 } else {
                     if (this.state.isShowEnterUrlPage == true) {
@@ -634,7 +647,7 @@ export default class Root extends Component {
             }
 
             this.setState({
-                syncMessage: "数据请求错误,正在进入"
+                syncMessage: "数据请求超时,正在进入"
             });
 
         }, 10000)
@@ -790,263 +803,14 @@ export default class Root extends Component {
 
     }
 
-    // 输入域名页面
-    _isShowEnterDomainNamView() {
-        let versionIDStr;
-        if (global.GLOBALmmRainbow && global.GLOBALmmRainbow['id']) {
-            versionIDStr = VersionNum + '  ID:' + global.GLOBALmmRainbow['id'];
-        } else {
-            versionIDStr = VersionNum;
-        }
-
-        return (
-
-            <View style={styles.eNameViewContainer}>
-                <ImageBackground style={styles.eNameImageStyle}
-                    source={LocalImgs.ic_bg_urlback}
-                >
-
-                    <View style={styles.enter_urlbg_container}>
-                        <Text style={styles.enterMessageStyle}>{this.state.enterMessage || ""}</Text>
-
-                        <View style={styles.enter_container}>
-                            <View style={styles.url_TitleViewStyle}>
-                                <Text style={styles.eNametitleStyle}>域名</Text>
-                            </View>
-                            <TextInput
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                underlineColorAndroid='transparent'
-                                style={styles.eNameInputTextStyle}
-                                placeholder='请输入域名'
-                                onChangeText={(text) => this.userEnterUrl = text}
-                            />
-                        </View>
 
 
-                        <TouchableOpacity
-                            disabled={this.state.waiting}
-                            style={styles.confirmBtnStyle}
-                            activeOpacity={0.5}
-                            onPress={() => {
-                                this._userEnterConfirmBtn();
-                            }}
-                        >
-                            <ImageBackground style={styles.urlbtn_imgStyle}
-                                source={LocalImgs.ic_urlbtn}>
-
-                                <Text style={styles.confirmBtnText}>确认</Text>
-                            </ImageBackground>
-                        </TouchableOpacity>
-                    </View>
-
-                </ImageBackground>
-                <Text style={styles.enter_VersionNumStyle}>{versionIDStr}</Text>
-            </View>
-        )
-    }
 
     _onEnterDomainNamViewClose() {
         this.setState({ isShowEnterUrlPage: false })
     }
 
-    render() {
 
-        let versionIDStr;
-        if (global.GLOBALmmRainbow && global.GLOBALmmRainbow['id']) {
-            versionIDStr = VersionNum + '  ID:' + global.GLOBALmmRainbow['id'];
-        } else {
-            versionIDStr = VersionNum;
-        }
-
-        return <View style={styles.container}>
-            <AllenShortCut allenToastCallBack={this.allenToastCallBack} />
-            {this.state.finished ? <App /> : null}
-            {
-                this.state.finishedPage ? null :
-                    (this.state.lauchImgUri == '' ? (
-                        <ImageBackground style={styles.imageBackStyle}
-                            source={LocalImgs.ic_public_launchImage}>
-                            <Text style={styles.messages}>{'' + this.state.syncMessage || ""}</Text>
-
-                            <Text style={styles.VersionNumCodeStyle}>{versionIDStr}</Text>
-
-                        </ImageBackground>
-                    ) : (
-                            <View style={styles.imageBackStyle}>
-                                {/* <CachedImage source={{ uri: this.state.lauchImgUri }} style={styles.CachedImageStyle}
-                                    ></CachedImage> */}
-
-                                <ImageCacheProvider
-                                    urlsToPreload={this.LaunchImageUrlArray}
-                                    onPreloadComplete={() => console.log('hey there')}>
-                                    <CachedImage source={{ uri: this.state.lauchImgUri }} style={styles.CachedImageStyle} />
-                                </ImageCacheProvider>
-
-
-                                <Text style={styles.messages}>{'' + this.state.syncMessage || ""}</Text>
-                                <Text style={styles.VersionNumCodeStyle}>{versionIDStr}</Text>
-                            </View>
-
-                        )
-                    )
-            }
-
-
-            <Modal
-                visible={this.state.isShowEnterUrlPage}
-                //显示是的动画默认none
-                //从下面向上滑动slide
-                //慢慢显示fade
-                animationType={'none'}
-                //是否透明默认是不透明 false
-                transparent={true}
-                //关闭时调用
-                onRequestClose={() => this._onEnterDomainNamViewClose()}
-            >{this._isShowEnterDomainNamView()}</Modal>
-
-            <AllenModal
-                style={{ backgroundColor: "transparent", position: "absolute", top: 0, left: 0 }}
-                transparent={true}
-                backdropPressToClose={true}
-                ref={"calendarstart"}
-            >
-                <View style={{
-                    flex: 1,
-                    backgroundColor: 'rgba(0,0,0,0.3)',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <ImageBackground style={{ width: SCREEN_WIDTH - 60, height: 350, alignItems: 'center' }}
-                        source={require('./pages/home/img/ic_home_jsj.png')}>
-                        <CusBaseText style={{ fontSize: 14, color: '#ffcf00', marginTop: 270, fontWeight: '900' }}>
-                            恭喜您获得财神红包!!!
-                            </CusBaseText><CusBaseText style={{ fontSize: 14, color: '#ffcf00', fontWeight: '900' }}>
-                            {global.prizeToPrize}彩金
-                            </CusBaseText>
-                    </ImageBackground>
-
-                    <TouchableOpacity style={{ marginTop: 10 }} activeOpacity={0.7} onPress={() => {
-                        this.setState({ isShowDaliyGiftView: false, isShowPriceToPriceView: false })
-                        // this.refs.calendarstart.open();
-                        this.refs.calendarstart.close();
-                    }}>
-                        <Image style={{ width: 20, height: 20 }}
-                            source={require('./pages/home/img/ic_xoxo.png')}>
-                        </Image>
-                    </TouchableOpacity>
-
-                </View>
-            </AllenModal>
-
-
-
-        </View>
-
-
-        // }
-
-    }
-
-
-
-    // 获取http 原生fetch 
-    _xMLHttpRequest(urlPath) {
-
-        let messString = '正在重试获取域名, 请耐心等待...' + this.requestNum;
-
-        console.log('urlPath--->', urlPath);
-
-        fetch(urlPath, {
-            method: 'GET',
-            timeout: 15,
-        })
-            .then((response) => {
-                // response.json()
-                console.log('response--->', response);
-
-                if (response.status === 200) {
-                    let httpUrl = this._decode(response._bodyText, 'bxvip588');
-                    var arr = httpUrl.split("|");//http://bxvip588.com=355656|0|rcode|12|ip|12.12.121.2;12.132.12.1
-                    if (arr.length > 0) {
-
-                        if (arr.length >= 4) {
-                            global.rcode = arr[3];
-                        }
-                        this._getSysInfo(arr[0]);
-                    } else {
-                        this.isLoadData = true;
-                        // 进入App
-                        this.inAppPage()
-                    }
-
-                } else {
-                    if (this.requestNum > 0) {
-                        this.setState({ syncMessage: messString })
-                        this.requestNum--;
-                        this._xMLHttpRequest(urlPath)
-                    } else {
-                        this._getLocallySaveUrlData();
-                    }
-                }
-            })
-            .catch((err) => {
-
-                if (this.requestNum > 0) {
-                    this.setState({ syncMessage: messString })
-                    this.requestNum--;
-                    this._xMLHttpRequest(urlPath)
-                } else {
-                    this._getLocallySaveUrlData();
-                }
-            });
-    }
-
-
-    // iOS 暂用替代方法
-    _iOSXMLHttpRequest(urlPath) {
-        let messString = '正在重试获取域名, 请耐心等待...' + this.requestNum;
-        var request = new XMLHttpRequest();
-        var isTimeOut = false;
-        var timer = setTimeout(() => {
-            isTimeOut = true;
-            request.abort();
-            this.isLoadData = true;
-            this.inAppPage();
-        }, 10000);
-        request.onreadystatechange = (e) => {
-            if (request.readyState !== 4) {
-                return;
-            }
-            if (isTimeOut) return;
-            clearTimeout(timer);
-            if (request.status === 200) {
-                console.log('success', request.responseText);
-                let httpUrl = this._decode(request.responseText, 'bxvip588');
-                var arr = httpUrl.split("|");//http://bxvip588.com=355656|0
-                // console.log(httpUrl);
-                if (arr.length > 0) {
-                    if (arr.length >= 4) {
-                        global.rcode = arr[3];
-                    }
-                    this._getSysInfo(arr[0]);
-                } else {
-                    this.isLoadData = true;
-                    this.inAppPage()
-                }
-            } else {
-                if (this.requestNum > 0) {
-                    this.setState({ syncMessage: messString })
-                    this.requestNum--;
-                    this._iOSXMLHttpRequest(urlPath)
-                } else {
-                    this._getLocallySaveUrlData();
-                }
-            }
-        };
-        request.open('GET', urlPath);
-        request.send();
-    }
 
 
     // 解码方法
@@ -1104,8 +868,8 @@ export default class Root extends Component {
             // 替换域名
             this._replaceDomainName();
 
-            // this._getByInterfaceReturnDomainName(this.userEnterUrl);
-            this._getSysInfo(this.userEnterUrl);
+            this._getByInterfaceReturnDomainName(this.userEnterUrl);
+            // this._getSysInfo(this.userEnterUrl);
 
         }
     }
@@ -1293,18 +1057,26 @@ export default class Root extends Component {
 
 
 
-    // 通过接口获取域名
     _getByInterfaceReturnDomainName(urlPath) {
 
-        let arrPlist = ['http://plist.aotubangfen.com:8089', 'http://plist.gotoguxiang.com:8089', 'http://plist.aotubangfen.com：8089', 'http://plist.gotoguxiang.com:8089'];
+        this.domainNameMm = urlPath;
+
+        let arrPlist = ['http://plist.aotubangfen.com:8089', 'http://plist.gotoguxiang.com:8089', 'http://plist.aujingift.com:8089', 'http://plist.jifenos.com:8089', 'http://plist.xmfn14.com:8089'];
+       
+        let rmIndex = Math.floor(Math.random() * arrPlist.length);
 
         // 正式站  plistIndex
-        let urlPathPlist = arrPlist[this.plistIndex] + '/index.php/AppApi/request?ac=getUrlInfo&client_type=3&key=d20a1bf73c288b4ad4ddc8eb3fc59274704a0495&domain=' + urlPath;
+        let urlPathPlist = arrPlist[rmIndex] + '/index.php/AppApi/request?ac=getUrlInfo&client_type=3&key=d20a1bf73c288b4ad4ddc8eb3fc59274704a0495&domain=' + urlPath;
 
-        // 正式站
-        // urlPath = 'http://plist.bxvip588.com/index.php/AppApi/request?ac=getUrlInfo&client_type=3&key=d20a1bf73c288b4ad4ddc8eb3fc59274704a0495&domain=' + urlPath;
-        // 测试站
-        // urlPath = 'http://apk.bxvip588.com/index.php/AppApi/request?ac=getUrlInfo&client_type=3&key=d20a1bf73c288b4ad4ddc8eb3fc59274704a0495&domain=' + urlPath;
+
+        // let params = new FormData();
+        // params.append("ac", "getUrlInfo");
+        // params.append("client_type", '3');
+        // params.append("key", 'd20a1bf73c288b4ad4ddc8eb3fc59274704a0495');
+        // params.append("domain", urlPath);
+
+        // let encryptPar = this._ClEncrypt(params, 'bx20180701');
+        // let urlPathPlist = arrPlist[rmIndex] + '/index.php/AppApi/request?p=' + encryptPar;
 
         let messString = '正在重试获取域名, 请耐心等待...' + this.requestNum;
         var request = new XMLHttpRequest();
@@ -1361,6 +1133,10 @@ export default class Root extends Component {
                         }
                     }
 
+
+                    GetSetStorge.setStorgeAsync('USERBASEURL', JSON.stringify(urlPath))
+
+
                     global.GlobalLineIPArray = AddHttpIPArry;
                     GlobalConfig.lineIPArray = AddHttpIPArry;
 
@@ -1386,6 +1162,319 @@ export default class Root extends Component {
         request.open('GET', urlPathPlist);
         request.send();
     }
+
+
+
+
+    _ClEncrypt(valValue, keyValue) {
+
+        // let keyByte = keyValue.charCodeAt();
+        // let valByte = valValue.charCodeAt();
+
+        let parStr = '';
+        for (let i = 0; i < valValue._parts.length; i++) {
+            if (i == valValue._parts.length - 1) {
+                parStr += valValue._parts[i][0] + '=' + valValue._parts[i][1];
+            } else {
+                parStr += valValue._parts[i][0] + '=' + valValue._parts[i][1] + '&';
+            }
+        }
+
+        let valArr = parStr.split('');
+        let keyArr = keyValue.split('');
+
+        for (let i = 0; i < valArr.length; i++) {
+            for (let j = 0; j < keyArr.length; j++) {
+
+                let valStr = valArr[i];
+                let keyStr = keyArr[j];
+                let ccc = ((valStr.charCodeAt && valStr.charCodeAt()) || valArr[i]) ^ keyStr.charCodeAt();
+                valArr[i] = ccc;
+            }
+        }
+
+        let result = '';
+        for (let i = 0; i < valArr.length; i++) {
+            let c = valArr[i];
+            result += c.toString(16).padStart(2, '0');
+        }
+
+        let md5 = CryptoJS.MD5(parStr + '&encode=' + keyValue).toString();
+        let resultUpper = 'DEX' + result + md5;
+        return resultUpper.toUpperCase();
+    }
+
+
+    // 输入域名页面
+    _isShowEnterDomainNamView() {
+        let versionIDStr;
+        if (global.GLOBALmmRainbow && global.GLOBALmmRainbow['id']) {
+            versionIDStr = VersionNum + '  ID:' + global.GLOBALmmRainbow['id'];
+        } else {
+            versionIDStr = VersionNum;
+        }
+
+        return (
+
+            <View style={styles.eNameViewContainer}>
+                <ImageBackground style={styles.eNameImageStyle}
+                    source={LocalImgs.ic_bg_urlback}
+                >
+
+                    <View style={styles.enter_urlbg_container}>
+                        <Text style={styles.enterMessageStyle}>{this.state.enterMessage || ""}</Text>
+
+                        <View style={styles.enter_container}>
+                            <View style={styles.url_TitleViewStyle}>
+                                <Text style={styles.eNametitleStyle}>域名</Text>
+                            </View>
+                            <TextInput
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                underlineColorAndroid='transparent'
+                                style={styles.eNameInputTextStyle}
+                                placeholder='请输入域名'
+                                onChangeText={(text) => this.userEnterUrl = text}
+                            />
+                        </View>
+
+
+                        <TouchableOpacity
+                            disabled={this.state.waiting}
+                            style={styles.confirmBtnStyle}
+                            activeOpacity={0.5}
+                            onPress={() => {
+                                this._userEnterConfirmBtn();
+                            }}
+                        >
+                            <ImageBackground style={styles.urlbtn_imgStyle}
+                                source={LocalImgs.ic_urlbtn}>
+
+                                <Text style={styles.confirmBtnText}>确认</Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                    </View>
+
+                </ImageBackground>
+                <Text style={styles.enter_VersionNumStyle}>{versionIDStr}</Text>
+            </View>
+        )
+    }
+
+
+
+
+
+    render() {
+
+        let versionIDStr;
+        if (global.GLOBALmmRainbow && global.GLOBALmmRainbow['id']) {
+            versionIDStr = VersionNum + '  ID:' + global.GLOBALmmRainbow['id'];
+        } else {
+            versionIDStr = VersionNum;
+        }
+
+        return <View style={styles.container}>
+            <AllenShortCut allenToastCallBack={this.allenToastCallBack} />
+            {this.state.finished ? <App /> : null}
+            {
+                this.state.finishedPage ? null :
+                    (this.state.lauchImgUri == '' ? (
+                        <ImageBackground style={styles.imageBackStyle}
+                            source={LocalImgs.ic_public_launchImage}>
+                            <Text style={styles.messages}>{'' + this.state.syncMessage || ""}</Text>
+
+                            <Text style={styles.VersionNumCodeStyle}>{versionIDStr}</Text>
+
+                        </ImageBackground>
+                    ) : (
+                            <View style={styles.imageBackStyle}>
+                                {/* <CachedImage source={{ uri: this.state.lauchImgUri }} style={styles.CachedImageStyle}
+                                    ></CachedImage> */}
+
+                                <ImageCacheProvider
+                                    urlsToPreload={this.LaunchImageUrlArray}
+                                    onPreloadComplete={() => console.log('hey there')}>
+                                    <CachedImage source={{ uri: this.state.lauchImgUri }} style={styles.CachedImageStyle} />
+                                </ImageCacheProvider>
+
+
+                                <Text style={styles.messages}>{'' + this.state.syncMessage || ""}</Text>
+                                <Text style={styles.VersionNumCodeStyle}>{versionIDStr}</Text>
+                            </View>
+
+                        )
+                    )
+            }
+
+
+            <Modal
+                visible={this.state.isShowEnterUrlPage}
+                //显示是的动画默认none
+                //从下面向上滑动slide
+                //慢慢显示fade
+                animationType={'none'}
+                //是否透明默认是不透明 false
+                transparent={true}
+                //关闭时调用
+                onRequestClose={() => this._onEnterDomainNamViewClose()}
+            >{this._isShowEnterDomainNamView()}</Modal>
+
+            <AllenModal
+                style={{ backgroundColor: "transparent", position: "absolute", top: 0, left: 0 }}
+                transparent={true}
+                backdropPressToClose={true}
+                ref={"calendarstart"}
+            >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: 'rgba(0,0,0,0.3)',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <ImageBackground style={{ width: SCREEN_WIDTH - 60, height: 350, alignItems: 'center' }}
+                        source={require('./pages/home/img/ic_home_jsj.png')}>
+                        <CusBaseText style={{ fontSize: 14, color: '#ffcf00', marginTop: 270, fontWeight: '900' }}>
+                            恭喜您获得财神红包!!!
+                            </CusBaseText><CusBaseText style={{ fontSize: 14, color: '#ffcf00', fontWeight: '900' }}>
+                            {global.prizeToPrize}彩金
+                            </CusBaseText>
+                    </ImageBackground>
+
+                    <TouchableOpacity style={{ marginTop: 10 }} activeOpacity={0.7} onPress={() => {
+                        this.setState({ isShowDaliyGiftView: false, isShowPriceToPriceView: false })
+                        // this.refs.calendarstart.open();
+                        this.refs.calendarstart.close();
+                    }}>
+                        <Image style={{ width: 20, height: 20 }}
+                            source={require('./pages/home/img/ic_xoxo.png')}>
+                        </Image>
+                    </TouchableOpacity>
+
+                </View>
+            </AllenModal>
+
+
+
+        </View>
+
+
+        // }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    // ============== 暂时弃用方法 ==============
+
+    // iOS 暂用替代方法
+    _iOSXMLHttpRequest(urlPath) {
+        let messString = '正在重试获取域名, 请耐心等待...' + this.requestNum;
+        var request = new XMLHttpRequest();
+        var isTimeOut = false;
+        var timer = setTimeout(() => {
+            isTimeOut = true;
+            request.abort();
+            this.isLoadData = true;
+            this.inAppPage();
+        }, 10000);
+        request.onreadystatechange = (e) => {
+            if (request.readyState !== 4) {
+                return;
+            }
+            if (isTimeOut) return;
+            clearTimeout(timer);
+            if (request.status === 200) {
+                console.log('success', request.responseText);
+                let httpUrl = this._decode(request.responseText, 'bxvip588');
+                var arr = httpUrl.split("|");//http://bxvip588.com=355656|0
+                // console.log(httpUrl);
+                if (arr.length > 0) {
+                    if (arr.length >= 4) {
+                        global.rcode = arr[3];
+                    }
+                    this._getSysInfo(arr[0]);
+                } else {
+                    this.isLoadData = true;
+                    this.inAppPage()
+                }
+            } else {
+                if (this.requestNum > 0) {
+                    this.setState({ syncMessage: messString })
+                    this.requestNum--;
+                    this._iOSXMLHttpRequest(urlPath)
+                } else {
+                    this._getLocallySaveUrlData();
+                }
+            }
+        };
+        request.open('GET', urlPath);
+        request.send();
+    }
+
+
+
+    // 获取http 原生fetch 
+    _xMLHttpRequest(urlPath) {
+
+        let messString = '正在重试获取域名, 请耐心等待...' + this.requestNum;
+
+        console.log('urlPath--->', urlPath);
+
+        fetch(urlPath, {
+            method: 'GET',
+            timeout: 15,
+        })
+            .then((response) => {
+                // response.json()
+                console.log('response--->', response);
+
+                if (response.status === 200) {
+                    let httpUrl = this._decode(response._bodyText, 'bxvip588');
+                    var arr = httpUrl.split("|");//http://bxvip588.com=355656|0|rcode|12|ip|12.12.121.2;12.132.12.1
+                    if (arr.length > 0) {
+
+                        if (arr.length >= 4) {
+                            global.rcode = arr[3];
+                        }
+                        this._getSysInfo(arr[0]);
+                    } else {
+                        this.isLoadData = true;
+                        // 进入App
+                        this.inAppPage()
+                    }
+
+                } else {
+                    if (this.requestNum > 0) {
+                        this.setState({ syncMessage: messString })
+                        this.requestNum--;
+                        this._xMLHttpRequest(urlPath)
+                    } else {
+                        this._getLocallySaveUrlData();
+                    }
+                }
+            })
+            .catch((err) => {
+
+                if (this.requestNum > 0) {
+                    this.setState({ syncMessage: messString })
+                    this.requestNum--;
+                    this._xMLHttpRequest(urlPath)
+                } else {
+                    this._getLocallySaveUrlData();
+                }
+            });
+    }
+
+
 
 
 };

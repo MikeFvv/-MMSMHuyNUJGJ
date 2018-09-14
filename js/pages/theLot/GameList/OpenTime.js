@@ -29,6 +29,7 @@ const screenHight = height
             nextjiezhitime:props.jiezhitime ? props.jiezhitime : '', //当前时间
             oneqishu:props.prevqishu ? props.prevqishu:'',
             fengPanTime:props.fengPanTime ? props.fengPanTime:'',
+            finishTime: Math.round(new Date() / 1000),
         };
 
         this.timer01= null;
@@ -76,6 +77,7 @@ const screenHight = height
     }
 
 
+
     componentDidMount() {
 
         //this._featchData(this.state.tag);
@@ -88,14 +90,10 @@ const screenHight = height
         this.timer02 && clearTimeout(this.timer02);
  
         }
+
+        
         
         _countTime(){
-         
-        // 进来先自减一次。
-        this.setState({
-            fengPanTime: this.state.fengPanTime - 1,
-            nextjiezhitime: this.state.nextjiezhitime - 1,
-        });
 
         this.timer01 = setInterval(() => {
 
@@ -107,36 +105,32 @@ const screenHight = height
                 if (this.currentIdx < this.state.dataTime.length) {
 
                     // 下一期的stopless 要减少上一期的openless。
-                    let stopTime = this.state.dataTime[this.currentIdx].stopless - this.state.dataTime[this.currentIdx - 1].openless;
-                    let openTime = this.state.dataTime[this.currentIdx].openless - this.state.dataTime[this.currentIdx - 1].openless;
+            
                     let qishu = this.state.dataTime[this.currentIdx].qishu;
 
                     this.setState({
-                        fengPanTime: stopTime,  // 封盘时间
-                        nextjiezhitime: openTime,     // 开奖时间
                         oneqishu: qishu,   // 当前期数
                     });
                 }
             }
 
-            // if (this.state.nextjiezhitime < 1){
-
-            //     this._featchData(this.state.tag);
-            // }
-  
-            // this.setState({
-            //     nextjiezhitime:this.state.nextjiezhitime - 1,
-            //  });
-       
+            
         // 已封盘 且nextData数据已经用到最后一期了。请先去请求了。
         if (this.state.fengPanTime == 0 && this.currentIdx >= this.state.dataTime.length - 1) {
             // 请求新的倒计时数据。
             this._featchData(this.state.tag);
         }
 
+        let currOpen = 0, currStop = 0;
+            if (this.currentIdx < this.state.dataTime.length) {
+                // 倒计时时间直接用opentime 减 手机系统时间。
+                currOpen = this.state.dataTime[this.currentIdx].opentime - (this.state.dataTime[this.currentIdx].server_time - this.state.finishTime) - Math.round(new Date() / 1000);
+                currStop = this.state.dataTime[this.currentIdx].stoptime - (this.state.dataTime[this.currentIdx].server_time - this.state.finishTime) - Math.round(new Date() / 1000);
+            }
+
         this.setState({
-            fengPanTime: this.state.fengPanTime - 1,
-            nextjiezhitime: this.state.nextjiezhitime - 1,
+            fengPanTime: currStop,
+            nextjiezhitime:currStop,
         });
 
 
@@ -233,15 +227,17 @@ const screenHight = height
          params.append("tag", tag);
          var promise = GlobalBaseNetwork.sendNetworkRequest(params);
          promise
-             .then((responseData) => {
+             .then((response) => {
             
                 if (response.msg == 0 && response.data.length != 0) {
 
                     this.state.dataTime = response.data[0].next;
                     this.currentIdx = 0;  // 重置。
 
-                    let stopTime = this.state.dataTime[0].stopless;
-                    let openTime = this.state.dataTime[0].openless;
+                    this.state.finishTime = Math.round(new Date() / 1000);
+                    let openTime = this.state.dataTime[0].opentime - (this.state.dataTime[0].server_time - this.state.finishTime) - Math.round(new Date() / 1000);
+                    let stopTime = this.state.dataTime[0].stoptime - (this.state.dataTime[0].server_time - this.state.finishTime) - Math.round(new Date() / 1000);
+
                     let qishu = this.state.dataTime[0].qishu;
 
                     this.setState({

@@ -92,7 +92,8 @@ export default class Loading extends Component {
         });
 
         //默认15秒消失，网络不好的情况
-        this.cancer(15);
+        // 不能消失那么快，超时15秒回不来的。不然这个都消失了 请求还没有结果回来。
+        this.cancer(25);
     }
 
     /**

@@ -24,7 +24,7 @@ import RqDxItemView from './ItemViews/RqDxItemView'; // 让球 / 大小
 
 let lastTabIdx = -1;
 
-export default class SectionView extends Component {
+export default class FBGameCenter extends Component {
 
     constructor(props) {
         super(props);
@@ -49,7 +49,8 @@ export default class SectionView extends Component {
         this.nextTime = 0;  // 上拉加载 请求用的start_time时间
         this.nextTime2 = 0;  // 备作 当前不是在第一页时，刷新多页用
         this.backupData = [];
-        this.isReloadDyRqDx = false; // 按联盟时间排序时 重载独赢视图
+        this.isReloadDyRqDx = false; // 按联盟 时间 筛选 排序时 重载独赢视图
+        this.carBackClearSItemId = []; // 购物车点添加返回的，记录在那边删除的sitemid
         lastTabIdx = props.tabIdx;
     }
 
@@ -61,7 +62,10 @@ export default class SectionView extends Component {
             this.state.leagueIds = []; // 切换了清空联盟ids
             this.nextTime = 0;  // 重置
             this.nextTime2 = 0; 
+            this._getShowItemIds(); // 切换也走一次吧， 存住展开的section的标识
 
+            /*
+            // 默认是展开时，才要重置这个偏移量，现在是不展开，所以这个先预留着。
             if (this.state.sectionData.length > 0) {
                 // 滚动偏移重置为0
                 this.refs.FBSectionList && this.refs.FBSectionList._wrapperListRef._listRef.scrollToOffset({
@@ -69,6 +73,7 @@ export default class SectionView extends Component {
                     animated: true,
                 });
             }
+            */
 
             this.setState({
                 ballsDict: {}, // 清空已选数据。
@@ -91,19 +96,24 @@ export default class SectionView extends Component {
                 // 用于按联盟或时间排序时 重载
                 if (isReloadUI) {
                     this.state.ballsDict = {}; // 清空。
+                    this.isShowItemIds = []; // 先置空
                     this.isReloadDyRqDx = true; 
 
+                    /*
+                    // 默认是展开时，才要重置这个偏移量，现在是不展开，所以这个先预留着。
                     if (this.state.sectionData.length > 0) {
                         this.refs.FBSectionList && this.refs.FBSectionList._wrapperListRef._listRef.scrollToOffset({
                             offset: 0,
                             animated: true,
                         });
                     }
+                    */
+
                     this._getSportGameList(true);
                     
                 } else {
                     this.nextTime2 = 0; // 刷新时重置
-                    this._getShowItemIds();   // 走一次 存住展开的section的标识
+                    this._getShowItemIds();   // 切换tab 走一次 存住展开的section的标识
                     this._getSportGameList(true, true);
                 }
 
@@ -126,6 +136,19 @@ export default class SectionView extends Component {
             })
 
         });
+
+        // 综合过关 有删除过item后点添加比赛返回的
+        this.subscription3 = PushNotification.addListener('RefreshFootBallGameViewBallNotification', (clearSItemId) => {
+            this.carBackClearSItemId = clearSItemId;
+
+            for (let a = 0; a < clearSItemId.length; a++) {
+                delete this.state.ballsDict[clearSItemId[a]];  // 删除掉在购物车里面删除的货；
+            }
+            this.setState({
+                ballsDict: this.state.ballsDict, // 重新赋值；
+            })
+        });
+        
     }
 
     //移除组件
@@ -137,6 +160,10 @@ export default class SectionView extends Component {
 
         if (typeof(this.subscription2) == 'object'){
             this.subscription2 && this.subscription2.remove();
+        }
+
+        if (typeof(this.subscription3) == 'object') {
+            this.subscription3 && this.subscription3.remove();
         }
     }
 
@@ -160,8 +187,13 @@ export default class SectionView extends Component {
         params.append("game_type", this.props.game_typeID); // 0滚球、1今日、2早盘、3综合、4冠军
         params.append("play_group", this.props.game_typeID == 4 ? '' : this.props.play_group);  // 0独赢， 1波胆， 2半场/全场，3总入球 冠军不传入playgroups
         params.append("league_id", this.state.leagueIds.length > 0 ? this.state.leagueIds.join(',') : '');  // 联盟id，逗号隔开
-        params.append("start_time", isLoadMorePage ? this.nextTime2 : isRefresh ? 0 : this.nextTime ? this.nextTime : 0);  // 开始时间
-        params.append("end_time", "");
+        if (this.props.game_typeID == 0) {
+            params.append("start_time", 0);
+            params.append("end_time", isLoadMorePage ? this.nextTime2 : isRefresh ? 0 : this.nextTime ? this.nextTime : 0);  // 滚球用 结束时间
+        } else {
+            params.append("start_time", isLoadMorePage ? this.nextTime2 : isRefresh ? 0 : this.nextTime ? this.nextTime : 0);  // 开始时间
+            params.append("end_time", 0);
+        }
         params.append("date", "");
         params.append("order", this.state.orderIndex);
 
@@ -210,7 +242,7 @@ export default class SectionView extends Component {
                         }
                     }
                 } else {
-                    this.refs.Toast && this.refs.Toast.show(response.param, 2000);
+                    this.refs.Toast && this.refs.Toast.show(responseData.param, 2000);
                 }
                 
                 if (isLoadMorePage && result.length > 0) {
@@ -251,7 +283,6 @@ export default class SectionView extends Component {
                     } else {
                         this.state.isLoadFinish = false;
                         this.nextTime = responseData.data ? responseData.data.next_time : 0;
-                        this.isUpPullLoadFinish = true;
                         console.log('nextTime == ', this.nextTime);
                     }
 
@@ -261,6 +292,7 @@ export default class SectionView extends Component {
                     }
 
                     this.isReloadDyRqDx = false; 
+                    this.isUpPullLoadFinish = true;
 
                     console.log('运彩请求 result == ', result);
                     this.setState({
@@ -536,13 +568,13 @@ export default class SectionView extends Component {
             return;
         }
 
-        this.setState({ 
-            isLoadMore: true,
-            footStateText: '正在加载更多数据',
-         }); 
+        // 要等上个请求完 才能继续请求这次的上拉请求。
+        if (this.isUpPullLoadFinish) {
+            this.setState({ 
+                isLoadMore: true,
+                footStateText: '正在加载更多数据',
+            }); 
 
-         // 要等上个请求完 才能继续请求这次的上拉请求。
-         if (this.isUpPullLoadFinish) {
             this.isUpPullLoadFinish = false;  // 请求成功 给this.nextTime赋后 重置为true
             this._getSportGameList(false);
          }
@@ -567,7 +599,7 @@ export default class SectionView extends Component {
     // 分组头部
     _renderSectionHeader(section) {
         return (
-            <TouchableOpacity activeOpacity={0.8} style={{ height: Adaption.Height(45), width: SCREEN_WIDTH, backgroundColor: '#f6f6f6', alignItems: 'center', flexDirection: 'row' }}
+            <TouchableOpacity activeOpacity={0.5} style={{ height: Adaption.Height(45), width: SCREEN_WIDTH, backgroundColor: '#f6f6f6', alignItems: 'center', flexDirection: 'row' }}
                 onPress={() => {
                     if (this.state.sectionData && this.state.sectionData[section.section.sectionID] != null) {
                         this.state.sectionData[section.section.sectionID].isHide = !this.state.sectionData[section.section.sectionID].isHide;
@@ -640,8 +672,15 @@ export default class SectionView extends Component {
                     callback = true;  // 回调回来的 重置这个itemview的界面
                 }
 
+                if (this.carBackClearSItemId.length > 0) {
+                    // 购物车点添加返回的，清空这个item界面
+                    if (this.carBackClearSItemId.includes(cuntSItemIdx)) {
+                        callback = true;
+                    }
+                }
+
                 // 新的。。。让球 / 大小。 0滚球、1今日... 现在只能给QA进入
-                if ((this.props.game_typeID == 0 || this.props.game_typeID == 1) && GlobalConfig.phoneApiURL() == "http://qaclient.sg04.com/request") {
+                if (GlobalConfig.phoneApiURL().includes('sg04')) {
                     // 40 + 140(格高50) + 40.
                     return(
                         <RqDxItemView data={item.item} style={{ height: Adaption.Height(220) }} 
@@ -650,6 +689,7 @@ export default class SectionView extends Component {
                             lastSItemIdArr={sectionItemiIdArr}
                             lastIdxArr={sltIdxArr}
                             isAllBetCallback={callback}
+                            lastLastSItemIdx={this.lastLastSItemIdx}
                             allPlayClick={() => {
                                 this._allGameClick(item);
                             }}
@@ -669,6 +709,7 @@ export default class SectionView extends Component {
                         lastSItemIdArr={sectionItemiIdArr}
                         lastIdxArr={sltIdxArr}
                         isAllBetCallback={callback}
+                        lastLastSItemIdx={this.lastLastSItemIdx}
                         allPlayClick={() => {
                             this._allGameClick(item);
                         }}
@@ -743,7 +784,7 @@ export default class SectionView extends Component {
 
     _allGameClick = (item) => {
         // 所有玩法。
-        if (GlobalConfig.phoneApiURL() != "http://qaclient.sg04.com/request") {  // 测试阶段，只有QA站可以进入所有玩法。 
+        if (!GlobalConfig.phoneApiURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
             this.refs.Toast && this.refs.Toast.show('暂未开放，敬请期待', 1000);
             return;
         }
@@ -792,6 +833,7 @@ export default class SectionView extends Component {
                 console.log('回调 === ', callbackSItemId, data);
                 this.callbackSItemId = callbackSItemId;  // 从所有玩法回调回去的，独赢界面要按照传进去的lastidx的值去改变选择状态。
                 this.props.ballsDictClick ? this.props.ballsDictClick(data) : null;
+                this.props.AllDataBlock ? this.props.AllDataBlock() : null;
                 this.setState({
                     ballsDict: data,
                 })
@@ -814,8 +856,8 @@ export default class SectionView extends Component {
 
         if (this.props.game_typeID == 3) {
             // 综合过关
-            if (ballsDic[key].playMethod == null) {
-                delete ballsDic[key];
+            if (key == null) {
+                key = `${item.section.sectionID}+${item.index}`;
             }
             delete this.state.ballsDict[key]; // 不直接assign，因为他会保留前面存的那个值。
             Object.assign(ballsDic, this.state.ballsDict); 

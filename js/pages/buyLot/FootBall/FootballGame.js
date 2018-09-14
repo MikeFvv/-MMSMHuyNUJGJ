@@ -50,8 +50,8 @@ export default class FootballGame extends Component {
                     <View style = {{flexDirection:'row', alignItems:'center', marginTop:SCREEN_HEIGHT == 812 ? 44 : 20}}>
                         <TouchableOpacity style = {{width:40, height:44, alignItems:'center', justifyContent:'center'}} activeOpacity={1} onPress = {() => {navigation.state.params ? navigation.state.params.navTimePress(navigation) : null}}>
                             <CusBaseText style = {{color:'#fff', fontSize:Adaption.Font(18,15)}}>
-                            {navigation.state.params.navCountDownText ? navigation.state.params.navCountDownText : '0'}
-                        </CusBaseText>
+                                {navigation.state.params.navCountDownText ? navigation.state.params.navCountDownText : '0'}
+                            </CusBaseText>
                         </TouchableOpacity>
                         <TouchableOpacity
                             activeOpacity={1}
@@ -81,14 +81,12 @@ export default class FootballGame extends Component {
             footBallID:props.navigation.state.params.gameId ? props.navigation.state.params.gameId : 2001,
             isShowVerbView:false,  //是否显示维护界面
             verbTimeStr:'',  //维护的时间
-            isSelectFromAllPlay:false,  //是否从综合过关需要所有玩法界面选择号码回调
+            allDataClick:false, //是否从所有玩法回来，综合过关需要刷新页面
         };
 
         this.timer1 = null; //倒计时定时器
         this.wating = false; //防止多次快速点击
         this.xiaZhuClickWating = false;  //防止快速点击下注按钮
-
-
     }
 
     componentDidMount() {
@@ -127,7 +125,7 @@ export default class FootballGame extends Component {
             nextState.sortDataIdx != this.state.sortDataIdx ||
             nextState.selctBallsDict != this.state.selctBallsDict ||
             nextState.isShowVerbView != this.state.isShowVerbView ||
-            this.state.isSelectFromAllPlay == true){
+            (this.state.allDataClick == true && this.state.gameTypeIdx == 3)){
 
             return true;
         }
@@ -204,7 +202,7 @@ export default class FootballGame extends Component {
     };
 
 
-     // 赛选联赛回调数据
+    // 赛选联赛回调数据
     _callback(da) {
         this.state.leagueIdArr = da;
         PushNotification.emit('RefreshFootBallViewDataNotificaiton', this.state.sortDataIdx, this.state.leagueIdArr, this.state.topTabIdx, true);
@@ -231,7 +229,18 @@ export default class FootballGame extends Component {
             navigate('Screening',{sportID:this.state.footBallID, game_type: this.state.gameTypeIdx, play_group: this.state.topTabIdx > 1 ? this.state.topTabIdx - 1 : this.state.topTabIdx, gaBack:this._callback.bind(this)});
 
         } else if (index == 3) {
-            navigate('TouZhuRecord', {wanfa: 0, sportID:this.state.footBallID});
+            if (global.UserLoginObject.Token == '') {
+                setTimeout(() => {
+                    Alert.alert('提示', '您还未登录,请先去登录',
+                        [
+                            {text: '取消', onPress: () => { }},
+                            {text: '确定', onPress: () => {navigate('Login', {title: '登录'})}},
+                        ]
+                    )
+                }, 100);
+            } else {
+                navigate('TouZhuRecord', {wanfa: 0, sportID:this.state.footBallID});
+            }
 
         }  else if (index == 4) {
             navigate('GameRulesHome');
@@ -244,6 +253,14 @@ export default class FootballGame extends Component {
     //下注方法
     _xiaZhuMethod(params){
 
+        if (this.tempParamData == params) {
+            console.log('相同了。不给投。。。');
+            return;
+        } else {
+            console.log('不相同。开始投。。。。');
+            this.tempParamData = params;  // 把这个要提交投注的数据记下来。防止点多次了 投重复的。
+        }
+        
         this.refs.LoadingView && this.refs.LoadingView.showLoading('下注中');
 
         params.append('ac', 'betSport');
@@ -258,6 +275,10 @@ export default class FootballGame extends Component {
             .then((responseData) => {
 
                 this.refs.LoadingView && this.refs.LoadingView.dissmiss();
+                
+                if (responseData.msg != 0) {
+                    this.tempParamData = [];  // 不成功的，要重置
+                }
 
                 if (responseData.msg == 0 && responseData.data){
                     this.refs.Toast && this.refs.Toast.show('下注成功!', 2000);
@@ -276,7 +297,7 @@ export default class FootballGame extends Component {
                         },
                             {
                                 text: '取消', onPress: () => {
-                            }
+                                }
                             },
                         ],
                     )
@@ -298,24 +319,28 @@ export default class FootballGame extends Component {
     _gameCenterView(tabIndex, groupID, title) {
         return (
             <FBGameCenter key={tabIndex} tabIdx={tabIndex} play_group={groupID} game_typeID={this.state.gameTypeIdx} orderIndex={this.state.sortDataIdx} tabLabel={title} sportID = {this.state.footBallID}
-                maintenance={this.state.isShowVerbView}
-                maintenanceTime={this.state.verbTimeStr}
-                navigate={this.props.navigation.navigate} // 传入导航
-                downPullRefresh={() => {
-                    this.props.navigation.setParams({
-                        navCountDownText: this.state.gameTypeIdx == 0 ? 30 : 180, //滚球30秒刷新，其他180秒刷新
-                    });
-                }}
-                ballsDictClick={(seltBallsDic) => {
+                          maintenance={this.state.isShowVerbView}
+                          maintenanceTime={this.state.verbTimeStr}
+                          navigate={this.props.navigation.navigate} // 传入导航
+                          downPullRefresh={() => {
+                              this.props.navigation.setParams({
+                                  navCountDownText: this.state.gameTypeIdx == 0 ? 30 : 180, //滚球30秒刷新，其他180秒刷新
+                              });
+                          }}
+                          ballsDictClick={(seltBallsDic) => {
 
-                   this.state.isSelectFromAllPlay = true;  //强行刷新render,综合过关回调需要刷新
-                    setTimeout(()=>{this.state.isSelectFromAllPlay = false},1000);
+                              this.setState({
+                                  selctBallsDict: seltBallsDic,
+                              })
 
-                    this.setState({
-                        selctBallsDict: seltBallsDic,
-                    })
+                          }}
+                          AllDataBlock={() => {
+                              this.setState({
+                                  allDataClick:true,
+                              })
 
-                }}
+                              setTimeout(() => {this.state.allDataClick = false}, 1000);
+                          }}
             >
             </FBGameCenter>
         )
@@ -382,7 +407,6 @@ export default class FootballGame extends Component {
                             }>
                             {this._gameCenterView(0, 0, '独赢/让球/大小')}
                             {this._gameCenterView(1, 1, '波胆（全）')}
-                            {this._gameCenterView(2, 1, '波胆（半）')}
 
                         </ScrollableTabView>
                         : <ScrollableTabView
@@ -428,77 +452,77 @@ export default class FootballGame extends Component {
 
                 {/* 综合过关底部 */}
                 {this.state.isShowVerbView == true ? null
-                    : this.state.gameTypeIdx == 3 ? <ScorceZHBottom style = {{height:50, marginBottom: isIphoneX ? 34 : 0}}
-                    NextStepOnPress = {(pushDict) => {
+                    : this.state.gameTypeIdx == 3 ? <ScorceZHBottom style={{ height: 50, marginBottom: isIphoneX ? 34 : 0 }}
+                        NextStepOnPress={(pushDict) => {
 
-                        if (global.UserLoginObject.Uid != '') {
-                            if (pushDict) {
+                            if (global.UserLoginObject.Uid != '') {
+                                if (pushDict) {
 
-                                this.props.navigation.navigate('FBShopCar', {
-                                    navCountDownText: 10,
-                                    dataDict: pushDict,
-                                    gameType:this.state.gameTypeIdx,
-                                });
-                            }
-                            else {
+                                    this.props.navigation.navigate('FBShopCar', {
+                                        navCountDownText: 10,
+                                        dataDict: pushDict,
+                                        gameType: this.state.gameTypeIdx,
+                                    });
+                                }
+                                else {
 
-                                //没有选择号码点击下注则提示
-                                this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
-                            }
-                        }
-                        else {
-
-                            Alert.alert(
-                                '温馨提示',
-                                '您还未登录,请先去登录!',
-                                [
-                                    {text: '确定', onPress: () => this.props.navigation.navigate('Login', {title: '登录'})},
-                                    {text: '取消', onPress: () => {}}
-                                ])
-                        }
-                    }}
-                    PickDataDict = {this.state.selctBallsDict}
-                    sportIDsportID = {this.state.footBallID}/> :
-                    <ScorceBottom style={{ height: 90, marginBottom: isIphoneX ? 34 : 0 }}
-                      XiaZhuOnPress={(params) => {
-
-                            if (global.UserLoginObject.Uid != ''){
-
-                                if (this.xiaZhuClickWating == false){
-
-                                    this.xiaZhuClickWating = true;
-
-                                    if (params){
-                                        //选择了号码则直接拼接参数投注
-                                        this._xiaZhuMethod(params);
-                                    }
-                                    else {
-                                        //没有选择号码点击下注则提示
-                                        this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
-                                    }
-
-                                    setTimeout(()=> {this.xiaZhuClickWating = false},1000);
+                                    //没有选择号码点击下注则提示
+                                    this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
                                 }
                             }
                             else {
+
                                 Alert.alert(
                                     '温馨提示',
                                     '您还未登录,请先去登录!',
                                     [
-                                        {text: '确定', onPress: () => this.props.navigation.navigate('Login', {title: '登录'})},
-                                        {text: '取消', onPress: () => {}}
+                                        { text: '确定', onPress: () => this.props.navigation.navigate('Login', { title: '登录', loginClick: true }) },
+                                        { text: '取消', onPress: () => { } }
                                     ])
                             }
-                      }}
-                    normalPickDataDict = {this.state.selctBallsDict}
-                    zongHePickDataDict = {null}
-                    currentGameType = {this.state.gameTypeIdx}
-                    currentTabIndex = {this.state.topTabIdx}
-                    sportID = {this.state.footBallID}/>
+                        }}
+                        PickDataDict={this.state.selctBallsDict}
+                        sportIDsportID={this.state.footBallID} /> :
+                        <ScorceBottom style={{ height: 90, marginBottom: isIphoneX ? 34 : 0 }}
+                            XiaZhuOnPress={(params) => {
+
+                                if (global.UserLoginObject.Uid != '') {
+
+                                    if (this.xiaZhuClickWating == false) {
+
+                                        this.xiaZhuClickWating = true;
+
+                                        if (params) {
+                                            //选择了号码则直接拼接参数投注
+                                            this._xiaZhuMethod(params);
+                                        }
+                                        else {
+                                            //没有选择号码点击下注则提示
+                                            this.refs.Toast && this.refs.Toast.show('下注内容不能为空!', 1000);
+                                        }
+
+                                        setTimeout(() => { this.xiaZhuClickWating = false }, 1000);
+                                    }
+                                }
+                                else {
+                                    Alert.alert(
+                                        '温馨提示',
+                                        '您还未登录,请先去登录!',
+                                        [
+                                            { text: '确定', onPress: () => this.props.navigation.navigate('Login', { title: '登录', loginClick: true }) },
+                                            { text: '取消', onPress: () => { } }
+                                        ])
+                                }
+                            }}
+                            normalPickDataDict={this.state.selctBallsDict}
+                            zongHePickDataDict={null}
+                            currentGameType={this.state.gameTypeIdx}
+                            currentTabIndex={this.state.topTabIdx}
+                            sportID={this.state.footBallID} />
                 }
 
                 {/* 通用底部 */}
-                
+
                 {/* 更多 */}
                 <ScorceSlectAlert
                     ref='ScoreAlertView'
@@ -525,7 +549,7 @@ export default class FootballGame extends Component {
                             navCountDownText:item.index == 0 ? 30 : 180, //滚球30秒刷新，其他180秒刷新
                         });
 
-                      //item.index  0 滚球, 1今日赛事， 2 早盘， 3 综合过关， 4 冠军
+                        //item.index  0 滚球, 1今日赛事， 2 早盘， 3 综合过关， 4 冠军
                         this.setState({
                             gameTypeIdx: item.index,
                             selctBallsDict: {},

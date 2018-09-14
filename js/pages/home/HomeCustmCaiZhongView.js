@@ -1,30 +1,15 @@
 import React, { Component } from 'react';
 
 import {
-    AppRegistry,
     StyleSheet,
     View,
     TouchableOpacity,
-    Image,
     FlatList,
     Dimensions,
-    Alert,
-    ScrollView,
-    Platform,
     StatusBar,
-    Easing,
-    Animated,
-    Modal,
-    WebView,
-    ImageBackground,
-    NetInfo,
-    AsyncStorage,
-    Linking,
 } from 'react-native';
 
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
 import { CachedImage, ImageCache } from "react-native-img-cache";
 
 export default class HomeCustmCaiZhongView extends Component {

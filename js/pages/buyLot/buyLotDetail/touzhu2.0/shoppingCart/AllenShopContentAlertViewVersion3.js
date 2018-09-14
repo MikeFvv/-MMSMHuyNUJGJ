@@ -46,6 +46,12 @@ export default class ShopContentAlertView extends Component {
             isShowListView:props.isGF!=0,
 
         })
+
+        // 优先判断1-5分彩，再判断双面/官方玩法
+        let ffsf = props.tag.indexOf('ff') == 0 || props.tag.indexOf('sf') == 0 || props.tag.indexOf('wf') == 0;
+        // isGF: 双面1，官方0。
+        this.isShowOneKey = ffsf || (!ffsf && props.isGF == 1); // 一键购买。 成立条件：分分三分彩 或 (非分分三分 && 双面)
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,6 +81,11 @@ export default class ShopContentAlertView extends Component {
                 isShowKeyboardView: false, // 是否显示键盘
             })
         }
+
+        // 优先判断1-5分彩，再判断双面/官方玩法
+        let ffsf = nextProps.tag.indexOf('ff') == 0 || nextProps.tag.indexOf('sf') == 0 || nextProps.tag.indexOf('wf') == 0;
+        this.isShowOneKey = ffsf || (!ffsf && nextProps.isGF == 1); // 一键购买。 成立条件：分分三分彩 或 (非分分三分 && 双面)
+
     }
 
     //计算总金额和盈利
@@ -162,12 +173,30 @@ export default class ShopContentAlertView extends Component {
                     <View style = {{ marginBottom: Adaption.Height(10), marginTop: SCREEN_HEIGHT - Adaption.Height((this.state.isShowListView ? 380 : 360) + 270 + 10) - (iphoneX ? 34 : 0) , borderRadius:5, backgroundColor:'#fff', height: Adaption.Height(this.state.isShowListView ? 380 : 360), width: SCREEN_WIDTH - Adaption.Width(40)}}>
                         
                         <View style={{ height: Adaption.Height(65), alignItems:'center'}}>
-                            <View style={{ marginTop: Adaption.Height(5), height: Adaption.Height(30), alignItems:'center', justifyContent:'center'}}>
-                                <Text allowFontScaling={false} style={{ color:'#171717', fontSize:Adaption.Font(19,16) }}>{this.state.currentGameName}</Text>
-                            </View>
-                            <View style={{height: Adaption.Height(25)}}>
-                                <Text allowFontScaling={false} style={{ color:'#919191', fontSize:Adaption.Font(17,14) }}>第 <Text allowFontScaling={false} style={{color:'#e56664', fontSize: Adaption.Font(16,13)}}>{this.state.currentQiShu}</Text> 期</Text>
-                            </View>
+                            {this.isShowOneKey 
+                                ? <View style={{ flexDirection:'row' }}>
+                                    <View style={{flex: 0.1}}></View>
+                                    <View style={{flex: 0.8, alignItems:'center', justifyContent:'center'}}>
+                                        <View style={{ marginTop: Adaption.Height(5), height: Adaption.Height(30), alignItems:'center', justifyContent:'center'}}>
+                                            <Text allowFontScaling={false} style={{ color:'#171717', fontSize:Adaption.Font(19,16) }}>{this.state.currentGameName}</Text>
+                                        </View>
+                                        <View style={{height: Adaption.Height(25)}}>
+                                            <Text allowFontScaling={false} style={{ color:'#919191', fontSize:Adaption.Font(17,14) }}>第 <Text allowFontScaling={false} style={{color:'#e56664', fontSize: Adaption.Font(16,13)}}>{this.state.currentQiShu}</Text> 期</Text>
+                                        </View>
+                                    </View>
+                                    <TouchableOpacity style={{flex: 0.1, marginTop: Adaption.Height(20)}} activeOpacity={1} onPress={() => {this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'}); this.props.closeClick ? this.props.closeClick() : null}}>
+                                        <Image style={{width: 20, height: 20}} source={require('../../../img/ic_buyLotClose.png')}></Image>
+                                    </TouchableOpacity>
+                                </View>
+                                :<View>
+                                    <View style={{ marginTop: Adaption.Height(5), height: Adaption.Height(30), alignItems:'center', justifyContent:'center'}}>
+                                        <Text allowFontScaling={false} style={{ color:'#171717', fontSize:Adaption.Font(19,16) }}>{this.state.currentGameName}</Text>
+                                    </View>
+                                    <View style={{height: Adaption.Height(25)}}>
+                                        <Text allowFontScaling={false} style={{ color:'#919191', fontSize:Adaption.Font(17,14) }}>第 <Text allowFontScaling={false} style={{color:'#e56664', fontSize: Adaption.Font(16,13)}}>{this.state.currentQiShu}</Text> 期</Text>
+                                    </View>
+                                </View>
+                            }
                             <Image style={{ height: 1, width: SCREEN_WIDTH - Adaption.Width(60), marginTop: Adaption.Height(3) }} source={require('../../../img/ic_dottedLine.png')}/>
                         </View>
 
@@ -274,10 +303,30 @@ export default class ShopContentAlertView extends Component {
                         <View style = {{flexDirection:'row',height:Adaption.Height(50), borderTopWidth:1, borderColor:'#e1e2e3'}}>
                             <TouchableOpacity
                                 activeOpacity={0.8}
-                                onPress = {() => {this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'}); this.props.closeClick ? this.props.closeClick() : null}}
+                                onPress = {() => {
+
+                                    if (this.isShowOneKey) {
+                                        if (this.state.subTotalPrice <= 0) {
+                                            this.refs.Toast && this.refs.Toast.show('请输入购买金额！', 1000);
+
+                                        } else if (this.state.slectMutipleOne == '' || this.state.slectMutipleOne == '0') {
+                                            this.refs.Toast && this.refs.Toast.show('请输入追号期数！', 1000);
+
+                                        } else if (this.state.slectMutipleTwo =='' || this.state.slectMutipleTwo == '0') {
+                                            this.refs.Toast && this.refs.Toast.show('请输入投注倍数！', 1000);
+
+                                        } else {
+                                            this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'}); 
+                                            this.props.addToShopCarClick ? this.props.addToShopCarClick(this.state.ballSourceArr) : null; 
+                                        }
+                                    } else {
+                                        this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'}); 
+                                        this.props.closeClick ? this.props.closeClick() : null;
+                                    }
+                                }}
                                 style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}
                             >
-                                <CusBaseText style = {{fontSize:Adaption.Font(18,15), color:'#78797a'}}>取消</CusBaseText>
+                                <CusBaseText style = {{fontSize:Adaption.Font(18,15), color:'#78797a'}}>{this.isShowOneKey ? '加入购物车' : '取消'}</CusBaseText>
                             </TouchableOpacity>
                             <View style = {{height:(this.state.isShowListView?Adaption.Height(50):Adaption.Height(58)), backgroundColor:'lightgrey', width:1,marginBottom:0,marginTop:0}}></View>
                             <TouchableOpacity
@@ -285,17 +334,25 @@ export default class ShopContentAlertView extends Component {
                                 onPress = {() =>  {
                                     if (this.state.subTotalPrice <= 0) {
                                         this.refs.Toast && this.refs.Toast.show('请输入购买金额！', 1000);
-                                    }else if(this.state.slectMutipleOne ==''||this.state.slectMutipleOne == '0') {this.refs.Toast && this.refs.Toast.show('请输入追号期数！', 1000);}
-                                    else if(this.state.slectMutipleTwo ==''||this.state.slectMutipleTwo == '0'){this.refs.Toast && this.refs.Toast.show('请输入投注倍数！', 1000);
 
-                                    }
-                                    else {
+                                    } else if (this.state.slectMutipleOne == '' || this.state.slectMutipleOne == '0') {
+                                        this.refs.Toast && this.refs.Toast.show('请输入追号期数！', 1000);
+
+                                    } else if (this.state.slectMutipleTwo =='' || this.state.slectMutipleTwo == '0') {
+                                        this.refs.Toast && this.refs.Toast.show('请输入投注倍数！', 1000);
+
+                                    } else {
                                         this.setState({isShow:false,slectMutipleOne:'1',slectMutipleTwo:'1'});
-                                        this.props.addToShopCarClick ? this.props.addToShopCarClick(this.state.ballSourceArr) : null;
+
+                                        if (this.isShowOneKey) {
+                                            this.props.comformBuyClick ? this.props.comformBuyClick(this.state.ballSourceArr) : null;
+                                        } else {
+                                            this.props.addToShopCarClick ? this.props.addToShopCarClick(this.state.ballSourceArr) : null;
+                                        }
                                     }
                                 }}
                                 style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}>
-                                <CusBaseText style = {{fontSize:Adaption.Font(18,15), color:'#0094e7'}}>提交</CusBaseText>
+                                <CusBaseText style = {{fontSize:Adaption.Font(18,15), color:'#0094e7'}}>{this.isShowOneKey ? '一键购买' : '确定'}</CusBaseText>
                             </TouchableOpacity>
                         </View>
                     </View>

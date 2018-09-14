@@ -16,11 +16,8 @@ const KAdaptionWith = width / 414;
 const KAdaptionHeight = height / 736;
 
 import Adaption from "../../../skframework/tools/Adaption";
-import Moment from 'moment';
-import CustomNav from "../../../skframework/component/CustomNav";
+import LocalVcode from '../../me/safeCenter/LocalValidation';
 
-var CryptoJS = require("crypto-js");  //加密的库
-var registerKey = ''; //注册的秘钥
 var isNetWorkConnected = true;   //网络链接是否正常
 
 export default class Register extends Component {
@@ -29,7 +26,7 @@ export default class Register extends Component {
         super(props);
         this.state = {
             isArgree: true,
-            veriyCode: this._showCode(),
+            veriyCode: '',
             inputUserName: '',  //注册的用户名
             inputPWD: '',  //注册的密码
             inputComformPWD: '', //确认的密码
@@ -92,38 +89,6 @@ export default class Register extends Component {
 
     }
 
-    //验证码随机数的方法
-    _showCode() {
-        //请求参数
-        let params = new FormData();
-
-        params.append("ac", "getVerifyImage");
-        //params.append("key", encodeStr);
-
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
-        promise
-            .then(response => {
-
-                if (response.msg == 0) {
-
-                    registerKey = response.data.vid;
-                    this.setState({
-                        imgConformCode: response.data.img,
-                    })
-
-                }
-                else {
-                    return '';
-                }
-            })
-            .catch(err => {
-
-                return '';
-
-            });
-    }
-
     //注册按钮点击的方法
     _registerMethod() {
 
@@ -172,8 +137,8 @@ export default class Register extends Component {
                     return;
                 }
                 //验证码不正确
-                else if (!GlobalRegex(this.state.inputCode, 'vcode')){
-                    this.refs.LoadingView && this.refs.LoadingView.showFaile('验证码错误', 1);
+                else if (this.state.inputCode != this.state.veriyCode){
+                    this.refs.LoadingView && this.refs.LoadingView.showFaile('验证码不正确', 1);
                     return;
                 }
                 else {
@@ -186,8 +151,8 @@ export default class Register extends Component {
                     params.append("username", this.state.inputUserName);
                     params.append("password", this.state.inputPWD);
                     params.append("tg_code", isNeedInvitedCode ? this.state.inputInviteCode.trim() : (GlobalConfig.userData.bind_param ? GlobalConfig.userData.bind_param : '')); //非邀请码模式默认传后台返回的邀请码
-                    params.append("vcode", this.state.inputCode);
-                    params.append("vid", registerKey);
+                    params.append("vcode", '6666');
+                    params.append("vid", 'b97ec930-7c7c-11e8-acae-0242ac190002');
                     params.append("edition", global.VersionNum);
                     var mainUrl =  global.GlobalConfig.baseURL;
                     if (mainUrl.includes('http://'))
@@ -210,7 +175,6 @@ export default class Register extends Component {
                             else {
                                 //验证码不正确重新刷新
                                 this._showInfo(response.param ? response.param : '');
-                                this._showCode();
                             }
                         })
                         .catch(err => {
@@ -218,7 +182,7 @@ export default class Register extends Component {
                                 this.refs.LoadingView && this.refs.LoadingView.showFaile(err.message);
                             }
                             else {
-                                this.refs.LoadingView && this.refs.LoadingView.cancer(1000);
+                                this.refs.LoadingView && this.refs.LoadingView.cancer(0);
                             }
 
                         });
@@ -420,22 +384,28 @@ export default class Register extends Component {
                                    }} />
                     </View>
                     <View style={styles.container_RegisterView_TextView}>
-                        <View style={{flex: 0.2}}><CusBaseText style={{
+                        <View style={{flex: 0.3}}><CusBaseText style={{
                             fontSize: Adaption.Font(17, 15),
                             color: 'black',
                             marginLeft: 5
                         }}>验证码</CusBaseText></View>
-                        <View style={{flex: 0.5}}>
+                        <View style={{flex:0.68}}>
                             <TextInput allowFontScaling={false} returnKeyType="done"
                              keyboardType={global.iOS ? 'number-pad' : 'numeric'}
                              onChangeText={(text) => this.setState({inputCode: text})}
                              placeholder='输入验证码' underlineColorAndroid='transparent'
                              maxLength={4} style={{width: 200, fontSize: Adaption.Font(16, 14), marginLeft: 20, padding: 0}} />
                         </View>
-                        <View style={{flex: 0.3}}><TouchableOpacity activeOpacity={1}
-                                                                    onPress={() => this.setState({veriyCode: this._showCode()})}><Image
-                            style={{width: 85, height: Adaption.Width(40)}}
-                            source={this.state.imgConformCode != "" ? {uri: this.state.imgConformCode} : (require('../img/ic_refreshCode.png'))} /></TouchableOpacity></View>
+                        <LocalVcode
+                            type={'number'}
+                            maxDeg={5}
+                            minDeg={-5}
+                            maxFont={16}
+                            minFont={14}
+                            fontWeightArr={['normal']}
+                            fontArr={['normal']}
+                            getValue={(vcode) => this.state.veriyCode = vcode}
+                        />
                     </View>
                     <View style={{width:SCREEN_WIDTH, height: 50, flexDirection: 'row', alignItems: 'center'}}>
                         {this.state.isArgree == true ? (<View style={{

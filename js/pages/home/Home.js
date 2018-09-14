@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
   View,
   TouchableOpacity,
@@ -8,25 +7,16 @@ import {
   FlatList,
   Dimensions,
   Alert,
-  ScrollView,
   Platform,
   StatusBar,
-  Easing,
   Animated,
   Modal,
-  WebView,
   ImageBackground,
   NetInfo,
-  AsyncStorage,
   Linking,
 } from "react-native";
 
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
-import { StackNavigator } from "react-navigation";
-import LocalImg from "../../res/img";
-import LocalImages from "../../../publicconfig/images";
 
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../skframework/tools/Adaption"; //字体适配
@@ -34,22 +24,10 @@ import JPushModule from 'jpush-react-native';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import LocalImgs from '../../../js/res/img';   // 缓冲图片
 import HomeHeaderView from './HomeHeaderView';
-import HomeCaiBlockView from './HomeCaiBlockView';
 import HomeCaiFootView from './HomeCaiFootView';
 import HomeGongGao from './HomeGongGao';
-
-import GetSetStorge from '../../skframework/component/GetSetStorge'
-import SwitchURLHome from '../../skframework/common/SwitchURLClass';
-import DataRequest from '../../common/DataRequest'
 import NavStyle from './CusNavStyle';
-import HomeDefaultTabBar from './HomeDefaultTabBar'
-
-import RNFetchBlob from "react-native-fetch-blob";
-
-import { CachedImage, ImageCache } from "react-native-img-cache";
-import Carousel from 'react-native-banner-carousel';
 import DownAddress from '../../../js/skframework/common/DownAddress'
-import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import HomeRedPacketView from './HomeRedPacket';  //左上角红包活动
 
 
@@ -271,15 +249,8 @@ export default class Home extends Component {
 
   refshToken() {
 
-
     if (global.UserLoginObject.Uid != ''
       && global.UserLoginObject.Token != '' && global.UserLoginObject.session_key != '') {
-
-      if (this.time_interval) {
-
-        this.time_interval = null;
-        clearTimeout(this.time_interval);
-      }
 
       let params = new FormData();
       params.append("ac", "flushPrice");
@@ -289,7 +260,6 @@ export default class Home extends Component {
       var promise = BaseNetwork.sendNetworkRequest(params);
       promise
         .then(response => {
-
 
           //msg == 40000 则被踢下线
           if (response.msg == 40000) {
@@ -323,22 +293,9 @@ export default class Home extends Component {
            else {
               Hongbaolihe = 0;
            }
-
-            //请求到数据才会设置延迟方法
-            this.time_interval = setTimeout(() => {
-
-              this.refshToken();
-
-            }, 8000);
           }
         })
         .catch(err => {
-
-          this.time_interval = setTimeout(() => {
-
-            this.refshToken();
-
-          }, 8000);
 
         });
     }
@@ -447,7 +404,15 @@ export default class Home extends Component {
 
     //延迟刷新用户token的接口
     setTimeout(() => {
-      this.refshToken();
+
+        if (this.time_interval) {
+            return;
+        }
+
+        this.time_interval = setInterval(() => {
+          this.refshToken();
+      }, 10000);
+
     }, 20000);
 
     this.subscription4444 = PushNotification.addListener('ShuaXinJinEr', () => {
@@ -751,7 +716,6 @@ export default class Home extends Component {
 
 
   _backAction = () => {
-      console.log("我他妈的射了吗");
     // global.ShouYeYinDao=0;
     // PushNotification.emit('HomeYinDao', global.UserLoginObject);
 

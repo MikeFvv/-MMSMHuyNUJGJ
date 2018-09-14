@@ -152,6 +152,14 @@ export default class FBAllGameCenter extends Component {
     //下注方法
     _xiaZhuMethod(paramData) {
 
+        if (this.tempParamData == paramData) {
+            console.log('相同了。不给投。。。');
+            return;
+        } else {
+            console.log('不相同。开始投。。。。');
+            this.tempParamData = paramData;  // 把这个要提交投注的数据记下来。防止点多次了 投重复的。
+        }
+
         this.setState({
             loadTitle: '下注中...',
             isLoading: true,
@@ -174,6 +182,10 @@ export default class FBAllGameCenter extends Component {
         promise
             .then((response) => {
                 console.log('所有玩法下注结果：', response);
+
+                if (response.msg != 0) {
+                    this.tempParamData = [];  // 不成功的，要重置
+                }
 
                 if (response.msg == 0 && response.data) {
                     this.refs.Toast && this.refs.Toast.show('下注成功!', 1000);

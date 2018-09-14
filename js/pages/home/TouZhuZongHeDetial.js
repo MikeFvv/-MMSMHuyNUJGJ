@@ -1,26 +1,13 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Image,
   FlatList,
-  ActivityIndicator,
-  StatusBar,
-  Platform,
-  Alert,
   Dimensions,
-  ScrollView,
-  ImageBackground
 } from "react-native";
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
-import LocalImg from "../../res/img";
-import LocalImages from "../../../publicconfig/images";
-import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 import Adaption from "../../skframework/tools/Adaption"; //字体适配
 import moment from 'moment';
 

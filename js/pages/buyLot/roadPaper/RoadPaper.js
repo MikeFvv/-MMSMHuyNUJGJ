@@ -23,7 +23,10 @@ export default class RoadPaper extends Component {
     header: (
       <CustomNavBar
         centerText={navigation.state.params.game_name + '路纸图'}
-        leftClick={() => navigation.goBack()}
+        leftClick={() => {
+          global.isInBuyLotVC = true;  //返回时改为true,可以摇了
+          navigation.goBack()
+        }}
       />
     ),
   });
@@ -32,8 +35,6 @@ export default class RoadPaper extends Component {
     super(props);
 
     this.state = {
-      game_id: props.navigation.state.params.game_id,
-      tag: props.navigation.state.params.tag,
       isLoading: true,
       dx_ds_hz_wdx: {},
       ba123_hz_hr_wdx: {},
@@ -41,14 +42,17 @@ export default class RoadPaper extends Component {
       sectionData: [{'sectionID': 0, 'title': '双面长龙排行', 'isHide': true, 'data': ['000']}, {'sectionID': 1, 'title': '双面路纸图', 'isHide': false, 'data': ['111']}],
     }
 
+    this.tag = props.navigation.state.params.tag;
     this.js_tag =  props.navigation.state.params.js_tag;
     this.data = [];
     this.pageid = 0;
+    this.ba_ov = 0;   // 单个号码的大小 ， 大于ba_ov 则为大。
+    this.bahz_ov = 0; // 和值的大小
   }
 
   componentDidMount() {
 
-    this._getKjCpLogData(this.state.tag, this.pageid);
+    this._getKjCpLogData(this.tag, this.pageid);
   }
 
 
@@ -58,7 +62,7 @@ export default class RoadPaper extends Component {
     let params = new FormData();
     params.append('ac', 'getKjCpLog');
     params.append('tag', tag);
-    params.append('pcount', 20);
+    params.append('pcount', isNextQi ? 5 : 20);
     params.append('pageid', pageid);
 
     var promise = GlobalBaseNetwork.sendNetworkRequest(params);
@@ -66,53 +70,65 @@ export default class RoadPaper extends Component {
       .then((response) => {
 
         if (response.msg == 0 && response.data.length > 0) {
+          console.log('第'+pageid+'页数据 ==== ', response.data[0]['qishu'] ,response.data);
 
           if (isNextQi == true) {
-            // 进入下一期了
-            if (response.data[0]['qishu'] == this.data[0]['qishu']) {
+            // 进入下一期的
+            if (response.data[0]['ball'] == '') {
+              // 没结果是吧，那就再来过咯。 我也就请求5条而已不过分吧
+              setTimeout(() => {
+                this._getKjCpLogData(this.tag, 0, true);
+              }, (this.tag.includes('ff') ? 3000 : 30000));
               return;
-            } else {
-              this.data = [];
-            }
-          }
 
-          console.log('第'+pageid+'页数据 ==== ',response.data);
-          
-          this.data = [...this.data, ...response.data]; // 合并
-          
-          if (this.pageid == 5) {  // 请求多少页数据。。。
-            this.pageid = 0; // 重置。
-            this._allData(this.data);
+            } else {
+              // 有结果 那就拼在this.data前面好了。 不请求了 不然会被打的。
+              let idx = 0;
+              for (let m = 0; m < this.data.length; m++) {
+                if (this.data[m]['qishu'] == response.data[response.data.length - 1]['qishu']) {
+                  idx = m;
+                  break;
+                }
+              }
+              this.data.splice(0, idx+1); // 删掉前面的
+              this.data.splice(this.data.length - 1, 1);  // 删掉最后一个
+              this.data = [...response.data, ...this.data];  // 把新的拼在最前面
+              this._allData(this.data); // 处理
+            }
 
           } else {
-            this.pageid += 1;
-            this._getKjCpLogData(this.state.tag, this.pageid);
+            this.data = [...this.data, ...response.data]; // 合并
+
+            if (this.pageid == 5) {  // 请求多少页数据。。。
+              this._allData(this.data);
+
+            } else {
+              this.pageid += 1;
+              this._getKjCpLogData(this.tag, this.pageid);
+            }
           }
 
         } else {
           
           if (this.data.length > 0) { 
             this._allData(this.data);
+          } else {
+            this.setState({ isLoading: false });
           }
-
-          this.setState({
-            isLoading: false,
-          })
         }
       })
       .catch((err) => {
 
         if (this.data.length > 0) {
           this._allData(this.data);
+        } else {
+          this.setState({ isLoading: false });
         }
-
-        this.setState({
-          isLoading: false,
-        })
       })
   }
 
   _allData(data) {
+    this.pageid = 0; // 重置。
     console.log('当前总数据 === ', data);
     let dx_ds_hz_wdx = this._handleChangLongPaiHang(data);
     let ba123_hz_hr_wdx = this._handleData(data);
@@ -131,7 +147,8 @@ export default class RoadPaper extends Component {
       let ballsArr = data[i].balls && data[i].balls.length > 1  ? data[i].balls.split('+') : [];
       let sumHZ = this._sumResults(ballsArr);  // 总和值
 
-      for (let j = (this.js_tag == 'pcdd' ? 3 : 0); j < (this.js_tag == 'pk10' ? 5 : ballsArr.length); j++) {
+      let len = this.js_tag == 'pk10' && ballsArr.length > 5 ? 5 : ballsArr.length;
+      for (let j = (this.js_tag == 'pcdd' ? 3 : 0); j < len; j++) {
         if (ba123_hz_hr_wdx[`ba_${j+1}`] == null) {
           ba123_hz_hr_wdx[`ba_${j+1}`] = [parseInt(ballsArr[j])];
         } else {
@@ -179,53 +196,47 @@ export default class RoadPaper extends Component {
 
     let ba_dx_ds_hz_wdx = {};
     let titleArr = ['第一球', '第二球', '第三球', '第四球', '第五球'];
-    let keyArr = [];  // 后面取值时用。通过key取值比较准确
 
-    let ba_ov = 0; // 大于ov 则为大。
-    let baZH_ov = 0;
     if (this.js_tag == 'k3') {
-      ba_ov = 4; // 小：0-3， 大：4-6
-      baZH_ov = 11; // 总和 小：3-10，大：11-18，单双
+      this.ba_ov = 4; // 小：0-3， 大：4-6 // 总和 小：3-10，大：11-18
+      this.bahz_ov = 11;
       titleArr = ['号码一', '号码二', '号码三'];
-      keyArr = ['dx_1', 'ds_1', 'dx_2', 'ds_2', 'dx_3', 'ds_3', 'hzdx', 'hzds'];
 
     } else if (this.js_tag == '3d') {
-      ba_ov = 5; // 小：0-4， 大：5-9 
-      baZH_ov = 14; // 总和 小：0-13，大：14-27，单双
-      keyArr = ['dx_1', 'ds_1', 'dx_2', 'ds_2', 'dx_3', 'ds_3', 'hzdx', 'hzds'];
+      this.ba_ov = 5; // 小：0-4， 大：5-9  // 总和 小：0-13，大：14-27
+      this.bahz_ov = 14;
 
     } else if (this.js_tag == 'pcdd') {
-      ba_ov = 14; // 特码 小：0-13，大：14-27
+      this.ba_ov = 14; // 特码 小：0-13，大：14-27
+      this.bahz_ov = 14;
       titleArr = ['', '', '', '特码'];
-      keyArr = ['dx_4', 'ds_4'];
 
     } else if (this.js_tag == 'ssc') {
-      ba_ov = 5; // 小：0-4， 大：5-9 
-      baZH_ov = 23; // 总和 小：0-22，大：23-45，单双
-      keyArr = ['dx_1', 'ds_1', 'dx_2', 'ds_2', 'dx_3', 'ds_3', 'dx_4', 'ds_4', 'dx_5', 'ds_5', 'hzdx', 'hzds'];
+      this.ba_ov = 5; // 小：0-4， 大：5-9  // 总和 小：0-22，大：23-45
+      this.bahz_ov = 23;
 
     } else if (this.js_tag == '11x5') {
-      ba_ov = 6;  // 小：1-5， 大：6-11 
-      baZH_ov = 30; // 总和 小：15-29，大：30-45，尾小0-4，尾大5-9，单双
-      keyArr = ['dx_1', 'ds_1', 'dx_2', 'ds_2', 'dx_3', 'ds_3', 'dx_4', 'ds_4', 'dx_5', 'ds_5', 'hzdx', 'hzds', 'hrhzdx', 'hrhzds', 'hzwdx'];
+      this.ba_ov = 6;  // 小：1-5， 大：6-11 // 总和 小：15-29，大：30-45
+      this.bahz_ov = 30;
 
     } else if (this.js_tag == 'pk10') {
-      ba_ov = 6; // 小：1-5， 大：6-10 
+      this.ba_ov = 6; // 小：1-5， 大：6-10 
+      this.bahz_ov = 6;
       titleArr = ['冠军', '亚军', '季军', '第四名', '第五名'];
-      keyArr = ['dx_1', 'ds_1', 'lh_1', 'dx_2', 'ds_2', 'lh_2', 'dx_3', 'ds_3', 'lh_3', 'dx_4', 'ds_4', 'lh_4', 'dx_5', 'ds_5', 'lh_5'];
     }
 
-    let len = data.length > 20 ? 20 : data.length;
-    for (let i = 0; i < len; i++) {  // 这里循环20次够了。
+    let len = data.length > (this.js_tag == 'k3' ? 40 : 20) ? (this.js_tag == 'k3' ? 40 : 20) : data.length;
+    for (let i = 0; i < len; i++) {  // 这里循环20次够了，快三变态一点就40次了。
       // 先判断balls字段
       let ballsArr = data[i].balls && data[i].balls.length > 1  ? data[i].balls.split('+') : [];
       let sumHZ = this._sumResults(ballsArr);  // 总和值
 
-      for (let j = (this.js_tag == 'pcdd' ? 3 : 0); j < (this.js_tag == 'pk10' ? 5 : ballsArr.length); j++) {
+      let len = this.js_tag == 'pk10' && ballsArr.length > 5 ? 5 : ballsArr.length;
+      for (let j = (this.js_tag == 'pcdd' ? 3 : 0); j < len; j++) {
         let ball = ballsArr[j];
 
         // 记录每一位号码的大小单双状态。
-        let dx = `${ball < ba_ov ? '小' : '大'}`;   // 大小
+        let dx = `${ball < this.ba_ov ? '小' : '大'}`;   // 大小
         let ds = `${ball % 2 == 0 ? '双' : '单'}`;  // 单双
         let lh = ''; // 龙虎
         if (this.js_tag == 'pk10') {
@@ -275,7 +286,7 @@ export default class RoadPaper extends Component {
 
         if (j == ballsArr.length - 1 && this.js_tag != 'pcdd' && this.js_tag != 'pk10') {
           // 记录总和值大小单双，和值尾大小，后二和值，状态
-          let hzdx = `${sumHZ < baZH_ov ? '小' : '大'}`;  // 和值大小
+          let hzdx = `${sumHZ < this.bahz_ov ? '小' : '大'}`;  // 和值大小
           let hzds = `${sumHZ % 2 == 0 ? '双' : '单'}`;  // 和值单双
 
           let dxdsKeyArr = ['hzdx', 'hzds'];
@@ -315,7 +326,6 @@ export default class RoadPaper extends Component {
       }
     }
 
-    ba_dx_ds_hz_wdx['allKey'] = keyArr;
     return ba_dx_ds_hz_wdx;
   }
 
@@ -333,18 +343,31 @@ export default class RoadPaper extends Component {
   _changLongPaiHangView(ba_dx_ds_hz_wdx) {
     console.log(ba_dx_ds_hz_wdx);
 
-    let keyArr = ba_dx_ds_hz_wdx['allKey']; // 因为是字典，通过key去拿值比较确实
+    let values = Object.values(ba_dx_ds_hz_wdx); // 拿value出来 冒泡排序吧，那个多的就放前面。
+    for (let i = 0; i < values.length - 1; i++) {
+      for (let j = 0; j < values.length - 1 - i; j++) {
+
+        let v1 = values[j].split('：')[1];
+        let v2 = values[j+1].split('：')[1];
+
+        if (parseInt(v1) < parseInt(v2)) {
+          let tempv = values[j];
+          values[j] = values[j+1];
+          values[j+1] = tempv;
+        }
+      }
+    }
 
     let viewArr = [], rowView = [];
-    for (let a = 0; a < keyArr.length; a++) {
+    for (let a = 0; a < values.length; a++) {
 
       rowView.push(
         <View key={a} style={{ width: SCREEN_WIDTH * 0.5, height: Adaption.Height(32), justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: Adaption.Font(16, 13), color: '#494949' }}>{ba_dx_ds_hz_wdx[keyArr[a]]}</Text>
+          <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 13), color: '#494949' }}>{values[a]}</Text>
         </View>
       )
 
-      if (a % 2 == 1 || a == keyArr.length - 1) {
+      if (a % 2 == 1 || a == values.length - 1) {
         viewArr.push(
           <View key={a}>
             <View style={{ backgroundColor: '#e5e5e5', height: 0.7}}></View>
@@ -361,7 +384,7 @@ export default class RoadPaper extends Component {
   // item视图
   _renderItem(item) {
 
-    if (item.section.isHide || this.data.length <= 0) {
+    if (item.section.isHide || this.data.length <= 0 || Object.keys(this.state.ba123_hz_hr_wdx).length <= 0) {
       return null;
     }
 
@@ -377,30 +400,17 @@ export default class RoadPaper extends Component {
     } else {
 
       let btnTitArr = [];
-      let ba_ov = 0, bahz_ov = 0;
       if (this.js_tag == 'k3') {
-        ba_ov = 4; // 小：0-3， 大：4-6 // 总和 小：3-10，大：11-18
-        bahz_ov = 11;
         btnTitArr = ['总和-大小', '总和-单双', '号码一-大小', '号码一-单双', '号码二-大小', '号码二-单双', '号码三-大小', '号码三-单双'];
       } else if (this.js_tag == '3d') {
-        ba_ov = 5; // 小：0-4， 大：5-9  // 总和 小：0-13，大：14-27
-        bahz_ov = 14;
         btnTitArr = ['总和-大小', '总和-单双', '第一球-大小', '第一球-单双', '第二球-大小', '第二球-单双', '第三球-大小', '第三球-单双'];
       } else if (this.js_tag == 'pcdd') {
-        ba_ov = 14; // 特码 小：0-13，大：14-27
-        bahz_ov = 14;
         btnTitArr = ['特码-大小', '特码-单双'];
       } else if (this.js_tag == 'ssc') {
-        ba_ov = 5; // 小：0-4， 大：5-9  // 总和 小：0-22，大：23-45
-        bahz_ov = 23;
         btnTitArr = ['总和-大小', '总和-单双', '第一球-大小', '第一球-单双', '第二球-大小', '第二球-单双', '第三球-大小', '第三球-单双', '第四球-大小', '第四球-单双', '第五球-大小', '第五球-单双'];
       } else if (this.js_tag == '11x5') {
-        ba_ov = 6;  // 小：1-5， 大：6-11 // 总和 小：15-29，大：30-45
-        bahz_ov = 30;
         btnTitArr = ['总和-大小', '总和-单双', '总和-尾大小', '第一球-大小', '第一球-单双', '第二球-大小', '第二球-单双', '第三球-大小', '第三球-单双', '第四球-大小', '第四球-单双', '第五球-大小', '第五球-单双'];
       } else if (this.js_tag == 'pk10') {
-        ba_ov = 6; // 小：1-5， 大：6-10 
-        bahz_ov = 6;
         btnTitArr = ['冠军-大小', '冠军-单双', '冠军-龙虎', '亚军-大小', '亚军-单双', '亚军-龙虎', '季军-大小', '季军-单双', '季军-龙虎', '第四名-大小', '第四名-单双', '第四名-龙虎', '第五名-大小', '第五名-单双', '第五名-龙虎'];
       }
 
@@ -409,8 +419,8 @@ export default class RoadPaper extends Component {
           data={this.state.ba123_hz_hr_wdx}
           selectIdx={this.state.selectIndex}
           btnTitArr={btnTitArr}
-          bahz_ov={bahz_ov}  // 判断和值大小。
-          ba_ov={ba_ov}  // 判断单个号码大小。
+          bahz_ov={this.bahz_ov}  // 判断和值大小。
+          ba_ov={this.ba_ov}  // 判断单个号码大小。
           clickBtnIdx={(idx) => {
             this.state.selectIndex = idx;
           }}
@@ -447,7 +457,7 @@ export default class RoadPaper extends Component {
     return (
       <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', height: Adaption.Width(80), width: Adaption.Width(100), borderRadius: 5, justifyContent: 'center', alignItems: 'center',position: 'absolute', left: SCREEN_WIDTH / 2 - Adaption.Width(50), top: SCREEN_HEIGHT / 2 - Adaption.Width(100) }}>
         <ActivityIndicator color="white"/>
-        <Text style={{ marginTop: 10, fontSize: Adaption.Font(14, 12), color: 'white' }}>数据请求中...</Text>
+        <Text allowFontScaling={false} style={{ marginTop: 10, fontSize: Adaption.Font(14, 12), color: 'white' }}>数据请求中...</Text>
       </View> 
     )
   }
@@ -457,16 +467,15 @@ export default class RoadPaper extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <RoadTimeView style={{ height: Adaption.Height(35), justifyContent: 'center', alignItems: 'center' }}
+          finishTime={this.props.navigation.state.params.finishTime}
           nextData={this.props.navigation.state.params.nextData}
-          fengPanTime={this.props.navigation.state.params.fengPanTime}
-          openTime={this.props.navigation.state.params.openTime}
-          tag={this.state.tag}
+          tag={this.tag}
           enterNextQi={() => {
             // 进入下一期。去请求新的开奖记录
-            // 分分的延迟2秒去请求。其它的延迟1分钟
+            // 分分的延迟4秒去请求。其它的延迟1多分钟
             setTimeout(() => {
-              this._getKjCpLogData(this.state.tag, this.pageid, true);
-            }, (this.state.tag.includes('ff') ? 2000 : 60000));
+              this._getKjCpLogData(this.tag, 0, true);
+            }, (this.tag.includes('ff') ? 4000 : 80000));
 
           }}
         >

@@ -1,21 +1,9 @@
 import React, { Component } from "react";
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   View,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  ActivityIndicator,
-  StatusBar,
-  Platform,
-  Alert,
   Dimensions,
 } from "react-native";
-const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
 import Moment from 'moment';
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 export default class PersonMessageDetial extends Component {

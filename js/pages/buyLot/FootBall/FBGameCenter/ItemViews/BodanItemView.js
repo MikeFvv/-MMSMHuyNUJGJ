@@ -38,7 +38,8 @@ export default class BodanItemView extends Component {
         let aaa = nextState.isClearBalls != this.state.isClearBalls; // 选择不同区域了 为true。
         let bbb = nextProps.cuntSItemId == nextProps.lastSItemId; // 这个本次选择的
         let ccc = nextProps.cuntSItemId == nextProps.lastLastSItemIdx; // 上上次选择的，展开选择后 隐藏再展开 选不同区的号时 有用。
-        if (aaa || bbb || ccc) {
+        let ddd = nextProps.data != this.props.data; // 数据源不相同时
+        if (aaa || bbb || ccc || ddd) {
             return true;
         } else {
             return false;

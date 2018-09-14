@@ -1,38 +1,21 @@
 import React, { Component } from 'react';
 
 import {
-  AppRegistry,
   StyleSheet,
   View,
   TouchableOpacity,
   Image,
-  FlatList,
   Dimensions,
   Alert,
-  ScrollView,
-  Platform,
-  StatusBar,
-  Easing,
-  Animated,
-  Modal,
-  WebView,
-  ImageBackground,
-  NetInfo,
-  AsyncStorage,
-  Linking,
 } from 'react-native';
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
 const KAdaptionHeight = height / 736;
 import MarqueeLabel from "react-native-lahk-marquee-label"; //跑马灯
 import Carousel from 'react-native-banner-carousel';
 import HomeCaiBlockView from './HomeCaiBlockView';
 import HomeDefaultTabBar from './HomeDefaultTabBar'
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
-// import { CachedImage, ImageCache } from "react-native-img-cache";
-import HomeReCaiBlockView from './HomeReCaiBlockView';
 import Toast, { DURATION } from 'react-native-easy-toast'
-var CryptoJS = require("crypto-js");  //加密的库
 import {
   CachedImage,
   ImageCacheProvider

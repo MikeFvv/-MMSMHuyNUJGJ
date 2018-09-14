@@ -9,8 +9,6 @@ import {
     Image
 } from 'react-native';
 const { width, height } = Dimensions.get("window");
-const KAdaptionWith = width / 414;
-const KAdaptionHeight = height / 736;
 import BaseNetwork from "../../skframework/component/BaseNetwork"; //网络请求
 
 export default class HomeGongGao extends Component {

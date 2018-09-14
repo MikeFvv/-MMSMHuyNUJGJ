@@ -45,8 +45,8 @@ class NewOpenInfoView extends Component {
         super(props);
         let qishu = 0, jieZhiTime = 0, fengPan = 0;
         if (props.nextTimeList.length > 0) {  // 倒计时
-            jieZhiTime = props.nextTimeList[0].opentime - Math.round(new Date() / 1000);
-            fengPan = props.nextTimeList[0].stoptime - Math.round(new Date() / 1000);
+            jieZhiTime = props.nextTimeList[0].opentime - (props.nextTimeList[0].server_time - props.finishTime) - Math.round(new Date() / 1000);
+            fengPan = props.nextTimeList[0].stoptime - (props.nextTimeList[0].server_time - props.finishTime) - Math.round(new Date() / 1000);
             qishu = props.nextTimeList[0].qishu; //下一个期数
         }
 
@@ -70,6 +70,7 @@ class NewOpenInfoView extends Component {
             isOpenReWard:false,  //是否开奖
             nextCountDownList: props.nextTimeList, //开奖数组10条
             nextFengPan: fengPan, //距离封盘倒计时
+            isShowUserMoney:false, //是否显示用户余额
         })
 
         this.currentCountDownIndex = 0;//当前下标
@@ -83,8 +84,8 @@ class NewOpenInfoView extends Component {
         
         // 本地到计时数组
         if (nextProps.nextTimeList.length > 0 && this.state.nextCountDownList.length <= 0) {
-            let jieZhiTime = nextProps.nextTimeList[0].opentime - Math.round(new Date() / 1000);
-            let fengPanTime = nextProps.nextTimeList[0].stoptime - Math.round(new Date() / 1000);
+            let jieZhiTime = nextProps.nextTimeList[0].opentime - (nextProps.nextTimeList[0].server_time - nextProps.finishTime) - Math.round(new Date() / 1000);
+            let fengPanTime = nextProps.nextTimeList[0].stoptime - (nextProps.nextTimeList[0].server_time - nextProps.finishTime) - Math.round(new Date() / 1000);
 
             this.setState({
                 nextQiShu: nextProps.nextTimeList[0].qishu,          //下一个期数
@@ -111,8 +112,12 @@ class NewOpenInfoView extends Component {
     //创建号码球属性信息的视图
     _initBallDescView(ballsArr){
 
+        let qiShuCha = parseInt(this.state.nextQiShu, 10) - parseInt(this.state.prevQiShu, 10);
+        let isNeedRequest = qiShuCha > 1 && qiShuCha < 3 ? true : false;  //期数差大于1期小于3期,要重新刷新数据.但是隔天的期数就不请求
+
         //分分钟开奖给5秒钟延迟
-        if ((ballsArr.length == 0 || ballsArr.length == 1) && isFreshOpenTime == false) {
+        if (((ballsArr.length == 0 || ballsArr.length == 1) && isFreshOpenTime == false) || (isNeedRequest && isFreshOpenTime == false)) {
+            //如果开奖号码为''字符串并且刷新了，则延迟之后再次进来。防止每秒钟都在刷。
 
             let expire  = 0;
             isFreshOpenTime = true;
@@ -324,7 +329,7 @@ class NewOpenInfoView extends Component {
 
         } else if (this.state.js_tag == 'lhc') {
             flexArr = [0.13, 0.45, 0.11, 0.1, 0.1, 0.11];
-            titleArr = ['期号', '开奖号码', '特肖', '家野', '大小', '单双'];
+            titleArr = ['期号', '开奖号码', '家野', '大小', '单双', '色波'];
 
         } else if (this.state.js_tag == 'ssc') {
             flexArr = [0.14, 0.19, 0.11, 0.11, 0.11, 0.11, 0.11, 0.12];
@@ -451,10 +456,10 @@ class NewOpenInfoView extends Component {
             cellTitArr = [
                 openQiShu,
                 !isOpen ? '正在开奖' : ballsArr.join(','),
-                !isOpen ? '-' : teXiaoStr,
-                !isOpen ? '-' :  GetBallStatus.getKindToShengxiao(teXiaoStr),
+                !isOpen ? '-' : GetBallStatus.getKindToShengxiao(teXiaoStr),
                 !isOpen ? '-' :  parseInt(teMa) > 24 ? '大' : '小',
                 !isOpen ? '-' :  parseInt(teMa) % 2 == 0 ? '双' : '单',
+                !isOpen ? '-' :  GetBallStatus.getLhcColorToBallStr(teMa, true),
             ];
 
             var lhcCellViews = [];
@@ -468,7 +473,7 @@ class NewOpenInfoView extends Component {
                     </View>
                 )
             }
-            return <View style={{flexDirection: 'row', height: 30, width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{lhcCellViews}</View>
+            return <View style={{flexDirection: 'row', height: 45, width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{lhcCellViews}</View>
 
         } else if (this.state.js_tag == 'ssc') {
 
@@ -538,7 +543,7 @@ class NewOpenInfoView extends Component {
                 </View>
             );
         }
-        return <View style={{flexDirection: 'row', height: 30, width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{cellViews}</View>
+        return <View style={{flexDirection: 'row', height: this.state.js_tag == 'lhc' ? 45 : 30,  width: SCREEN_WIDTH, backgroundColor: cellBgColor}}>{cellViews}</View>
 
     }
 
@@ -553,7 +558,15 @@ class NewOpenInfoView extends Component {
                 <CusBaseText key={i} style={{ color: color }}>{`${ba}`}<CusBaseText key={i*20} style={{ color: '#707070' }}>{i == ballAr.length - 2 ? ' + ': i == ballAr.length - 1 ? '' : ','}</CusBaseText></CusBaseText>
             )
         }
-        return <CusBaseText style={{ fontSize: Adaption.Font(14, 12), textAlign: 'center' }}>{ballViews}</CusBaseText>
+        return <View>
+                    <CusBaseText style={{fontSize: Adaption.Font(14, 12), textAlign: 'center' }}>
+                        {ballViews}
+                    </CusBaseText>
+                    <CusBaseText style={{fontSize: Adaption.Font(14, 12), textAlign: 'center', color:wenZiColor, marginTop:4}}>
+                        {this._getItemShengXiaoText(ballAr)}
+                    </CusBaseText>
+               </View>
+
     }
 
     // SSC前三号码状态
@@ -602,6 +615,50 @@ class NewOpenInfoView extends Component {
         return sumBall;
     }
 
+    // 返回头部六合彩生肖属性
+    _getShengxiaoText(lhcballsArr){
+
+        let lhcBallText = '';
+
+        if (lhcballsArr.length != 0){
+
+            for (let i = 0; i < lhcballsArr.length; i++){
+                let ball = lhcballsArr[i];
+
+                if (i == lhcballsArr.length - 1){
+                    lhcBallText += GetBallStatus.getShengxiaoToBallStr(ball) + '      ';
+                }
+                else {
+                    lhcBallText += GetBallStatus.getShengxiaoToBallStr(ball) + '    ';
+                }
+            }
+        }
+
+        return lhcBallText;
+    }
+
+    //ItemList六合彩生肖
+    _getItemShengXiaoText(lhcballsArr){
+
+        let lhcBallText = '';
+
+        if (lhcballsArr.length != 0){
+
+            for (let i = 0; i < lhcballsArr.length; i++){
+                let ball = lhcballsArr[i];
+
+                if (i == lhcballsArr.length - 1){
+                    lhcBallText += GetBallStatus.getShengxiaoToBallStr(ball) + ' ';
+                }
+                else {
+                    lhcBallText += GetBallStatus.getShengxiaoToBallStr(ball) + '  ';
+                }
+            }
+        }
+
+        return lhcBallText;
+    }
+
     //点击展开历史开奖列表
     _showLoList(isShow, isAnimated){
 
@@ -637,7 +694,7 @@ class NewOpenInfoView extends Component {
 
             this._openHeaderInfo.setNativeProps({
                 style: {
-                    height: 110,
+                    height: this.state.js_tag == 'lhc' ? 125 : 110,
                 }
             })
 
@@ -743,13 +800,13 @@ class NewOpenInfoView extends Component {
                 if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
 
                     let nextQi = this.state.nextCountDownList[this.currentCountDownIndex].qishu;
-
+                    this.state.prevQiShu = this.state.nextQiShu;  //如果到下一期。则赋值给上一期数
                     this.state.nextQiShu = nextQi;
                     this.state.openBallsArr = [];
 
                     this._initBallDescView([]);
                 }
-                PushNotification.emit('BuyLotDetailCountDown');  //倒计时结束发出通知
+                // PushNotification.emit('BuyLotDetailCountDown');  //倒计时结束发出通知
             }
 
             // 已封盘 倒计时数组已经用到最后一期了。请先去请求了。不等到最后一个数据用完才请求
@@ -780,8 +837,8 @@ class NewOpenInfoView extends Component {
 
             if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
-                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - Math.round(new Date() / 1000);
-                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - Math.round(new Date() / 1000);
+                currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
+                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.props.finishTime)  - Math.round(new Date() / 1000);
             }
 
             this.state.nextJieZhi = currOpen > 0 ? currOpen : 0;
@@ -831,7 +888,7 @@ class NewOpenInfoView extends Component {
         let params = new FormData();
         params.append('ac','getKjCpLog');
         params.append('tag', tag);
-        params.append('pcount', 8);
+        params.append('pcount', 10);
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
@@ -888,9 +945,11 @@ class NewOpenInfoView extends Component {
                         let nextList = responseData.data[0].next;
                         let nextModel = nextList[0];
 
+                        this.props.finishTime = Math.round(new Date() / 1000);
+
                         // 倒计时时间直接用opentime 减 手机系统时间。
-                        let currOpen = nextModel.opentime - Math.round(new Date() / 1000);
-                        let currStop = nextModel.stoptime - Math.round(new Date() / 1000);
+                        let currOpen = nextModel.opentime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
+                        let currStop = nextModel.stoptime - (nextModel.server_time - this.props.finishTime) - Math.round(new Date() / 1000);
                         this.currentCountDownIndex = 0;//当前下标
 
                         //先拿LockTime倒计时封盘
@@ -914,7 +973,7 @@ class NewOpenInfoView extends Component {
     render() {
 
         return (
-            <View style = {{backgroundColor:'#eeeeee', height: 110, width:SCREEN_WIDTH}} ref={(c) => this._openHeaderInfo = c}>
+            <View style = {{backgroundColor:'#eeeeee', height: this.state.js_tag == 'lhc' ? 125 : 110, width:SCREEN_WIDTH}} ref={(c) => this._openHeaderInfo = c}>
 
                 {/*上一期开奖结果和值啥的*/}
                 <View style = {{flexDirection:'row', height:35}}>
@@ -929,10 +988,15 @@ class NewOpenInfoView extends Component {
                 </View>
 
                 {/*上一期开奖结果 和历史开奖按钮*/}
-                <View style = {{flexDirection:'row', height:35, alignItems:'center'}}>
+                <View style = {{flexDirection:'row', height: this.state.js_tag == 'lhc' ? 50 : 35, alignItems:'center'}}>
 
                     {/*开奖球*/}
-                    <NewOpenBallsView style = {{flex:0.75}} ballsArr={this.state.openBallsArr} jstag={this.state.js_tag}  status = {this.state.random}/>
+                    <View style = {{flex:0.75}}>
+                    <NewOpenBallsView ballsArr={this.state.openBallsArr} jstag={this.state.js_tag}  status = {this.state.random}/>
+                    {this.state.js_tag == 'lhc' ?  <CusBaseText style = {{marginLeft:10, marginTop:6, fontSize:Adaption.Font(17,14), color:wenZiColor, textAlign:'left'}}>
+                        {this._getShengxiaoText(this.state.openBallsArr)}
+                    </CusBaseText> : null}
+                    </View>
 
                     <TouchableOpacity style = {{flex:0.25, alignItems:'center', flexDirection:'row', height:35}} activeOpacity={0.8}
                                       onPress = {() => {
@@ -967,42 +1031,50 @@ class NewOpenInfoView extends Component {
                     ListHeaderComponent={() => this._listHeaderComponent()}
                     automaticallyAdjustContentInsets={false}
                     alwaysBounceHorizontal = {false}
-                    scrollEnabled = {false}
                 />
 
                 {/*下面倒计时*/}
                 <View style = {{height: 40, flexDirection:'row'}}>
 
-                    <View style = {{flex:0.36, flexDirection:'row', flexDirection:'row', alignItems:'center'}}>
-                        <CusBaseText style = {{fontSize:Adaption.Font(16), color:wenZiColor, marginLeft:10}}>
-                            {`距${this.state.nextQiShu ? `${this.state.nextQiShu}`.substr(`${this.state.nextQiShu}`.length - 4, 4) : '- -'}期`}
+                    <View style = {{flex:0.54, flexDirection:'row', flexDirection:'row', alignItems:'center'}}>
+                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:10}}>
+                            {`第${this.state.nextQiShu ? `${this.state.nextQiShu}`.substr(`${this.state.nextQiShu}`.length - 4, 4) : '- -'}期${this.state.nextFengPan < 1 ? '已封盘' : '开奖时间'}:`}
                         </CusBaseText>
-
-                    </View>
-                    <View style = {{flex:0.64, flexDirection:'row', flexDirection:'row', alignItems:'center'}}>
-
-                        <CusBaseText  style = {{fontSize:Adaption.Font(16), color:wenZiColor, marginLeft:Adaption.Width(5)}}>
-                            封盘:
-                        </CusBaseText>
-
                         <ImageBackground resizeMode={'contain'} style = {{width:Adaption.Width(85), height:40, backgroundColor:'rgba(0,0,0,0)', justifyContent:'center', alignItems:'center'}} source = {require('../img/ic_buyLot_endTZ.png')}>
-                            <CusBaseText style = {{fontSize:Adaption.Font(16), color:'white'}}>
-                                {this.state.nextFengPan < 0 ? '已封盘' : this._changeTime(this.state.nextFengPan)}
-                            </CusBaseText>
-                        </ImageBackground>
-
-                        <CusBaseText  style = {{fontSize:Adaption.Font(16), color:wenZiColor, marginLeft:Adaption.Width(5)}}>
-                            开奖:
-                        </CusBaseText>
-
-                        <ImageBackground resizeMode={'contain'} style = {{width:Adaption.Width(85), height:40,backgroundColor:'rgba(0,0,0,0)', justifyContent:'center', alignItems:'center'}} source = {require('../img/ic_buyLot_endTZ.png')}>
-                            <CusBaseText style = {{fontSize:Adaption.Font(16), color:'white'}}>
-                                {this.state.nextJieZhi > 0 ? this._changeTime(this.state.nextJieZhi) : `00: 00: 00`}
+                            <CusBaseText style = {{fontSize:Adaption.Font(15), color:'white'}}>
+                                {this._changeTime(this.state.nextJieZhi)}
                             </CusBaseText>
                         </ImageBackground>
                     </View>
+                    {this.state.isShowUserMoney == true ? <View style = {{ flex:0.35, flexDirection:'row', alignItems:'center'}}>
+                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:18, textAlign:'right'}}>
+                            余额: <CusBaseText style = {{fontSize:Adaption.Font(15), color:'#eb3349', marginLeft:5}}>
+                            {global.UserLoginObject.TotalMoney != '' ? global.UserLoginObject.TotalMoney : '0.00'}
+                        </CusBaseText>
+                        </CusBaseText>
+                    </View> : <View style = {{ flex:0.35, flexDirection:'row', alignItems:'center'}}>
+                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:wenZiColor, marginLeft:global.UserLoginObject.Uid != '' ? SCREEN_WIDTH * 0.24 : SCREEN_WIDTH * 0.21, textAlign:'right'}}>
+                            {global.UserLoginObject.Uid != '' ?  `余额:` : `余额:请`}
+                        </CusBaseText>
+                    </View>}
+                    <TouchableOpacity activeOpacity={0.8} style = {{flex:0.11, marginRight:5, justifyContent:'center'}} onPress = {() => {
+
+                        if (global.UserLoginObject.Uid != '' ){
+
+                            this.setState({isShowUserMoney:!this.state.isShowUserMoney})
+                        }
+                        else {
+
+                            this.props.NoLoginClick ?  this.props.NoLoginClick() : null;
+                        }
+
+                    }}>
+                        <CusBaseText style = {{fontSize:Adaption.Font(15), color:'#00a3e9'}}>
+                            {global.UserLoginObject.Uid != '' ? this.state.isShowUserMoney == true ? `[隐藏]` : `[显示]` : `[登录]`}
+                        </CusBaseText>
+                    </TouchableOpacity>
                 </View>
-                <View style={{height: 1, width: SCREEN_WIDTH, backgroundColor:'#ddd'}}></View>
+                <View style={{height: 1, width: SCREEN_WIDTH, backgroundColor:'#ddd'}} />
             </View>
         )
     }

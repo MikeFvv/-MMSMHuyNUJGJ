@@ -4,6 +4,23 @@ let OTHER = 0, GRAYLOG_ERROR = 1, GRAYLOG_WARNING = 2, GRAYLOG_INFO = 3, GRAYLOG
 var CryptoJS = require("crypto-js");
 import Moment from 'moment';
 
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength, padString) {
+        targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
+        padString = String(padString || ' ');
+        if (this.length > targetLength) {
+            return String(this);
+        }
+        else {
+            targetLength = targetLength - this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+            }
+            return padString.slice(0, targetLength) + String(this);
+        }
+    };
+}
+
 export default {
     // params 请求参数
     // IPIndex 请求线路下标
@@ -16,13 +33,18 @@ export default {
         let form_unique_token = Math.random().toString(35).slice(2, 8) + (new Date()).getTime() + Math.random().toString(35).slice(2, 8) + 'E' + Math.random().toString(35).slice(2, 8);
         params.append("form_unique_token", form_unique_token);
 
+        let encryptPar = this._ClEncrypt(params, 'bx20180701');
+        let enParams = new FormData();
+        enParams.append("p", encryptPar);
+
         return new Promise(function (resolve, reject) {
             fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.phoneApiURL() + '/' + params._parts[0][1], {
                 method: 'POST',
                 headers: {
-                    'BXVIP-UA':'ios',
+                    'BXVIP-UA': 'ios',
                 },
-                body: params, // 参数
+                // body: params, // 参数
+                body: enParams, // 参数
                 timeout: 15, // 超时了
             })
                 .then((response) => response.json())
@@ -42,14 +64,11 @@ export default {
                         if (value == 0) {
                             value = value + "";//不加空串,当value为整数0时,下面直接通过不了.
                         }
-                        if (parameter && value)
-                        {
-                            if (i == array.length - 1)
-                            {
+                        if (parameter && value) {
+                            if (i == array.length - 1) {
                                 bodygroup = parameter + '=' + value
                             }
-                            else
-                            {
+                            else {
                                 bodygroup = parameter + '=' + value + '&'
 
                             }
@@ -68,8 +87,7 @@ export default {
     //发送错误日志
     sendGrayLog(responseData, info, bodystr) {
 
-        if(responseData.stack.indexOf('[native code]') != -1 || responseData.stack.indexOf('CodePush') != -1 || sbodystr.indexOf('[native code]') != -1 || bodystr.indexOf('CodePush') != -1 )
-        {
+        if (responseData.stack.indexOf('[native code]') != -1 || responseData.stack.indexOf('CodePush') != -1 || sbodystr.indexOf('[native code]') != -1 || bodystr.indexOf('CodePush') != -1) {
             console.log('错误信息');
             return;
         }
@@ -99,15 +117,20 @@ export default {
         newparams.append("message", bodystr + "\n" + responseData.stack);
         newparams.append("level", info);
         newparams.append("facility", "ios");
-        newparams.append('time_stamp',currentMomentStr);
+        newparams.append('time_stamp', currentMomentStr);
         newparams.append("controller", this.constructor.name);
+
+        let encryptPar = this._ClEncrypt(newparams, 'bx20180701');
+        let enParams = new FormData();
+        enParams.append("p", encryptPar);
 
         fetch(LOG_ERL, {
             method: 'POST',
             headers: {
-                'BXVIP-UA':'ios',
+                'BXVIP-UA': 'ios',
             },
-            body: newparams,
+            // body: newparams,
+            body: enParams,
             timeout: 15,
         })
             .then((response) => response.json())
@@ -120,37 +143,23 @@ export default {
     },
 
 
-    sendNetworkRequestSeparate(params, urlPath) {
-
-        params.append('client_type', '3');
-
-        return new Promise(function (resolve, reject) {
-            fetch(urlPath ? urlPath : GlobalConfig.phoneApiURL()  + '/' + params._parts[0][1], {
-                method: 'POST',
-                body: params, // 参数
-                timeout: 15, // 超时了
-            })
-                .then((response) => response.json())
-                .then((responseData) => {
-                    resolve(responseData);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    },
-
     sendNetworkTabelRequest(params) {
 
         params.append('client_type', '3');
+
+        let encryptPar = this._ClEncrypt(params, 'bx20180701');
+        let enParams = new FormData();
+        enParams.append("p", encryptPar);
 
         return new Promise(function (resolve, reject) {
             fetch(GlobalConfig.rebateOddsTableURL() + '/' + params._parts[0][1], {
                 method: 'POST',
                 headers: {
-                    'BXVIP-UA':'ios',
+                    'BXVIP-UA': 'ios',
                 },
-                body: params, // 参数
+                // body: params, // 参数
+                body: enParams, // 参数
+
                 timeout: 15, // 超时了
             })
                 .then((response) => response.json())
@@ -169,13 +178,18 @@ export default {
 
         params.append('client_type', '3');
 
+        let encryptPar = this._ClEncrypt(params, 'bx20180701');
+        let enParams = new FormData();
+        enParams.append("p", encryptPar);
+
         return new Promise(function (resolve, reject) {
-            fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.phoneApiURL()  + '/' + params._parts[0][1], {
+            fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.phoneApiURL() + '/' + params._parts[0][1], {
                 method: 'POST',
                 headers: {
-                    'BXVIP-UA':'ios',
+                    'BXVIP-UA': 'ios',
                 },
-                body: params, // 参数
+                // body: params, // 参数
+                body: enParams, // 参数
                 timeout: 15, // 超时了
             })
                 .then((response) => {
@@ -189,7 +203,48 @@ export default {
                 });
         })
 
+    },
+
+
+
+    _ClEncrypt(valValue, keyValue) {
+
+        // let keyByte = keyValue.charCodeAt();
+        // let valByte = valValue.charCodeAt();
+
+        let parStr = '';
+        for (let i = 0; i < valValue._parts.length; i++) {
+            if (i == valValue._parts.length - 1) {
+                parStr += valValue._parts[i][0] + '=' + valValue._parts[i][1];
+            } else {
+                parStr += valValue._parts[i][0] + '=' + valValue._parts[i][1] + '&';
+            }
+        }
+
+
+        let valArr = unescape(encodeURIComponent(parStr)).split('');
+        let keyArr = keyValue.split('');
+
+        for (let i = 0; i < valArr.length; i++) {
+            for (let j = 0; j < keyArr.length; j++) {
+
+                let valStr = valArr[i];
+                let keyStr = keyArr[j];
+                let ccc = ((valStr.charCodeAt && valStr.charCodeAt()) || valArr[i]) ^ keyStr.charCodeAt();
+                valArr[i] = ccc;
+            }
+        }
+
+        let result = '';
+        for (let i = 0; i < valArr.length; i++) {
+            let c = valArr[i];
+            result += c.toString(16).padStart(2, '0');
+        }
+
+        let md5 = CryptoJS.MD5(parStr + '&encode=' + keyValue).toString();
+        let resultUpper = 'DEX' + result + md5;
+        return resultUpper.toUpperCase();
     }
 
-
 }
+

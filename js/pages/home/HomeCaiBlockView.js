@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import {
-    AppRegistry,
     StyleSheet,
     View,
     TouchableOpacity,
@@ -9,17 +8,8 @@ import {
     FlatList,
     Dimensions,
     Alert,
-    ScrollView,
-    Platform,
-    StatusBar,
     Easing,
     Animated,
-    Modal,
-    WebView,
-    ImageBackground,
-    NetInfo,
-    AsyncStorage,
-    Linking,
 } from 'react-native';
 
 const { width, height } = Dimensions.get("window");

@@ -66,6 +66,22 @@ export default class DyRqDxItemView extends Component {
         }
     }
 
+    // 只刷新 当前选择的，和之前有选择的。 其余的就不刷了 浪费时间。
+    shouldComponentUpdate(nextProps, nextState) {
+        let aaa = nextState.isClearBalls != this.state.isClearBalls; // 选择不同区域了 为true。
+        let bbb = nextProps.cuntSItemId == nextProps.lastSItemId; // 这个本次选择的
+        let ccc = nextProps.cuntSItemId == nextProps.lastLastSItemIdx; // 上上次选择的，展开选择后 隐藏再展开 选不同区的号时 有用。
+        let ddd = nextProps.data != this.props.data; // 数据源不相同时
+        let eee = nextProps.isAllBetCallback == true;  // 从所有玩法 或 综合购物车 回来的
+        let fff = nextState.seleBallDic != this.state.seleBallDic; // 选择号码数据不相同时。主要是综合过关 选择几关后 突然去取消第一次选择的 状态去不掉
+        let ggg = nextState.isFullTime != this.state.isFullTime;  // 半场全场切换的
+        if (aaa || bbb || ccc || ddd || eee || fff || ggg) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     render() {
 
         let h = this.props.style.height - Adaption.Height(60);
@@ -130,16 +146,6 @@ export default class DyRqDxItemView extends Component {
                         isAllBetCallback={this.props.isAllBetCallback}
                         ballClick={(ballDic) => {
 
-                            let key = Object.keys(ballDic)[0];
-                            if (key != null) {
-                                ballDic = {[`${this.props.cuntSItemId}`]: ballDic[key]};
-
-                                if (this.props.game_typeID != 3 && ballDic[`${this.props.cuntSItemId}`]['playMethod'] == null) {
-                                    // 不是综合的 返回空。
-                                    ballDic = {};
-                                }
-                            }
-                            
                             this.setState({
                                 isClearBalls: false,
                                 seleBallDic: ballDic,
@@ -292,7 +298,7 @@ class DyRqDxItem extends Component {
                             let dict = {};
                             if (isSelect) {
                                 this.state.seleIdx = -1;
-                                dict[`${bIdx}`] = {};
+                          
                             } else {
                                 this.state.seleIdx = idx;
 
@@ -309,7 +315,7 @@ class DyRqDxItem extends Component {
                                 } 
 
                                 Object.assign(ballD, data[bIdx]);
-                                dict[`${bIdx}`] = ballD;
+                                dict[this.props.cuntSItemId] = ballD;
                             }
 
                             this.props.ballClick ? this.props.ballClick(dict) : null;

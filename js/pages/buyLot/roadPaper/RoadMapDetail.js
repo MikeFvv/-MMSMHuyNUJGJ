@@ -48,7 +48,7 @@ export default class RoadMapDetail extends Component {
                         this.props.clickBtnIdx ? this.props.clickBtnIdx(a) : null;
                     }}
                     >
-                    <Text style={{ fontSize: Adaption.Font(16, 13), color: a == this.state.selectIdx ? '#fff' : '#494949' }}>{data[a]}</Text>
+                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 13), color: a == this.state.selectIdx ? '#fff' : '#494949' }}>{data[a]}</Text>
                 </TouchableOpacity>
             )
 
@@ -170,7 +170,7 @@ export default class RoadMapDetail extends Component {
 
                             columnView.push(
                                 <View key={jj+100} style={{ width: Adaption.Width(27), height: Adaption.Width(27), borderColor: '#e5e5e5', borderBottomWidth: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: Adaption.Font(16, 14), color: (baStr == '单' || baStr == '大' || baStr == '龙') ? '#e33939' : '#494949'}}>{baStr}</Text>
+                                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: (baStr == '单' || baStr == '大' || baStr == '龙') ? '#494949' : '#e33939'}}>{baStr}</Text>
                                 </View>
                             )
                             detourData[len-jj-1].splice(0, 1); // 删除
@@ -188,7 +188,7 @@ export default class RoadMapDetail extends Component {
                         columnView.push(
                             <View key={jj+100} style={{ width: Adaption.Width(27), height: Adaption.Width(27), borderColor: '#e5e5e5', borderBottomWidth: 0.7, justifyContent: 'center', alignItems: 'center' }}>
                                 {(lastState == crntBaState && crntBaState != '') || jj == 0
-                                    ? <Text style={{ fontSize: Adaption.Font(16, 14), color: (crntBaState == '单' || crntBaState == '大' || crntBaState == '龙') ? '#e33939' : crntBaState == '?' ? '#fa0' : '#494949'}}>{crntBaState}</Text>
+                                    ? <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(16, 14), color: (crntBaState == '单' || crntBaState == '大' || crntBaState == '龙') ? '#494949' : crntBaState == '?' ? '#fa0' : '#e33939'}}>{crntBaState}</Text>
                                     //: <Text style={{ fontSize: Adaption.Font(16, 14), color: '#fa0'}}>{ii}</Text>
                                     : null
                                 }
@@ -248,7 +248,7 @@ export default class RoadMapDetail extends Component {
         return (
             <View>
                 <View style={{ height: Adaption.Width(35), margin: inset_10, marginBottom: 0, backgroundColor: '#f3f3f3', justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: Adaption.Font(17, 15), color: '#494949' }}>{titleStr}</Text>
+                    <Text allowFontScaling={false} style={{ fontSize: Adaption.Font(17, 15), color: '#494949' }}>{titleStr}</Text>
                 </View>
 
                 <ScrollView style={{ marginLeft: inset_10, marginRight: inset_10, marginBottom: inset_10*2 }}
