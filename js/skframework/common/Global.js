@@ -43,7 +43,7 @@ global.GLOBALisRNParameters = true;
 global.SwitchRoute = 1;
 
 // 版本号    版本号的格式：v<主版本号>.<副版本号>.<发布号>
-global.VersionNum = 'v2.53.6';
+global.VersionNum = 'v2.55.0';
 // --------------------
 
 // 业主请求URL 每个App的请求域名(每个App都不一样) 会返回不同的域名及状态
@@ -75,12 +75,6 @@ global.PixelRatio = PixelRatio.get();
 
 // 最小线宽  没效果： 可以使用  1 / PixelRatio
 // global.GlobalPixel = 1 / PixelRatio;
-
-//随机颜色   使用： 例 randomColor()
-global.randomColor = () => {
-    let colorStr = Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase();
-    return "#" + "000000".substring(0, 6 - colorStr) + colorStr;
-}
 
 //判断字符串是”“或者空格或者连续空格
 global.global_isSpace = (str) => {
@@ -243,7 +237,7 @@ global.GameListConfigModel = {};
 global.isTiShi = false;    // 是否不再提示
 global.isMeDown = true;    // 我知道啦
 
-global.rcode = ""; // 邀请码。
+global.invCode = ""; // 邀请码。
 
 //存储银行列表
 global.bankList = [];
@@ -303,6 +297,8 @@ global.isFirstNetwork = true;
 global.GlobalLineIPArray = [];
 // 请求少于GlobalLineIPRequestMax次 继续请求
 global.GlobalLineIPRequestMax = 10;
+
+global.GlobalLineIPIndex = null;
 
 // 购彩定时器
 global.time = 0;

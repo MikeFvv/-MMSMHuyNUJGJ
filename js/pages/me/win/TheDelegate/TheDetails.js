@@ -41,45 +41,44 @@ export default class TheDetails extends React.Component {
   static navigationOptions = ({ navigation }) => ({
       header: (
           <CustomNavBar
-          //centerView
-          centerText = {
-                 navigation.state.params.title  
+          //centerView   centerText
+          centerView = {
+                // navigation.state.params.title  
 
-              //   (navigation.state.params.navigateTitlePress?
-              //     <TouchableOpacity
-              //         activeOpacity={0.7} onPress={() =>  navigation.state.params.navigateTitlePress?navigation.state.params.navigateTitlePress():null}>
-              //         <View style={{
-              //             width: SCREEN_WIDTH - 180 - 40 ,
-              //             height: 44,
-              //             justifyContent: 'center',
-              //             alignItems: 'center',
-              //             flexDirection: 'row',
-              //             marginTop:SCREEN_HEIGHT == 812?40:20,
-              //             marginLeft:50,
-              //             backgroundColor:'transparent'
-              //         }}>
-              //             <View style={{
-              //                 width: 130,
-              //                 height: 35,
-              //                 borderRadius: 5,
-              //                 borderWidth: 1,
-              //                 borderColor: 'white',
-              //                 justifyContent: 'center',
-              //                 alignItems: 'center',
-              //                 flexDirection: 'row',
-              //             }}>
-              //                 <CusBaseText
-              //                     style={{
-              //                         //fontSize: Adaption.Font(17),
-              //                         color: 'white',
-              //                         marginLeft:5,
-              //                     }}>{navigation.state.params.navcLTitle}</CusBaseText>
-              //             </View>
-              //         </View>
-              //     </TouchableOpacity>:null
-              // )
+                (navigation.state.params.navigateTitlePress?
+                  <TouchableOpacity
+                      activeOpacity={0.7} onPress={() =>  navigation.state.params.navigateTitlePress?navigation.state.params.navigateTitlePress():null}>
+                      <View style={{
+                          width: SCREEN_WIDTH - 180 - 40 ,
+                          height: 44,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          flexDirection: 'row',
+                          marginTop:SCREEN_HEIGHT == 812?40:20,
+                          marginLeft:50,
+                          backgroundColor:'transparent'
+                      }}>
+                          <View style={{
+                              width: 130,
+                              height: 35,
+                              borderRadius: 5,
+                              borderWidth: 1,
+                              borderColor: 'white',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              flexDirection: 'row',
+                          }}>
+                              <CusBaseText
+                                  style={{
+                                      //fontSize: Adaption.Font(17),
+                                      color: 'white',
+                                      marginLeft:5,
+                                  }}>{navigation.state.params.navcLTitle}</CusBaseText>
+                          </View>
+                      </View>
+                  </TouchableOpacity>:null
+              )
           }
-                
                 
               leftClick={() =>  navigation.goBack() }
               rightView = {(
@@ -106,9 +105,6 @@ export default class TheDetails extends React.Component {
     this.state = {
 
       centerTradListdataList: [],//全部录数据
-      tikuandataList: [], //提款数据
-      chongzhidataList: [], // 充值数据
-
       refreshState: RefreshState.Idle,
       isShowReceiveRedEnvelope: false,
       isNoData: false,
@@ -117,31 +113,14 @@ export default class TheDetails extends React.Component {
       alltypeArray:[],
       index: 0,
     };
+
     this.searchName = '';  // 搜索名称
     this.moreTimeOne = 0;//页码
-    this.moreTimeTwo = 0;//页码
-    this.moreTimeThree = 0;//页码
-    this.typeIndex = 0; // 类型
     this.requestDataNum = 20;  // 请求数据条数
     this.dateType = 0; // 日期类型
     this.numMark = 0;
-    this.timeData=0; //判断时间 0 今天1昨天2本周 3本月 4上个月
-
-    let day = '0';
-    if (HuoCalendar.getDate() < 10) {
-      day = '0' + HuoCalendar.getDate()
-    } else {
-      day = HuoCalendar.getDate()
-    }
-
-    //开始时间
-    this.homeTime = HuoCalendar.getFullYear() + '-' + (HuoCalendar.getMonth() + 1) + '-' + day;
-    //结束时间
-    this.endTime = HuoCalendar.getFullYear() + '-' + (HuoCalendar.getMonth() + 1) + '-' + day;
-
-    { (this: any).keyExtractor = this.keyExtractor.bind(this) }
-    { (this: any).renderCell = this.renderCell.bind(this) }
-
+    this.timeData = 0; //判断时间 0 今天1 昨天2 本周 3本月 4上个月
+    this.isTradtype = 0;
     this.showRedEnvelopeArray = [{ key: 0, value: '今天' }, { key: 1, value: '昨天' }, { key: 2, value: '本周' }, { key: 3, value: '本月' }, { key: 4, value: '上月' }]
   }
 
@@ -163,7 +142,7 @@ export default class TheDetails extends React.Component {
       navigateRightPress: this._navigateRightPress,
       navigateTitlePress: this._navigateTitlePress,
       choiceData: '今天',
-      navcLTitle: '全部',
+      navcLTitle: '交易明细',
     });
   }
 
@@ -173,11 +152,11 @@ export default class TheDetails extends React.Component {
       isLoading: true,
       isNoData: false,
     });
-    this._getDailiCenterTradList(true);
     this.getTradeType();
+    this._getDailiCenterTradList(true);
+   
 
   }
-
 
       /**
      * 获取交易类型
@@ -201,8 +180,6 @@ export default class TheDetails extends React.Component {
   }
 
 
-
-
   //头部刷新 
   onHeaderRefresh = () => {
     this.setState({
@@ -211,16 +188,9 @@ export default class TheDetails extends React.Component {
       isNoData: false,
     })
 
-    if (this.typeIndex == 1) {
-      this.moreTimeTwo = 0;
-      this._getNextGetPriceList(true);
-    } else if (this.typeIndex == 2) {
-      this.moreTimeThree = 0;
-      this._getNextPayPriceList(true);
-    } else {
       this.moreTimeOne = 0;
       this._getDailiCenterTradList(true);
-    }
+    
   }
 
   //尾部刷新 
@@ -228,17 +198,9 @@ export default class TheDetails extends React.Component {
 
     this.setState({ refreshState: RefreshState.FooterRefreshing })
 
-    if (this.typeIndex == 1) {
-      this.moreTimeTwo++;
-      this._getNextGetPriceList(false);
-    } else if (this.typeIndex == 2) {
-      this.moreTimeThree++;
-      this._getNextPayPriceList(false);
-    } else {
       this.moreTimeOne++;
       this._getDailiCenterTradList(false);
-    }
-
+  
   }
 
 
@@ -249,31 +211,15 @@ export default class TheDetails extends React.Component {
       refreshState: RefreshState.Idle,
       isShowReceiveRedEnvelope: false,
       centerTradListdataList: [],
-      tikuandataList: [],
-      chongzhidataList: [],
       isLoading: true,
       isNoData: false,
     });
 
-    if (this.typeIndex == 0) {
-
       this.moreTimeOne = 0;
       this._getDailiCenterTradList(true);
-
-    } else if (this.typeIndex == 1) {
-
-      this.moreTimeTwo = 0;
-      this._getNextGetPriceList(true);
-
-    } else if (this.typeIndex == 2) {
-
-      this.moreTimeThree = 0;
-      this._getNextPayPriceList(true);
-    }
-
   }
 
-  //      this.touzhuTypes = "getDailiCenterTradList",//全部类型   // 提款：getNextGetPriceList  充值：getNextPayPriceList
+  //      this.touzhuTypes = "getDailiCenterTradList",//全部类型   
   _getDailiCenterTradList(isReload) {
 
     let requestMark = this.numMark;
@@ -289,6 +235,8 @@ export default class TheDetails extends React.Component {
     params.append("pageid", String(this.moreTimeOne));
     params.append("lasttime", this.timeData);
     params.append("username", this.searchName);
+    params.append("tradtype", this.isTradtype);
+    
     var promise = BaseNetwork.sendNetworkRequest(params);
     promise.then(response => {
 
@@ -356,170 +304,6 @@ export default class TheDetails extends React.Component {
   }
 
 
-
-  _getNextGetPriceList(isReload) {
-
-    let requestMark = this.numMark;
-    //   提款：getNextGetPriceList
-    this.refs.LoadingView && this.refs.LoadingView.showLoading('正在请求数据...');
-    //请求参数
-    let params = new FormData();
-    params.append("ac", "getNextGetPriceList");   //请求类型
-    params.append("uid", global.UserLoginObject.Uid);
-    params.append("token", global.UserLoginObject.Token);
-    params.append('sessionkey',global.UserLoginObject.session_key)
-    params.append("pageid", String(this.moreTimeTwo));
-    params.append("lasttime", this.timeData);
-    params.append("username", this.searchName);
-    var promise = BaseNetwork.sendNetworkRequest(params);
-    promise.then(response => {
-
-      this.refs.LoadingView && this.refs.LoadingView.showSuccess();
-
-      if (requestMark != this.numMark) {
-        return;
-      }
-
-      if (response.msg == 0) {
-
-        let dataList = response.data;
-        if (dataList && dataList.length > 0) {
-
-          let dataBlog = [];
-          let i = 0;
-          dataList.map(dict => {
-            dataBlog.push({ key: i, value: dict });
-            i++;
-          });
-          let tikuandataList = isReload ? dataBlog : [...this.state.tikuandataList, ...dataBlog]
-          for (let i = 0; i < tikuandataList.length; i++) {
-            tikuandataList[i].id = i
-          }
-
-          // 防止两次请求
-          if ((tikuandataList.length / (this.moreTimeTwo + 1)) < 40) {
-            this.setState({
-              tikuandataList: tikuandataList,
-              refreshState: RefreshState.NoMoreData,
-            })
-          } else {
-            this.setState({
-              tikuandataList: tikuandataList,
-              refreshState: RefreshState.Idle,
-            });
-          }
-
-        } else {
-
-          if (this.state.tikuandataList.length > 0) {
-            this.setState({
-              refreshState: RefreshState.NoMoreData,
-            })
-          } else {
-            this.setState({
-              isLoading: false,
-              isNoData: true,
-              refreshState: RefreshState.Idle,
-            });
-          }
-
-        }
-
-      } else {
-
-        this._alertPromptMessage(response.param);
-      }
-
-    });
-
-    promise.catch(err => {
-
-    });
-
-  }
-
-
-  _getNextPayPriceList(isReload) {
-    let requestMark = this.numMark;
-    //  充值类型：getNextPayPriceList
-    this.refs.LoadingView && this.refs.LoadingView.showLoading('正在请求数据...');
-
-    //请求参数
-    let params = new FormData();
-    params.append("ac", "getNextPayPriceList");   //请求类型
-    params.append("uid", global.UserLoginObject.Uid);
-    params.append("token", global.UserLoginObject.Token);
-    params.append('sessionkey',global.UserLoginObject.session_key);
-    params.append("pageid", String(this.moreTimeThree));
-    params.append("lasttime", this.timeData);
-    params.append("username", this.searchName.trim());
-    var promise = BaseNetwork.sendNetworkRequest(params);
-    promise.then(response => {
-
-      this.refs.LoadingView && this.refs.LoadingView.showSuccess();
-      
-      if (requestMark != this.numMark) {
-        return;
-      }
-
-      if (response.msg == 0) {
-
-        let dataList = response.data;
-        if (dataList && dataList.length > 0) {
-
-          let dataBlog = [];
-          let i = 0;
-          dataList.map(dict => {
-            dataBlog.push({ key: i, value: dict });
-            i++;
-          });
-          let chongzhidataList = isReload ? dataBlog : [...this.state.chongzhidataList, ...dataBlog]
-          for (let i = 0; i < chongzhidataList.length; i++) {
-            chongzhidataList[i].id = i
-          }
-
-          // 防止两次请求
-          if ((chongzhidataList.length / (this.moreTimeThree + 1)) < 40) {
-            this.setState({
-              chongzhidataList: chongzhidataList,
-              refreshState: RefreshState.NoMoreData,
-            })
-          } else {
-            this.setState({
-              chongzhidataList: chongzhidataList,
-              refreshState: RefreshState.Idle,
-            });
-          }
-
-        } else {
-
-          if (this.state.chongzhidataList.length > 0) {
-            this.setState({
-              refreshState: response.data == null ? RefreshState.NoMoreData : RefreshState.Idle,
-            })
-          } else {
-            this.setState({
-              isLoading: false,
-              isNoData: true,
-              refreshState: RefreshState.Idle,
-            });
-          }
-
-        }
-      } else {
-
-        this._alertPromptMessage(response.param);
-      }
-
-    });
-
-    promise.catch(err => {
-
-
-    });
-
-  }
-
   _alertPromptMessage(message) {
     this.setState({
       isLoading: false,
@@ -567,69 +351,6 @@ export default class TheDetails extends React.Component {
 
   keyExtractor = (item: any, index: number) => {
     return item.id
-  }
-
-  // 移动 选择类型 
-  _onclickDataTyle(obj) {
-    // 相同就返回 不查询
-    if (obj.i == this.typeIndex) {
-      return;
-    }
-
-    this.typeIndex = obj.i;
-
-    // 更新 刷新器的状态
-    this.setState({
-      refreshState: RefreshState.Idle,
-    })
-
-    if (obj.i == 0) {
-
-      if (this.state.centerTradListdataList.length > 0) {
-       
-      } else {
-
-        if (this.state.isNoData) {
-          this.setState({
-            isLoading: true,
-            isNoData: false,
-          })
-        }
-
-        this._getDailiCenterTradList(true);
-      }
-
-    } else if (obj.i == 1) {
-      if (this.state.tikuandataList.length > 0) {
-        
-      } else {
-        if (this.state.isNoData) {
-          this.setState({
-            isLoading: true,
-            isNoData: false,
-          })
-        }
-        this._getNextGetPriceList(true);
-      }
-
-    } else if (obj.i == 2) {
-      if (this.state.chongzhidataList.length > 0) {
-        // if (this.state.isNoData) {
-        //   this.setState({
-        //     isNoData: false,
-        //   })
-        // }
-      } else {
-        if (this.state.isNoData) {
-          this.setState({
-            isLoading: true,
-            isNoData: false,
-          })
-        }
-        this._getNextPayPriceList(true);
-      }
-
-    }
   }
 
 
@@ -705,7 +426,7 @@ export default class TheDetails extends React.Component {
           </TouchableOpacity>
         </View>
 
-        <ScrollableTabView
+        <View
           automaticallyAdjustContentInsets={false}
           alwaysBounceHorizontal={false}
           style={styles.container}
@@ -724,34 +445,9 @@ export default class TheDetails extends React.Component {
             onHeaderRefresh={this.onHeaderRefresh}
             onFooterRefresh={this.onFooterRefresh}
             ListEmptyComponent={this.listEmptyComponent(this)} // 没有数据时显示的界面
-            tabLabel='全部类型'
+           
           />
-          <RefreshListView
-            automaticallyAdjustContentInsets={false}
-            alwaysBounceHorizontal={false}
-            data={this.state.tikuandataList}
-            renderItem={this.renderCell}
-            keyExtractor={this.keyExtractor}
-            refreshState={this.state.refreshState}
-            onHeaderRefresh={this.onHeaderRefresh}
-            onFooterRefresh={this.onFooterRefresh}
-            ListEmptyComponent={this.listEmptyComponent(this)} // 没有数据时显示的界面
-            tabLabel='提款记录'
-          />
-
-          <RefreshListView
-            automaticallyAdjustContentInsets={false}
-            alwaysBounceHorizontal={false}
-            data={this.state.chongzhidataList}
-            renderItem={this.renderCell}
-            keyExtractor={this.keyExtractor}
-            refreshState={this.state.refreshState}
-            onHeaderRefresh={this.onHeaderRefresh}
-            onFooterRefresh={this.onFooterRefresh}
-            ListEmptyComponent={this.listEmptyComponent(this)} // 没有数据时显示的界面
-            tabLabel='充值记录'
-          />
-        </ScrollableTabView>
+        </View>
 
         {this.state.haderISShow ?
                     <View style={{ position: 'absolute', top: 0, left: 0 }}>
@@ -785,15 +481,19 @@ export default class TheDetails extends React.Component {
      * @param data 点击的位置
      */
     getIndexData(data) {
-      // console.log("回调", data);
-      //记录当前点击状态
+
       this.setState({ index: data });
       this.props.navigation.setParams({
           navcLTitle: this.state.alltypeArray[data].value,
       });
 
-      //this.getTokenAndUid(this.state.alltypeArray[data].key);  调用接口
-
+      if (this.state.alltypeArray[data].key === this.isTradtype ){
+        return;
+      }
+      this.isTradtype = this.state.alltypeArray[data].key;
+      console.log('opopopopop',this.state.alltypeArray[data].key);
+      this._getWingViewBaseNetwork();
+      
   }
 
 
@@ -871,17 +571,10 @@ export default class TheDetails extends React.Component {
 
   _isShowReceiveRedEnvel() {
 
-    let modalHeight = 0;
-    if (iOS) {
-      modalHeight = 225;
-    } else if (Android) {
-      modalHeight = 248;
-    }
-
     return (
       <TouchableOpacity activeOpacity={1} style={{ flex: 1 }} onPress={() => this.onRequestClose()}>
         <View style={{ backgroundColor: 'rgba(0,0,0,0.2)', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ width: width, height: 225, marginTop: height - modalHeight, backgroundColor: '#f3f3f3' }}>
+          <View style={{ width: width, height: 225, marginTop: height - 225, backgroundColor: '#f3f3f3' }}>
             <FlatList
               automaticallyAdjustContentInsets={false}
               alwaysBounceHorizontal={false}
@@ -893,19 +586,6 @@ export default class TheDetails extends React.Component {
       </TouchableOpacity>
     )
   }
-
-
-  //无数据加载显示
-  _noDataComponent() {
-    const { navigate } = this.props.navigation;
-    return (
-      <View style={{ width: width, height: height - 180, justifyContent: 'center', alignItems: 'center' }}>
-        <Image resizeMode={'stretch'} style={{ width: 60 * KAdaptionWith, height: 50 * KAdaptionWith }} source={require('./img/ic_wushuju.png')}></Image>
-        <CusBaseText style={{ textAlign: 'center', marginTop: 5 }}>暂无数据</CusBaseText>
-      </View>
-    );
-  }
-
 
   // 加载视图 和 无数据页面
   listEmptyComponent() {

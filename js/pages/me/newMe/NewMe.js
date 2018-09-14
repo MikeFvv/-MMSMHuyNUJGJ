@@ -44,6 +44,9 @@ export default class NewMe extends Component {
             qiandao:0,
             anquanzhongxin:0,
         })
+
+        this.freshMoneyClick = false;  //防止快速点击刷新金额按钮
+
     }
 
     static navigationOptions = ({ navigation, screenProps }) => ({
@@ -79,14 +82,14 @@ export default class NewMe extends Component {
 
         //获取等级头衔信息
         this._fetchUserEventRise();
-        this.subscription6666 = PushNotification.addListener('ShuaXinJinEr', () => {
+        // this.subscription6666 = PushNotification.addListener('ShuaXinJinEr', () => {
 
-            this._fetchPersonalMessageData();
-        });
-        this.subscription222 = PushNotification.addListener('BiaoJiMessageSuccess', () => {
+        //     this._fetchPersonalMessageData();
+        // });
+        // this.subscription222 = PushNotification.addListener('BiaoJiMessageSuccess', () => {
 
-            this._fetchPersonalMessageData();
-        });
+        //     this._fetchPersonalMessageData();
+        // });
 
         //接受用户登录成功的通知
         this.subscription = PushNotification.addListener('LoginSuccess', (loginObject)=>{
@@ -320,64 +323,63 @@ export default class NewMe extends Component {
         if (typeof(this.subscription3) == 'object'){
             this.subscription3 && this.subscription3.remove();
         }
-        if (typeof(this.subscription222) == 'object'){
-            this.subscription222 && this.subscription222.remove();
-        }
-        if (typeof(this.subscription6666) == 'object'){
-            this.subscription6666 && this.subscription6666.remove();
-        }
+        // if (typeof(this.subscription222) == 'object'){
+        //     this.subscription222 && this.subscription222.remove();
+        // }
+        // if (typeof(this.subscription6666) == 'object'){
+        //     this.subscription6666 && this.subscription6666.remove();
+        // }
     }
 
     //刷新金额
     _onRershRMB(navigate){
 
-        this.refs.LoadingView && this.refs.LoadingView.showLoading('正在刷新余额..');
-        //请求参数
+        if (this.freshMoneyClick == false) {
+            this.freshMoneyClick = true; //防止快速点击
 
-        let params = new FormData();
-        params.append("ac", "flushPrice");
-        params.append("uid", global.UserLoginObject.Uid);
-        params.append("token", global.UserLoginObject.Token);
-        params.append('sessionkey',global.UserLoginObject.session_key);
-        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-        promise
-            .then(response => {
+            this.refs.LoadingView && this.refs.LoadingView.showLoading('正在刷新余额..');
+            //请求参数
 
-                this.refs.LoadingView && this.refs.LoadingView.cancer();
-                if (response.msg == 0) {
+            let params = new FormData();
+            params.append("ac", "flushPrice");
+            params.append("uid", global.UserLoginObject.Uid);
+            params.append("token", global.UserLoginObject.Token);
+            params.append('sessionkey', global.UserLoginObject.session_key);
+            var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+            promise
+                .then(response => {
 
-                    this.refs.Toast.show('刷新金额成功!', 1000);
+                    this.freshMoneyClick = false;
 
-                    //数字类型的取两位小数
-                    if (typeof(response.data.price) == 'number'){
+                    this.refs.LoadingView && this.refs.LoadingView.cancer();
+                    if (response.msg == 0) {
 
-                        response.data.price = response.data.price.toFixed(2);
+                        this.refs.Toast.show('刷新金额成功!', 1000);
+
+                        //数字类型的取两位小数
+                        if (typeof(response.data.price) == 'number') {
+
+                            response.data.price = response.data.price.toFixed(2);
+                        }
+
+                        global.UserLoginObject.TotalMoney = response.data.price;
+                        // global.UserLoginObject.Sign_event = response.data._user.sign_event;//判断每日签到通道是否开启 0 未开，1开启
+                        // global.UserLoginObject.Gift_event = response.data._user.gift_event;//判断红包通道是否开启0 未开，1开启
+                        // global.UserLoginObject.RiseEvent = response.data._user.rise_event,//是不是开放等级页面
+                        // global.UserInfo.updateUserInfo(global.UserLoginObject, (result) => {});
+
+                        this.setState({
+                            totalMoney: response.data.price,
+                            tkPrice: response.data.last_get_price,
+                        })
+
+                        PushNotification.emit('RefreshHomeNavRightText', response.data.price); //我的界面刷新金额时首页也更新
                     }
-
-                    global.UserLoginObject.TotalMoney = response.data.price;
-                    // global.UserLoginObject.Sign_event = response.data._user.sign_event;//判断每日签到通道是否开启 0 未开，1开启
-                    // global.UserLoginObject.Gift_event = response.data._user.gift_event;//判断红包通道是否开启0 未开，1开启
-                    // global.UserLoginObject.RiseEvent = response.data._user.rise_event,//是不是开放等级页面
-                    // global.UserInfo.updateUserInfo(global.UserLoginObject, (result) => {});
-
-                    this.setState({
-                        totalMoney:response.data.price,
-                        tkPrice:response.data.last_get_price,
-                    })
-
-                    PushNotification.emit('RefreshHomeNavRightText', response.data.price); //我的界面刷新金额时首页也更新
-                } else {
-                    Alert.alert(
-                        '提示',
-                        response.param,
-                        [
-                            {text: '确定', onPress: () => {navigate('Login',{title:'登录',})}},
-                            {text: '取消', onPress: () => {}},
-                        ]
-                    )
-                }
-            })
-            .catch(err => { });
+                })
+                .catch(err => {
+                    this.freshMoneyClick = true;
+                });
+        }
     }
 
     //渲染每个Item

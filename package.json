@@ -66,6 +66,7 @@
       "Debug_xunying01",
       "Debug_xunying02",
       "Debug_QiDianCP01",
+      "Debug_M679C1",
       "Debug_Test2",
       "Debug_TestQA",
       "Debug_TestRN"
@@ -91,6 +92,7 @@
       "Release_xunying01",
       "Release_xunying02",
       "Release_QiDianCP01",
+      "Release_M679C1",
       "Release_Test2",
       "Release_TestQA",
       "Release_TestRN"

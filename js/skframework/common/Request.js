@@ -98,7 +98,7 @@ const  RNRequest = {
         // console.log(url);
         return RNFetchBlob
             .config(Request.GetConfig)
-            .fetch('GET',url?url:GlobalConfig.phoneApiURL(),Request.Header)
+            .fetch('GET',url?url:GlobalConfig.lineBaseIPURL(),Request.Header)
             .then((response) => {
                 if (response.respInfo.status === 200){
                     return response.json();
@@ -125,7 +125,7 @@ const  RNRequest = {
 
         return RNFetchBlob
             .config(Request.PostConfig)
-            .fetch('POST',url?url:GlobalConfig.phoneApiURL(),Request.Header,body)
+            .fetch('POST',url?url:GlobalConfig.lineBaseIPURL(),Request.Header,body)
             .then((response) => {   
                 if (response.respInfo.status === 200){
                     return response.json();
@@ -152,7 +152,7 @@ const  RNRequest = {
     upload:(url,body,uploadProgress,successCallBack,failCallBack) => {
         return RNFetchBlob
             .config(Request.UpLoadConfig)
-            .fetch('POST',url?url:GlobalConfig.phoneApiURL(),{
+            .fetch('POST',url?url:GlobalConfig.lineBaseIPURL(),{
             'Content-Type' : 'multipart/form-data',
         },body)
             .uploadProgress((written, total) => {

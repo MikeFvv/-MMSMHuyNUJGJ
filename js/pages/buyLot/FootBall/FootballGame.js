@@ -113,6 +113,14 @@ export default class FootballGame extends Component {
         if (typeof(this.subscription) == 'object'){
             this.subscription && this.subscription.remove();
         }
+
+        //清除定时器
+        this.timer1 && clearInterval(this.timer1);
+
+        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
+        this.setState = (state,callback) => {
+            return;
+        }
     }
 
 
@@ -175,19 +183,6 @@ export default class FootballGame extends Component {
             });
         }, 1000)
     }
-
-    //移除通知
-    componentWillUnmount(){
-
-        //清除定时器
-        this.timer1 && clearInterval(this.timer1);
-
-        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
-        this.setState = (state,callback) => {
-            return;
-        }
-    }
-
 
     //中间标题点击
     _navTitleBtnPress = () => {

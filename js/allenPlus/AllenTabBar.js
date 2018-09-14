@@ -100,9 +100,9 @@ export default class Tab extends Component {
         const {routes,} = navigation.state;
         const focused = 1 === navigation.state.index;
         HomeIndex = navigation.state.index;
-        if(navigation.state.index==0||navigation.state.index==4){
-            PushNotification.emit('ShuaXinJinEr');
-        }
+        // if(navigation.state.index==0||navigation.state.index==4){
+        //     PushNotification.emit('ShuaXinJinEr');
+        // }
         const color = focused ? this.props.activeTintColor : this.props.inactiveTintColor;
         let TabScene = {
             focused:focused,

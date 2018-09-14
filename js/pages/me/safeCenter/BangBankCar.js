@@ -142,13 +142,9 @@ export default class BangBankCar extends Component {
     );
   }
   _addBankCar(navigate){
-  
- 
         navigate( 
-       'BindBankCard',{callback: () => {this._fetchBangBankData()},BindBankCardPreviousAction:'BangBankCar'});
+       'BindBankCard',{callback: () => {this._fetchBangBankData()}});
         return;
-   
-   
   }
   _listBankHeaderComponent(){
   const { navigate } = this.props.navigation;

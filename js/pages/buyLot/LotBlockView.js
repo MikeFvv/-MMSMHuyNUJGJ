@@ -113,6 +113,7 @@ class LotBlockView extends Component {
         }
         else
         {
+            global.isInBuyLotVC = true;
             this.props.navigator.navigate('BuyLotDetail', {
                 gameId: info.item.game_id,
                 indexList: info.index,

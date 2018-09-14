@@ -356,13 +356,13 @@ _fetchPreferentialData(isReload) {
                   <CusBaseText style={{fontSize: this.baseFontSize,color:othercolor}}>{imageBall != ''? kudu   : '--'}</CusBaseText> 
                   </View> 
                   <View style={{flex:0.11,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                  <CusBaseText style={{fontSize:this.baseFontSize,color:othercolor}}>{imageBall != ''? (bigBaiwei+baiweiSingle) : '--'}</CusBaseText> 
+                  <CusBaseText style={{fontSize:this.baseFontSize,color:othercolor}}>{imageBall != ''? (bigBits+bitsSingle) : '--'}</CusBaseText> 
                   </View> 
                   <View style={{flex:0.11,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
                   <CusBaseText style={{fontSize:this.baseFontSize,color:othercolor}}>{imageBall != ''? (bigTen+tenSingle) : '--'}</CusBaseText> 
                   </View> 
                   <View style={{flex:0.11,alignItems: 'center', justifyContent:'center',borderBottomColor:'#ccc',borderLeftColor:'#ccc',borderLeftWidth:1,borderBottomWidth:0.5}}>
-                  <CusBaseText style={{fontSize:this.baseFontSize,color:othercolor}}>{imageBall != ''? (bigBits+bitsSingle) : '--'}</CusBaseText> 
+                  <CusBaseText style={{fontSize:this.baseFontSize,color:othercolor}}>{imageBall != ''? (bigBaiwei+baiweiSingle) : '--'}</CusBaseText> 
                   </View> 
                   </View>
                 )

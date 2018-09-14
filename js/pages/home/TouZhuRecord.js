@@ -263,7 +263,7 @@ export default class TouZhuRecord extends React.Component {
     params.append("sport_id", this.state.sport_Id);
     params.append("status", this.zhuQiuState);
     params.append("lasttime", this.lasttime);
-    params.append("start_time", this.start_time);
+    params.append("end_time", this.start_time);
     params.append("sessionkey", global.UserLoginObject.session_key);
 
     var promise = BaseNetwork.sendNetworkRequest(params);
@@ -284,7 +284,7 @@ export default class TouZhuRecord extends React.Component {
               refreshState:RefreshState.NoMoreData,
             }) 
             return;
-           }else if (this.start_time = response.data.next_time){
+           }else if (this.start_time == response.data.next_time){
             this.setState({
               refreshState:RefreshState.NoMoreData,
             }) 
@@ -305,7 +305,7 @@ export default class TouZhuRecord extends React.Component {
           dataBlog.push({ key: i, value: dict });
           i++;
         });
-        let dataList = isReload ? dataBlog : [...this.state.dataList, ...dataBlog]
+        let dataList = isReload ? dataBlog : [...this.state.zhuqiuDataList, ...dataBlog];
         for (let i = 0; i < dataList.length; i++) {
           dataList[i].id = i
         }

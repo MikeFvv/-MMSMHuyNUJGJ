@@ -79,7 +79,7 @@ export default class Register extends Component {
 
         global.infoLogin = this.props.navigation.state.key;
 
-        global.rcode.length > 0 ? this.state.inputInviteCode = global.rcode : this.state.inputInviteCode = "";  //如果有默认邀请码则赋值
+        global.invCode.length > 0 ? this.state.inputInviteCode = global.invCode : this.state.inputInviteCode = "";  //如果有默认邀请码则赋值
 
         NetInfo.isConnected.fetch().then(isConnected => {
 
@@ -340,7 +340,7 @@ export default class Register extends Component {
                         <TextInput allowFontScaling={false} returnKeyType="done"
                                    keyboardType={global.iOS ? 'number-pad' : 'numeric'}
                                    onChangeText={(text) => this.setState({inputInviteCode: text})} maxLength={6}
-                                   placeholder='请输入邀请码' defaultValue={global.rcode.length > 0 ? global.rcode : ""}
+                                   placeholder='请输入邀请码' defaultValue={global.invCode.length > 0 ? global.invCode : ""}
                                    underlineColorAndroid='transparent' style={{
                             width: 200,
                             fontSize: Adaption.Font(16, 14),

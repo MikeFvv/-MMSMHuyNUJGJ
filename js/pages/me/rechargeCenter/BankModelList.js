@@ -13,8 +13,6 @@ import {
 
 import RechargeAmountView from './RechargeAmountView';
 import Regex from '../../../skframework/component/Regex';
-const rowHeight = 120;
-
 
 // 银行转账界面
 export default class BankModelList extends Component {
@@ -117,13 +115,12 @@ export default class BankModelList extends Component {
 
         return (
             <View style={styles.container}>
-
                 <View style={styles.accountInfo}>
                     <View style={styles.account}>
                         <CusBaseText style={styles.namePrefix}>账号：</CusBaseText>
                         <CusBaseText style={styles.name}>{this.loginObject ? this.loginObject.UserName : null}</CusBaseText>
                     </View>
-                    <View style={styles.balance}>
+                    <View style={styles.account}>
                         <CusBaseText style={styles.namePrefix}>余额：</CusBaseText>
                         <CusBaseText style={styles.name}>{this.state.totalMoney}</CusBaseText>
                         <TouchableOpacity
@@ -141,7 +138,7 @@ export default class BankModelList extends Component {
                     </View>
                 </View>
 
-                <View style={styles.rechaAmount}>
+                <View style={{backgroundColor:'white'}}>
                     <View style={styles.inputAmount}>
                         <CusBaseText style={styles.namePrefix}>充值金额：</CusBaseText>
                         <TextInput
@@ -156,10 +153,10 @@ export default class BankModelList extends Component {
                                 this.recharNumber = text;
                             }}
                         />
-                        <CusBaseText style={[styles.namePrefix, { marginRight: 15 }]}>元</CusBaseText>
+                        <CusBaseText style={styles.namePrefix}>元</CusBaseText>
                     </View>
                     <RechargeAmountView
-                        style={styles.rechaAmountSelect}
+                        style={{paddingTop:10,paddingBottom:10}}
                         selecteIndex={this.selecteIndex}
                         onPress={(value, rowID) => {
                             this.selecteIndex = rowID;
@@ -172,7 +169,6 @@ export default class BankModelList extends Component {
                             });
                         }}
                         dataSource={[10,100,300,500,1000,3000,5000,10000]}
-
                     />
                 </View>
 
@@ -189,7 +185,6 @@ export default class BankModelList extends Component {
                     ItemSeparatorComponent={this._renderSeparator}
                     keyExtractor={this._keyExtractor}
                     showsVerticalScrollIndicator={false}
-                    // extraData={this.state}
                     ListFooterComponent={this._renderListFooter}
                 />
                 <LoadingView ref="LoadingView" />
@@ -199,14 +194,12 @@ export default class BankModelList extends Component {
     }
 
     _renderItem = (info) => {
-
         return (
             <BankModelCell
-                style={styles.itemStyle}
+                style={{backgroundColor:'white'}}
                 item={info.item}
                 onPress={this._onPress}
             />
-
         );
     }
 
@@ -226,8 +219,8 @@ export default class BankModelList extends Component {
 
     _renderListFooter = () => {
         return (
-            <View style={styles.listFooter}>
-                <CusBaseText style={styles.tipText}>每次存款前，请一定到网站获取最新入款消息</CusBaseText>
+            <View style={{alignItems:'center',marginTop:10,marginBottom:10}}>
+                <CusBaseText style={{fontSize:15}}>每次存款前，请一定到网站获取最新入款消息</CusBaseText>
             </View>
         );
     }
@@ -305,61 +298,38 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
+        backgroundColor:'#f2f3f4',
     },
-
     //账户信息
     accountInfo: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: SCREEN_WIDTH,
-        height: 45,
-        backgroundColor: 'rgb(240,240,245)',
+        marginTop:10,
+        marginBottom:10,
+        paddingLeft:15,
+        paddingRight:15,
     },
-
     account: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 15,
     },
-
     namePrefix: {
         fontSize: 16,
         color: '#4d4d4d',
     },
-
     name: {
-        fontSize: 15,
+        fontSize: 16,
         color: 'red',
     },
-
-    balance: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 15,
-    },
-
-    //充值金额
-    rechaAmount: {
-        backgroundColor: 'white',
-    },
-
-    rechaAmountSelect: {
-        paddingTop: 10,
-        paddingBottom: 10,
-    },
-
     inputAmount: {
         flexDirection: 'row',
+        alignItems: 'center',
         paddingTop: 10,
         paddingLeft: 10,
-        alignItems: 'center',
-        width: SCREEN_WIDTH,
-        height: 40,
+        paddingRight:10,
     },
-
     inputText: {
         flex: 1,
         borderBottomWidth: 1,
@@ -367,76 +337,47 @@ const styles = StyleSheet.create({
         marginRight: 10,
         padding: 0,
         paddingLeft: 5,
-        height: 28,
-        textAlign: 'center',
+        textAlign:'center',
     },
-
-    itemStyle: {
-        backgroundColor: 'white',
-    },
-
     itemSeparator: {
-        backgroundColor: '#cccccc',
-        width: SCREEN_WIDTH,
+        backgroundColor: '#f0f1f2',
         height: 1,
     },
-
-    listFooter: {
-        width: SCREEN_WIDTH,
-        alignItems: 'center',
-    },
-
-    tipText: {
-        marginTop: 10,
-        fontSize: 15,
-    },
-
     bankModelCell: {
         flexDirection: 'row',
-        width: SCREEN_WIDTH,
-        height: rowHeight,
-        paddingLeft: 15,
         backgroundColor: 'white',
+        paddingLeft: 15,
+        paddingRight: 15,
+        height:120,
     },
-
     cellLeft: {
         flex: 1,
         justifyContent: 'center',
     },
-
     cellMid: {
         flex: 2,
         justifyContent: 'center',
-        backgroundColor: 'white',
     },
-
     cellRight: {
         alignItems: 'flex-end',
         justifyContent: 'center',
-        backgroundColor: 'white',
     },
-
     textContainer: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'white',
     },
-
     prex: {
         fontSize: 15,
         color: '#7d7d7d',
         backgroundColor: 'white',
     },
-
     desc: {
         fontSize: 15,
         color: '#434343',
         backgroundColor: 'white',
     },
-
     selectImg: {
         width: 15,
         height: 15,
-        marginRight: 15,
     },
 });

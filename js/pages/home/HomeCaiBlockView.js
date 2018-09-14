@@ -158,6 +158,7 @@ class HomeCaiBlockView extends Component {
         if (item.item.value.js_tag.includes('lhc')) {
           global.yearId = item.item.value.yearid;
         }
+        global.isInBuyLotVC = true;  //是否在投注界面
         this.props.navigator.navigate('BuyLotDetail',
           {
             gameId: item.item.value.game_id,

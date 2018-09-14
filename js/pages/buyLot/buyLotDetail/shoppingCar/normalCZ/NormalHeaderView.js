@@ -35,12 +35,12 @@ class NormalHeaderView extends Component {
         let jieZhiTime = 0, fengPan = 0;
         if (props.nextTimeList.length > 0) {  // 倒计时
             jieZhiTime = props.nextTimeList[this.currentCountDownIndex].opentime - (props.nextTimeList[this.currentCountDownIndex].server_time - this.finishTime) - Math.round(new Date() / 1000);
-            fengPan = props.nextTimeList[this.currentCountDownIndex].stoptime - (props.nextTimeList[this.currentCountDownIndex].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            //fengPan = props.nextTimeList[this.currentCountDownIndex].stoptime - (props.nextTimeList[this.currentCountDownIndex].server_time - this.finishTime) - Math.round(new Date() / 1000);
         }
 
         this.state = ({
             countTime: jieZhiTime,
-            nextFengPanTime: fengPan,  //封盘时间
+            //nextFengPanTime: fengPan,  //封盘时间
             qiShu: props.theQiShu,
             tag: props.tag ? props.tag : '',
             nextCountDownList: props.nextTimeList,
@@ -110,18 +110,20 @@ class NormalHeaderView extends Component {
 
                         // 倒计时时间直接用opentime 减 手机系统时间。
                         let currOpen = nextModel.opentime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
-                        let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
+                       // let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
                         this.currentCountDownIndex = 0;//当前下标
 
                         this.setState({
                             nextCountDownList: nextList,
                             qiShu: nextModel.qishu,
                             countTime: currOpen,  //下一期截止时间
-                            nextFengPanTime: currStop,
+                            //nextFengPanTime: currStop,
                         });
 
-                        this.props.currentQiShu ? this.props.currentQiShu(nextModel.qishu) : null;  //回调期数
-                        this.props.FengPanBlock ?  this.props.FengPanBlock(false) : null; //回调封盘状态
+                        global.CurrentQiShu = nextModel.qishu;
+
+                        // this.props.currentQiShu ? this.props.currentQiShu(nextModel.qishu) : null;  //回调期数
+                        //this.props.FengPanBlock ?  this.props.FengPanBlock(false) : null; //回调封盘状态
 
                           this._setTimeInval();
                     }
@@ -158,34 +160,35 @@ class NormalHeaderView extends Component {
                         qiShu: nextQi,
                     })
 
-                    this.props.currentQiShu ? this.props.currentQiShu(nextQi) : null;  //回调期数
-                    this.props.FengPanBlock ?  this.props.FengPanBlock(false) : null; //回调封盘状态
+                    global.CurrentQiShu = nextQi;  //拿到下一期期数
+                    // this.props.currentQiShu ? this.props.currentQiShu(nextQi) : null;  //回调期数
+                    //this.props.FengPanBlock ?  this.props.FengPanBlock(false) : null; //回调封盘状态
                 }
 
                 // PushNotification.emit('CountTimeDeadLine1');
             }
 
              // 已封盘 倒计时数组已经用到最后一期了。请先去请求了。不等到最后一个数据用完才请求
-             if (this.state.nextFengPanTime == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 1) {
+             if (this.state.countTime == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 1) {
                 this._fetchCountDownData(this.state.tag);
             }
 
 
-            if (this.state.nextFengPanTime == 0) {
-                this.props.FengPanBlock ? this.props.FengPanBlock(true) : null;  //回调封盘状态
-            }
+            // if (this.state.nextFengPanTime == 0) {
+            //     this.props.FengPanBlock ? this.props.FengPanBlock(true) : null;  //回调封盘状态
+            // }
 
 
             let currOpen = 0, currStop = 0;
             if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
                 currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
-                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
+                //currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
             }
 
             this.setState({
                 countTime: currOpen > 0 ? currOpen : 0, 
-                nextFengPanTime: currStop,
+                //nextFengPanTime: currStop,
             });
 
         }, 1000);
@@ -240,7 +243,7 @@ class NormalHeaderView extends Component {
                         第
                         <CusBaseText style={{ color: 'red' }}>{this.state.qiShu ? this.state.qiShu : ''}</CusBaseText>
                         期投注截止时间：
-                        <CusBaseText style={{ color: 'red' }}>{this.state.nextFengPanTime < 0 ? '已封盘' : this._changeTime(this.state.nextFengPanTime)}</CusBaseText>
+                        <CusBaseText style={{ color: 'red' }}>{this._changeTime(this.state.countTime)}</CusBaseText>
                     </CusBaseText>
                 </View>
 

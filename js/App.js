@@ -10,7 +10,6 @@ import Home from './pages/home/Home';
 import BuyLot from './pages/buyLot/BuyLot';
 import TheLot from './pages/theLot/TheLot';
 import Trend from './pages/trend/MoneyTrend';
-import Me from './pages/me/Me';
 import Login from './pages/login/Login'; //登录界面
 import Register from './pages/login/register/Register';  //注册界面
 import More from './pages/me/more/More'; //更多设置
@@ -22,6 +21,7 @@ import TheLotDatail from './pages/theLot/TheLotDatail';
 import Preferential from './pages/home/Preferential';//优惠活动
 import BuyTrend from './pages/trend/MoneyTrend'; // 走势2
 import RoadPaper from './pages/buyLot/roadPaper/RoadPaper'; // 路纸图
+
 
 import FinalChangeEncry from './pages/me/safeCenter/FinalChangeEncry'; //安全中心验证密保问题后修改
 
@@ -56,7 +56,7 @@ import ThridWebPay from './pages/me/rechargeCenter/ThridWebPay'; //第三方web�
 import BankTransferInfo from './pages/me/rechargeCenter/BankTransferInfo'; //银行转账详情
 import RechargeSubmit from './pages/me/rechargeCenter/RechargeSubmit'; //充值提交
 import PayModelList from './pages/me/rechargeCenter/PayModelList'; //wx,qq,ali充值方式
-import OnlineModelView from './pages/me/rechargeCenter/OnlineModelView'; //在线支付
+import OnlineModelList from './pages/me/rechargeCenter/OnlineModelList'; //在线支付
 import BankModelList from './pages/me/rechargeCenter/BankModelList'; //网银转账
 
 
@@ -95,6 +95,9 @@ import FindpsEmail from './pages/login/forgetpwd/FindpsEmail'; //通过邮箱找
 import FindpsPhoneNum from './pages/login/forgetpwd/FindpsPhoneNum'; //通过手机号码找回密码
 import FindpsEncrypt from './pages/login/forgetpwd/FindpsEncrypt'; //通过密保问题找回密码
 import MyInfo from './pages/me/myinformation/MyInfo'; //个人信息页面
+import GrowthDetail from './pages/me/myinformation/GrowthDetail'; //成长明细
+import LevelReward from './pages/me/myinformation/LevelReward'; //等级奖励
+import MissionPackage from './pages/me/myinformation/MissionPackage'; //任务礼包
 
 import NewestWinBang from './pages/home/NewestWinBang'; //中奖榜
 import PersonMessageDetial from './pages/home/PersonMessageDetial'; //个人消息详情
@@ -140,6 +143,9 @@ import AllenDragShortCutMainView from './allenPlus/AllenDragShortCutMainView';
 import FBShopCarView from './pages/buyLot/FootBall/fbShopCar/FBShopCarList'; //体彩购物车列表
 import FootballResult from './pages/buyLot/FootBall/Result/FootballResult';
 import FootballResultDetail from "./pages/buyLot/FootBall/Result/FootballResultDetail";
+
+//新全部彩种界面
+import NewBuyLot from './pages/buyLot/NewBuyLot';
 
 // 通过TabNavigator做路由映射
 const MainTab = TabNavigator({
@@ -329,7 +335,7 @@ const MainNav = StackNavigator({
     RechargeSubmit: { screen: RechargeSubmit },
     DrawalSubmit: { screen: DrawalSubmit },
     PayModelList: { screen: PayModelList },
-    OnlineModelView: { screen: OnlineModelView },
+    OnlineModelList: { screen: OnlineModelList },
     BankModelList: { screen: BankModelList },
     FeedbackList: { screen: FeedbackList },//意见反馈
     
@@ -358,6 +364,9 @@ const MainNav = StackNavigator({
 
     //个人信息
     MyInfo: { screen: MyInfo },
+    GrowthDetail: { screen: GrowthDetail },
+    LevelReward: { screen: LevelReward },
+    MissionPackage: { screen: MissionPackage },
 
     // 下级开户
     SubAccount: { screen: SubAccount },
@@ -399,6 +408,9 @@ const MainNav = StackNavigator({
     //拖拽正式版
     AllenDragShortCutMainView:{screen:AllenDragShortCutMainView},
 
+
+    //新全部彩种
+    NewBuyLot:{screen:NewBuyLot},
     
 });
 

@@ -1,7 +1,7 @@
 /**
  * Created by Mike on 2017/10/21.
  * 请求 配置文件
- * 使用方法   GlobalConfig.方法名()  例： GlobalConfig.phoneApiURL()
+ * 使用方法   GlobalConfig.方法名()  例： GlobalConfig.lineBaseIPURL()
  */
 'use strict';
 
@@ -12,18 +12,24 @@ class ConfigClass {
 		this.userData = {};
 		this.lineIPArray = [];
 	}
-
-	phoneApiURL = () => {
+	
+	lineBaseIPURL = () => {
 		//return this.baseURL + '/index.php/PhoneApi/request';
 		return this.baseURL + '/request';
 		// return "http://client.sg04.com/request";
 	}
 
 	lineIPArrayURL = (ipIndex) => {
+
 		if (!this.lineIPArray || this.lineIPArray.length == 0) {
 			GlobalConfig.lineIPArray.splice(0, 0, this.baseURL);  // 将主域名添加到数组开始位置
 		}
+
+		// let resultIndex = Math.floor(Math.random() * this.lineIPArray.length);
+
 		let resultIndex = ipIndex % this.lineIPArray.length;
+		this.baseURL = this.lineIPArray[resultIndex];
+
 		return this.lineIPArray[resultIndex] + '/request';
 	}
 

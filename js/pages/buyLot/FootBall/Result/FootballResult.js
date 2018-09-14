@@ -904,10 +904,10 @@ export default class FootballResult extends Component {
                               }}>
                 <View style={{flex: 0.9, marginLeft: 10, flexDirection: 'row'}}>
 
-                    <CusBaseText allowFontScaling={false} style={{
+                    <CusBaseText allowFontScaling={false} adjustsFontSizeToFit = {true} minimumFontScale = {0.8} style={{
                         fontSize: Adaption.Font(18, 16),
                         fontWeight: '500',
-                        flex: 0.58
+                        flex: 0.58,
                     }}>{section.section.league_name}</CusBaseText>
                     <CusBaseText style={{flex: 0.22, textAlign: 'center'}}>全场</CusBaseText>
                     <CusBaseText style={{flex: 0.2, textAlign: 'center', marginRight: 10}}>上半场</CusBaseText>

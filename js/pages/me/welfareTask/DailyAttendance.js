@@ -20,18 +20,17 @@ import HuoCalendar from './HuoCalendar';
 import BaseNetwork from "../../../skframework/component/BaseNetwork"; //网络请求
 
 export default class DailyAttendance extends Component {
-
-      //接收上一个页面传过来的title显示出来
+    //接收上一个页面传过来的title显示出来
   static navigationOptions = ({ navigation }) => ({
 
       header: (
-
           <CustomNavBar
               centerText={"每日签到"}
-              leftClick={() => {navigation.state.params.callback(),navigation.goBack()} }
+              leftClick={() => {
+                  (navigation.state.params&&navigation.state.params.callback)?navigation.state.params.callback(navigation.state.params.msg):null;
+                  navigation.goBack();
+              }}
           />
-
-    
         ),
       });
 
@@ -151,18 +150,14 @@ export default class DailyAttendance extends Component {
               year = this.state.current_month
             }
 
-         
-            
             let date = HuoCalendar.getFullYear() + '-' + year + '-' + day;
             let dataLoglist = [];
             if(response.data.log!=''){
               dataLoglist = response.data.log.split('+');
             }
-             
-        
+
             let dataBlog = [];
-            let dataBoxBlog = [];
-            
+
             if (dataLoglist.includes(date)) {
               this.setState({qiandaoButton:'已签到',isClickQianDao:false});
             }else {
@@ -277,6 +272,10 @@ export default class DailyAttendance extends Component {
       .then(response => {
       this.refs.LoadingView && this.refs.LoadingView.cancer()
       if (response.msg == 0) {
+
+          if (this.props.navigation.state.params && this.props.navigation.state.params.msg) {
+              this.props.navigation.state.params.msg = 0;
+          }
 
         this._fetchMeiRiQianDaoData()
         Alert.alert(

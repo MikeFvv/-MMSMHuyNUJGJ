@@ -25,7 +25,7 @@ export default class ChangePsd extends Component {
 
         header: (
             <CustomNavBar
-                centerText = {navigation.state.params.title}
+                centerText = {global.UserLoginObject.Real_name.length > 1 ? '修改真实姓名' : '设置真实姓名'}
                 leftClick={() =>  navigation.goBack() }
             />
         ),
@@ -170,8 +170,6 @@ export default class ChangePsd extends Component {
                     this.refs.LoadingView && this.refs.LoadingView.cancer();
                     //请求成功
                     if (response.msg == 0 ){
-
-
                         if(global.UserLoginObject.Real_name.length <= 0){
                             //说明是第一次设置,根据后台逻辑,设置立即成功
                             this._updateInfo(response.data);
@@ -182,6 +180,7 @@ export default class ChangePsd extends Component {
                                 [
                                     {text:'确定', onPress: () => {
                                         this.props.navigation.goBack();
+                                        (this.props.navigation.state.params && this.props.navigation.state.params.callback) ? this.props.navigation.state.params.callback(response.msg) : null;
                                     }},
                                 ]
                             );
@@ -217,7 +216,6 @@ export default class ChangePsd extends Component {
         global.UserLoginObject.Real_name = newName;//更新global状态,即时更新状态
         UserInfo.updateUserInfo(global.UserLoginObject, (error) => {});
         PushNotification.emit('MsgHasChange');
-
     }
 
     _showInfo(title){

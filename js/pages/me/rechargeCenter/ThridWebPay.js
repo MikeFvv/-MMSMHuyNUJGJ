@@ -14,7 +14,7 @@ class ThridWebPay extends Component {
         header: (
             <CustomNavBar
                 centerText = {navigation.state.params.title}
-                leftClick={() =>  navigation.goBack() }
+                leftClick={() => navigation.goBack()}
             />
         ),
 

@@ -127,7 +127,7 @@ export default class TouZhuDetial extends Component {
     return (
       <View style={{ width: width, height: 25, backgroundColor: 'white', flexDirection: 'row' }}>
         <CusBaseText style={{ marginLeft: 40, fontSize: Adaption.Font(14, 14), color: '#666666', textAlign: 'left' }}>
-          是否开奖:
+          是否中奖:
     </CusBaseText>
         <CusBaseText style={{ marginLeft: 10, fontSize: Adaption.Font(14, 14), color: '#222222', textAlign: 'left' }}>
           {kaijiang}
@@ -223,7 +223,7 @@ export default class TouZhuDetial extends Component {
       this._fetchCheDanData();
       }
     } else {
-
+      global.isInBuyLotVC = true;
       navigate('BuyLotDetail', { gameId: this.state.detialArray.value.gameid })
     }
   }

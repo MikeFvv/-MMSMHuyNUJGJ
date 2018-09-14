@@ -58,22 +58,6 @@ export default class ChangeEncrypt extends  Component {
                 leftClick={() =>  navigation.goBack() }
             />
         ),
-
-        // title:global.UserLoginObject.Question_1 == '0'?'设置密保问题':'验证密保问题',
-        // headerStyle: {backgroundColor: COLORS.appColor, marginTop: Android ?(parseFloat(global.versionSDK) > 19?StatusBar.currentHeight:0) : 0},
-        // headerTitleStyle: {color: 'white',alignSelf:'center'},
-        // //加入右边空视图,否则标题不居中  ,alignSelf:'center'
-        // headerRight: (
-        //     <View style={GlobalStyles.nav_blank_view} />
-        // ),
-        // headerLeft: (
-        //     <TouchableOpacity
-        //         activeOpacity={1}
-        //         style={GlobalStyles.nav_headerLeft_touch}
-        //         onPress={() => { navigation.goBack() }}>
-        //         <View style={GlobalStyles.nav_headerLeft_view} />
-        //     </TouchableOpacity>
-        // ),
     });
 
 
@@ -501,6 +485,7 @@ export default class ChangeEncrypt extends  Component {
                             {text:'确定', onPress: () => {
                                 PushNotification.emit('MsgHasChange');
                                 this.props.navigation.goBack();
+                                (this.props.navigation.state.params && this.props.navigation.state.params.callback) ? this.props.navigation.state.params.callback(response.msg) : null;
                             }},
                         ]
                     );

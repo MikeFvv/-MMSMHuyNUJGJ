@@ -10,6 +10,7 @@ import {
     ActivityIndicator,
     Modal,
     Alert,
+    AppState,
 } from 'react-native';
 
 import Toast, {DURATION} from 'react-native-easy-toast'  //土司视图
@@ -19,6 +20,8 @@ import NewBottomView from './buyTool/NewUnitBottomView';   //新版底部工具�
 import  NewAllenShopAlertView from './touzhu2.0/shoppingCart/AllenShopContentAlertViewVersion3';
 import NewOpenInfoHeader from './touzhu2.0/newBuyTool/NewOpenInfoView';  //新版开奖头部视图
 import NewGuanFangXinYongView from './touzhu2.0/newBuyTool/NewSwitchGFXYView';  //新版官方信用选择视图
+import NSelectGamePlay from './touzhu2.0/NNewBuyCenter/NSelectGamePlay';  // 官方双面sub玩法选择视图
+import NNewBuyCenter from './touzhu2.0/NNewBuyCenter/NNewBuyCenter'; 
 import TrendRoadModel from './buyTool/TrendRoadModel'; // 底部点击更多弹出的model
 import TouZhuParam from './TouZhuParam'; // 最终投注需要的参数
 import CalcReturnParam from './CalcReturnParam'; // 计算返回投注需要的参数
@@ -26,7 +29,6 @@ import CalcReturnParam from './CalcReturnParam'; // 计算返回投注需要的�
 let currentTime = 0;  //当前时间
 let currentFengPan = 0; //当前封盘时间
 var isRemindJieZhi = false; //是否提示用户到期
-var currentUserMoney = 0;
 
 class BuyLotDetail extends Component {
 
@@ -107,53 +109,28 @@ class BuyLotDetail extends Component {
             ballsNumPinJieArr: [], //解析拼接后的号码
             isShowLoad: false, // 加载框
             isLoadPeilv: false, // 赔率请求是否成功。
-            wanfaindx: 1,  // 默认显示0官方玩法
-            isLockTouZhu:false, //是否是封盘时间
+            wanfaindx: 0,  // 默认显示0官方玩法
+            // isLockTouZhu:false, //是否是封盘时间
             isClickOpen:false,  //开奖列表是否展开
             showRoadModal: false,  // 点击走势 弹出的modalview
-            lockTime:0,  //封盘时间
+            // lockTime:0,  //封盘时间
             isShowGuide1: global.TouZhuGuide == 0 ? false : true, // 是否显示引导页面1
             nextData: [],  // 倒计时的数组
         };
         this.isTrendCallBack = false;
         this.wating = false;  //不能多次点击
         this.finishTime = 0;  // this.state.nextData 倒计时的数组请求成功的时间戳
-    }
-
-    componentWillUnmount() {
-
-        // global.isLeaveBuyVC = true;
-
-        if (typeof(this.subscription) == 'object') {
-            this.subscription && this.subscription.remove();
-        }
-
-        if (typeof(this.subscription3) == 'object') {
-            this.subscription3 && this.subscription3.remove();
-        }
-
-        if (typeof(this.subscription2) == 'object') {
-            this.subscription2 && this.subscription2.remove();
-        }
-
-        if (typeof(this.subscription4) == 'object') {
-            this.subscription4 && this.subscription4.remove();
-        }
-
-
-        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
-        this.setState = (state,callback) => {
-            return;
-        }
-
+        
+        this.isShowNew7 = false;  // true显示7月的新版，false显示只有官方双面的视图
+        this.oneGameIdx = 0;  // 一级菜单,切换彩种时要重置。
+        this.twoGameIdx = 0;  // 二级菜单
+        this.threeGameIdx = 0;// 三级菜单
     }
 
     componentDidMount() {
 
         // global.isLeaveBuyVC = false; //是否离开界面
-        global.isInShopCarVC = false; //是否在购物车界面
-        global.isInBuyLotVC = true;  //是否在投注界面
-        currentUserMoney = global.UserLoginObject.TotalMoney;
+        // global.isInShopCarVC = false; //是否在购物车界面
 
         global.ShopHistoryArr = [];  // 防止划左边返回上一个界面 购物车没清空问题。
         
@@ -165,23 +142,27 @@ class BuyLotDetail extends Component {
             navLeftPress: this._clearTouZhuList,
         });
 
-        //请求当前彩种开奖数据
-        this._fetchCountDownData(this.state.current_tag);
-        this._fetchOpenInfoData(this.state.current_tag);
+        //防止BuyLotDetail销毁时重新DidMount请求数据
+       if (global.isInBuyLotVC == true) {
 
-        let isLogin = global.UserLoginObject.Uid && global.UserLoginObject.Token; // 是否登录
-        this._requestPeilvConfig(this.state.current_gameId, this.state.current_js_tag, isLogin ? true : false); // 请求赔率
-        
-        this._currentPlayData(this.state.current_js_tag);
+           //请求当前彩种开奖数据
+           this._fetchCountDownData(this.state.current_tag);
+           this._fetchOpenInfoData(this.state.current_tag);
+
+           let isLogin = global.UserLoginObject.Uid && global.UserLoginObject.Token; // 是否登录
+           this._requestPeilvConfig(this.state.current_gameId, this.state.current_js_tag, isLogin ? true : false); // 请求赔率
+
+           this._currentPlayData(this.state.current_js_tag);
+       }
 
         if (global.AllPlayGameList == null || global.AllPlayGameList.length <= 0) {
             this._fetchAllCZData(); //请求所有彩种。
         }
 
          //接受倒计时通知,弹出是否清空购物车界面
-        this.subscription = PushNotification.addListener('isLockTimeEnableTouZhu', () => {
+        this.subscription = PushNotification.addListener('BuyLotDetailCountDown', () => {
 
-            if ((isRemindJieZhi == false && global.isInShopCarVC == false && global.isInBuyLotVC == true)) {
+            if ((isRemindJieZhi == false)) {
 
                 isRemindJieZhi = true;
                 //每次封盘时都会提示用户当前期数封盘,如果下注弹窗或者选择彩种弹窗显示的话则让它消失
@@ -194,11 +175,28 @@ class BuyLotDetail extends Component {
                     })
                 }
 
-                let curretnQiShuStr = `${global.CurrentQiShu}`;
+                if (this.state.pickerZhuShu != 0){
 
-                setTimeout(()=>{
-                    this.refs.Toast && this.refs.Toast.show(`当前投注${curretnQiShuStr.substr(curretnQiShuStr.length - 4, 4)}期已封盘!`, 1600);
-                },500)
+                    setTimeout(() => {
+
+                        let qiShuStr = `${global.CurrentQiShu}`.substr(`${global.CurrentQiShu}`.length - 4, 4);  //截取字符串
+                        let alertContentStr = `请注意! 当前进入${qiShuStr}期\n是否清空所选号码?`;  //弹窗文本
+                        this.refs.RNAlert && this.refs.RNAlert.show(alertContentStr);
+                        this.refs.RNAlert && this.refs.RNAlert.dissmiss(3);
+
+                    }, 800);
+
+                }
+                else {
+
+                    let currentQiShu = `${global.CurrentQiShu}`.substr(`${global.CurrentQiShu}`.length - 4, 4);
+
+                    setTimeout(() => {
+
+                        this.refs.Toast && this.refs.Toast.show(`请注意！当前进入${currentQiShu}期`, 1600);
+
+                    }, 800);
+                }
 
                 //设置延迟20秒,已经弹过窗的要重新赋值
                 setTimeout(() => {
@@ -239,6 +237,53 @@ class BuyLotDetail extends Component {
 
             this.refs.Toast && this.refs.Toast.show(message, 2000);
         });
+
+        //监听程序的活跃性
+        AppState.addEventListener('change', (appState)=> {
+
+            //活跃状态重新刷数据
+            if (appState == 'active'){
+
+                this.setState({
+
+                    isShowGameView: false,
+                    isShowShopAlertView: false,
+                })
+
+                setTimeout(()=> {
+                    this.setState({});
+                }, 1000);  //延迟刷新,切换彩种时期数相差两期,值改变了但是界面没刷新,需要用额外的state刷新才会改变
+
+            }
+        });
+    }
+
+    componentWillUnmount() {
+
+
+        if (typeof(this.subscription) == 'object') {
+            this.subscription && this.subscription.remove();
+        }
+
+        if (typeof(this.subscription3) == 'object') {
+            this.subscription3 && this.subscription3.remove();
+        }
+
+        if (typeof(this.subscription2) == 'object') {
+            this.subscription2 && this.subscription2.remove();
+        }
+
+        if (typeof(this.subscription4) == 'object') {
+            this.subscription4 && this.subscription4.remove();
+        }
+
+        AppState.removeEventListener('change');  //移除后台监听的通知
+
+        //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
+        this.setState = (state,callback) => {
+            return;
+        }
+
     }
 
     //退出投注界面时的逻辑
@@ -318,6 +363,11 @@ class BuyLotDetail extends Component {
         promise
             .then((responseData) => {
 
+                // 防止请求没成功时，又去切换彩种，赋值错乱的
+                if (tag != this.state.current_tag) {
+                    return;
+                }
+                
                 if (responseData.msg == 0 && responseData.data.length > 0) {
 
                     let prevList = [];
@@ -350,39 +400,18 @@ class BuyLotDetail extends Component {
         promise
             .then((responseData) => {
 
-                if (responseData.msg == 0 && responseData.data) {
+                // 防止请求没成功时，又去切换彩种，赋值错乱的
+                if (tag != this.state.current_tag) {
+                    return;
+                }
 
-                    if (responseData.data[0] && responseData.data[0].next.length != 0){
+                if (responseData.msg == 0) {
+
+                    if (responseData.data && responseData.data[0] && responseData.data[0].next.length != 0){
 
                         let nextList = responseData.data[0].next;
 
                         global.CurrentQiShu = nextList[0].qishu;  //当前期数
-
-                         let isLock =  nextList[0].stoptime - nextList[0].server_time;  //如果这个字段小于等于0则表示已封盘
-
-                        if (isLock <= 0){
-
-                            this.setState({
-                                isLockTouZhu:true,
-                            })
-
-                            //设置锁定时间(封盘时间)
-                            setTimeout(() => {
-
-                                this.setState({
-                                    isLockTouZhu:false,
-                                })
-
-                            }, isLock * 1000)
-                        }
-                        else {
-                            //切换彩种造成封盘
-                            if (this.state.isLockTouZhu == true){
-                                this.setState({
-                                    isLockTouZhu:false,
-                                })
-                            }
-                        }
 
                         this.finishTime = Math.round(new Date() / 1000);
                         this.setState({
@@ -628,6 +657,7 @@ class BuyLotDetail extends Component {
 
         //重新设置导航栏。
         let jsttag = dataList[0].js_tag;  // 判断如果是快三 pcdd 六合彩 就不显示navcSTitle。
+        let navcTit = dataList.length <= 0 || creditList.length <= 0 ? '' : this.isShowNew7 == false ? '-官方玩法' : `-${allDataArr[wanfaidx][0].submenu[0].playlist[0].wanfa}`;
         if (this.isTrendCallBack) {
             // 走势彩种改变后，返回到这里时 刷新导航栏要延迟一下，不然刷新导航的方法他不走。
             this.isTrendCallBack = false;
@@ -636,7 +666,7 @@ class BuyLotDetail extends Component {
                     navRightPress: this._showHelpView,
                     navTitlePress: this._showSwitchBlocksView,
                     navcLTitle: this.state.current_gameName,
-                    navcSTitle: creditList.length <= 0 && (jsttag == 'lhc' || jsttag == 'k3' || jsttag == 'pcdd') ? '' : (wanfaidx == 0 ? (js_tag == 'lhc' ? '-自选下注' : '-官方玩法') : (js_tag == 'lhc' ? '-快捷下注' : '-双面玩法')),
+                    navcSTitle: creditList.length <= 0 && (jsttag == 'lhc' || jsttag == 'k3' || jsttag == 'pcdd') ? '' : (wanfaidx == 0 ? (js_tag == 'lhc' ? '-自选下注' : navcTit) : (js_tag == 'lhc' ? '-快捷下注' : '-双面玩法')),
                     navLeftPress: this._clearTouZhuList,
                 });
             }, 1)
@@ -646,7 +676,7 @@ class BuyLotDetail extends Component {
                 navRightPress: this._showHelpView,
                 navTitlePress: this._showSwitchBlocksView,
                 navcLTitle: this.state.current_gameName,
-                navcSTitle: creditList.length <= 0 && (jsttag == 'lhc' || jsttag == 'k3' || jsttag == 'pcdd') ? '' : (wanfaidx == 0 ? (js_tag == 'lhc' ? '-自选下注' : '-官方玩法') : (js_tag == 'lhc' ? '-快捷下注' : '-双面玩法')),
+                navcSTitle: creditList.length <= 0 && (jsttag == 'lhc' || jsttag == 'k3' || jsttag == 'pcdd') ? '' : (wanfaidx == 0 ? (js_tag == 'lhc' ? '-自选下注' : navcTit) : (js_tag == 'lhc' ? '-快捷下注' : '-双面玩法')),
                 navLeftPress: this._clearTouZhuList,
             });
         }
@@ -777,13 +807,19 @@ class BuyLotDetail extends Component {
             speed = gameDic['speed'];
         }
 
+        this.oneGameIdx = 0;
+        this.twoGameIdx = 0;
+        this.threeGameIdx = 0;
+        
         this.state.prevList = []; // 切换，清空开奖的数据
         this.state.nextData = []; // 切换，清空倒计时数据
         this.finishTime = 0;  // 置空 请求成功的时间
         global.CurrentQiShu = 0; // 切换重置
         this.state.current_gameName = gameName;
+        this.state.current_tag = tag;
+        this.state.current_js_tag = jstag;
 
-        this.state.wanfaindx = 1; // 重置.
+        this.state.wanfaindx = 0; // 重置.
         this.state.current_gameId = gameId; 
         // 以上两个值要在currentWafaAllPlayData赋值新数据之前改变。不然在buycenter里面很可能崩馈。
 
@@ -804,11 +840,15 @@ class BuyLotDetail extends Component {
             totalPrice: 0.00,
             ballSelectData: {},
             titles: [],
-            current_tag: tag,
-            current_js_tag: jstag,
+            // current_tag: tag,
+            // current_js_tag: jstag,
             current_speed: speed,
             shopCarZhushuNum: 0, //切换彩种后购物车的num置为0；
         });
+
+        setTimeout(()=> {
+            this.setState({});
+        }, 1000);  //延迟刷新,切换彩种时期数相差两期,值改变了但是界面没刷新,需要用额外的state刷新才会改变
     }
 
     // 进入购物车
@@ -855,6 +895,7 @@ class BuyLotDetail extends Component {
                         <View style={styles.container}>
                             <View style={styles.scrollViewContainer}>
                                 {/*购彩界面*/}
+                                {this.isShowNew7 == false || this.state.wanfaindx == 1 || (this.state.current_js_tag == 'k3' || this.state.current_js_tag == 'pcdd' || this.state.current_js_tag == 'lhc') ? 
                                 <BuyCenter
                                     key={this.state.wanfaindx * 100 + parseInt(this.state.current_gameId)}
                                     style={{marginTop: this.state.current_js_tag == 'lhc' ? 122 : 110, height: SCREEN_HEIGHT - headerToolHeight - 64  - bottomToolHeight - iphoneXBottomHeight}}
@@ -897,6 +938,31 @@ class BuyLotDetail extends Component {
                                     }}
                                 >
                                 </BuyCenter>
+                                
+                                    : <NNewBuyCenter
+                                        key={this.state.wanfaindx * 100 + parseInt(this.state.current_gameId) * 50 + this.state.currentPlayData.playid}
+                                        style={{marginTop: headerToolHeight, height: SCREEN_HEIGHT - headerToolHeight - 64  - bottomToolHeight - iphoneXBottomHeight}}
+                                        wafaDataArr={this.state.currentWafaAllPlayData}
+                                        currentPlayData={this.state.currentPlayData}
+                                        peilvDataArr={this.state.peilvDataArr}
+                                        js_tag={this.state.current_js_tag}
+                                        tag={this.state.current_tag}
+                                        wanfaindex={this.state.wanfaindx}
+                                        speed={this.state.current_speed}
+                                        ballsClick={(ballSelectDatas, playData, titleArr, ballArr) => {
+
+                                            this.state.ballSelectData = ballSelectDatas; // 不用setState赋值。
+                                            // 选号回调到这里。
+                                            this.setState({
+                                                // currentPlayData: playData,
+                                                titles: titleArr,
+                                                ballArr: ballArr,
+                                            });
+                                            //每次回调传入号码和标题参数
+                                            this._caculateAllPlayGame(ballSelectDatas, playData, titleArr);
+                                        }}
+                                    ></NNewBuyCenter>
+                                }
                             </View>
 
                             {/*头部View*/}
@@ -909,21 +975,21 @@ class BuyLotDetail extends Component {
                                 nextTimeList={this.state.nextData ? this.state.nextData : []}
                                 finishTime={this.finishTime}
                                 getCurrentTime={(timeStr) => currentTime = timeStr}
-                                getCurrentFengPan={(fengPanStr) => currentFengPan = fengPanStr}
+                                // getCurrentFengPan={(fengPanStr) => currentFengPan = fengPanStr}
                                 prevList={this.state.prevList ? this.state.prevList : []}
-                                isLock = {this.state.isLockTouZhu}
+                                // isLock = {this.state.isLockTouZhu}
                                 againRequestTime={(finishTime, nextList) => {
                                     // 20期用完后，重新改变。
                                     this.state.nextData = nextList;
                                     this.finishTime = finishTime;
                                 }}
-                                isRefreshLockStatues = {(isLock) => {
-                                    if (this.state.isLockTouZhu != isLock) {
-                                        this.setState({
-                                            isLockTouZhu:isLock
-                                        });
-                                    }
-                                }}
+                                // isRefreshLockStatues = {(isLock) => {
+                                //     if (this.state.isLockTouZhu != isLock) {
+                                //         this.setState({
+                                //             isLockTouZhu:isLock
+                                //         });
+                                //     }
+                                // }}
                                 NoLoginClick = {() => {
 
                                     navigate('Login', {title: '登录', isBuy: true});
@@ -972,7 +1038,7 @@ class BuyLotDetail extends Component {
                                 }}
                             >
                             </SelectGameView>
-                            {this.state.isShowSwitchBlocksView ?
+                            {this.state.isShowSwitchBlocksView && this.isShowNew7 == false ?
                                 <NewGuanFangXinYongView
                                     data={this.state.current_js_tag == 'lhc' ? ['快捷下注', '自选下注'] : ['双面玩法', '官方玩法']}
                                     isClose={this.state.isShowSwitchBlocksView}
@@ -1017,6 +1083,77 @@ class BuyLotDetail extends Component {
                                         });
                                     }}/> 
                                 : null
+                            }
+                            {this.state.isShowSwitchBlocksView && this.isShowNew7 == true
+                                ?<NSelectGamePlay
+                                    allGamePlayData={this.state.allPlayData} // 玩法配置
+                                    wanfaIdx={this.state.wanfaindx} // 玩法下标：官方或双面
+                                    slectOneIdx={this.oneGameIdx} // 一级菜单
+                                    slectTwoIdx={this.twoGameIdx}  // 二级菜单
+                                    slectThreeIdx={this.threeGameIdx}// 三级菜单
+                                    titleData={this.state.current_js_tag == 'lhc' ? ['快捷下注', '自选下注'] : ['双面玩法', '官方玩法']}
+                                    isClose={this.state.isShowSwitchBlocksView}
+                                    close={() => {
+                                        this.setState({
+                                            isShowSwitchBlocksView: false,
+                                        })
+                                    }}
+                                    playClick={(playData, oneIdx, twoIdx, threeIdx, showview) => {
+                                        this.state.wanfaindx = 0; // 官方玩法 idx永远记0
+                                        this.oneGameIdx = oneIdx;
+                                        this.twoGameIdx = twoIdx;
+                                        this.threeGameIdx = threeIdx;
+
+                                        console.log('idx ==== ', oneIdx, twoIdx, threeIdx, playData);
+                                        this.setState({
+                                            pickerZhuShu: 0,
+                                            totalPrice: 0.00,
+                                            ballSelectData: {},
+                                            titles: [],
+                                            currentPlayData: playData,
+                                            isShowSwitchBlocksView: showview ? true : false,
+                                            currentWafaAllPlayData: this.state.allPlayData[this.state.wanfaindx],
+                                        })
+
+                                        let navcTit = '-' + playData.wanfa;
+                                        this.props.navigation.setParams({
+                                            navcSTitle: this.state.current_js_tag == 'lhc' ? (this.state.wanfaindx == 0 ? '-自选下注' : '-快捷下注') : (this.state.wanfaindx == 0 ? navcTit : '-双面玩法'),
+                                        });
+                                    }}
+                                    onPressWanfaIdx={(currWanfaIdx) => {
+
+                                        let curData = this.state.allPlayData[currWanfaIdx]; // 没有数据 就提示未开放吧。
+                                        if (curData && curData.length <= 0) {
+                                            this.refs.Toast && this.refs.Toast.show(currWanfaIdx == 1 ? '双面玩法暂无数据' : '官方玩法暂无数据', 1500);
+                                            this.setState({
+                                                isShowSwitchBlocksView: false,
+                                            })
+                                            if (this.state.allPlayData[0].length <= 0 && this.state.allPlayData[1].length <= 0) {
+                                                // 双面 官方都关闭了的 可以切换按钮。
+                                                this.state.wanfaindx = currWanfaIdx;
+                                                this.props.navigation.setParams({
+                                                    navcSTitle: this.state.current_js_tag == 'lhc' ? (currWanfaIdx == 0 ? '-自选下注' : '-快捷下注') : (currWanfaIdx == 0 ? '-官方玩法' : '-双面玩法'),
+                                                });
+                                            }
+                                            return;
+                                        }
+
+                                        this.state.wanfaindx = currWanfaIdx; // 改变了wanfaindx，再从allPlayData里拿对应的玩法数据。
+                                        this.setState({
+                                            pickerZhuShu: 0,
+                                            totalPrice: 0.00,
+                                            ballSelectData: {},
+                                            titles: [],
+                                            isShowSwitchBlocksView: false,
+                                            currentWafaAllPlayData: this.state.allPlayData[currWanfaIdx],
+                                            currentPlayData: this.state.allPlayData[currWanfaIdx][0].submenu[0].playlist[0], // 默认彩种数据
+                                        });
+                                        this.props.navigation.setParams({
+                                            navcSTitle: this.state.current_js_tag == 'lhc' ? (currWanfaIdx == 0 ? '-自选下注' : '-快捷下注') : (currWanfaIdx == 0 ? '-官方玩法' : '-双面玩法'),
+                                        });
+                                    }}>
+                                </NSelectGamePlay> 
+                                :null
                             }
                         </View>
                         <NewBottomView
@@ -1141,7 +1278,26 @@ class BuyLotDetail extends Component {
                 }
                 <Toast ref="Toast" position='center'/>
                 <LoadingView ref='LoadingView'/>
-                <RNAlert comformBtnTitle={'确定'} cancleBtnTitle={'取消'} comformClik={() => {this._reasetLotView(); isRemindJieZhi = false;}} dissmissClick={() => {isRemindJieZhi = false;}} ref='RNAlert' alertTitle={'提示'} alertContent={'本期倒计时截止' + '\n' + '是否清空购物车'}/>
+                <RNAlert comformBtnTitle={'清空'}
+                         cancleBtnTitle={'保留'}
+                         comformClick={() => {}}
+                         dissmissClick={() => {
+
+                             if (this.state.pickerZhuShu != 0 || Object.keys(this.state.ballSelectData).length > 0) {
+
+                                 this.refs.Toast && this.refs.Toast.show('清空号码成功!', 1000);
+                                 //只清空当前界面的号码
+                                 PushNotification.emit('ClearAllBalls');
+                                 this.setState({
+                                     pickerZhuShu: 0,
+                                     totalPrice: 0.00,
+                                     ballSelectData: {},
+                                 })
+                             }
+                         }}
+                         ref='RNAlert'
+                         alertTitle={'提示'}
+                />
                 {this._isShowGuideView()} 
                 {this._trend_RoadModal()} 
             </View>

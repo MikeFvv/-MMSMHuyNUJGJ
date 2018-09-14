@@ -22,8 +22,11 @@ export default class RNAlertView extends Component {
     this.state = ({
 
       isShow:false,
-      dissMissTime:2,   //消失时间
+      dissMissTime:3,   //消失时间
+      contentString:'', //显示的内容
     })
+
+      this.timer1 = null;
   }
 
   render() {
@@ -44,13 +47,13 @@ export default class RNAlertView extends Component {
           >
           <View style = {styles.container}>
               <View style = {styles.AlertView}>
-                 <View style = {{justifyContent:'center', alignItems:'center', height:30}}><CusBaseText style = {{fontSize:18, fontWeight:'900'}}>{this.props.alertTitle}</CusBaseText></View>
-                 <View style = {{justifyContent:'center', alignItems:'center', height:50}}><CusBaseText style = {{fontSize:16, color:'grey'}}>{this.props.alertContent}</CusBaseText></View>
-                 <View style = {{height:1, backgroundColor:'lightgrey'}}></View>
+                 <View style = {{justifyContent:'center', alignItems:'center', height:20, marginTop:10}}><CusBaseText style = {{fontSize:Adaption.Font(18,15), fontWeight:'900'}}>{this.props.alertTitle}</CusBaseText></View>
+                 <View style = {{justifyContent:'center', alignItems:'center', height:70}}><CusBaseText style = {{fontSize:Adaption.Font(16,14), color:'grey'}}>{this.state.contentString}</CusBaseText></View>
+                 <View style = {{height:1, backgroundColor:'lightgrey'}}/>
                  <View style = {{flexDirection:'row', height:50}}>
-                    <TouchableOpacity onPress = {() => {this.setState({isShow:false}); this.props.comformClik ? this.props.comformClik() : null} } style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}><CusBaseText style = {{fontSize:18, color:'red'}}>确定</CusBaseText></TouchableOpacity>
-                    <View style = {{height:50, backgroundColor:'lightgrey', width:1}}></View>
-                    <TouchableOpacity onPress = {() => {this.setState({isShow:false}); this.props.dissmissClick? this.props.dissmissClick() : null} } style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}><CusBaseText style = {{fontSize:18, color:'blue'}}>{`取消(${this.state.dissMissTime})`}</CusBaseText></TouchableOpacity>
+                    <TouchableOpacity onPress = {() => {this.setState({isShow:false}); this.props.dissmissClick ? this.props.dissmissClick() : null} } style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}><CusBaseText style = {{fontSize:Adaption.Font(17,15), color:'red'}}>{this.props.comformBtnTitle}</CusBaseText></TouchableOpacity>
+                    <View style = {{height:50, backgroundColor:'lightgrey', width:1}}/>
+                    <TouchableOpacity onPress = {() => {this.setState({isShow:false}); this.props.comformClick? this.props.comformClick() : null} } style = {{flex:0.49, justifyContent:'center', alignItems:'center'}}><CusBaseText style = {{fontSize:Adaption.Font(17,15), color:'blue'}}>{`${this.props.cancleBtnTitle}(${this.state.dissMissTime})`}</CusBaseText></TouchableOpacity>
                  </View>
               </View>
           </View>
@@ -59,10 +62,11 @@ export default class RNAlertView extends Component {
   }
 
   //显示
-  show(){
+  show(alerStr){
     this.setState({
         isShow:true,  //显示弹窗
         dissMissTime:3,
+        contentString:alerStr,
     })
   }
 
@@ -112,8 +116,14 @@ export default class RNAlertView extends Component {
     }
 
   componentWillUnmount() {
+
     this.timer && clearTimeout(this.timer);
     this.timer1 && clearInterval(this.timer1);
+
+      //若组件被卸载，刷新state则直接返回，可以解决警告(倒计时组件可能造成的警告)
+      this.setState = (state,callback) => {
+          return;
+      }
   }
 
 
@@ -136,7 +146,7 @@ const styles = StyleSheet.create({
       backgroundColor:'white',
       borderRadius:10,
       borderWidth:1,
-      height:130,
+    //   height:140,
       marginLeft:30,
       marginRight:30,
       borderColor:'lightgrey',

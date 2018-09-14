@@ -45,90 +45,54 @@ export default class RoadPaper extends Component {
     this.tag = props.navigation.state.params.tag;
     this.js_tag =  props.navigation.state.params.js_tag;
     this.data = [];
-    this.pageid = 0;
     this.ba_ov = 0;   // 单个号码的大小 ， 大于ba_ov 则为大。
     this.bahz_ov = 0; // 和值的大小
   }
 
   componentDidMount() {
 
-    this._getKjCpLogData(this.tag, this.pageid);
+    this._getKjCpLogData();
   }
 
 
   //获取历史开奖数据接口
-  _getKjCpLogData(tag, pageid, isNextQi) {
+  _getKjCpLogData() {
 
     let params = new FormData();
     params.append('ac', 'getKjCpLog');
-    params.append('tag', tag);
-    params.append('pcount', isNextQi ? 5 : 20);
-    params.append('pageid', pageid);
+    params.append('tag', this.tag);
+    params.append('pcount', 120);
 
     var promise = GlobalBaseNetwork.sendNetworkRequest(params);
     promise
       .then((response) => {
 
         if (response.msg == 0 && response.data.length > 0) {
-          console.log('第'+pageid+'页数据 ==== ', response.data[0]['qishu'] ,response.data);
 
-          if (isNextQi == true) {
-            // 进入下一期的
-            if (response.data[0]['ball'] == '') {
-              // 没结果是吧，那就再来过咯。 我也就请求5条而已不过分吧
-              setTimeout(() => {
-                this._getKjCpLogData(this.tag, 0, true);
-              }, (this.tag.includes('ff') ? 3000 : 30000));
-              return;
-
-            } else {
-              // 有结果 那就拼在this.data前面好了。 不请求了 不然会被打的。
-              let idx = 0;
-              for (let m = 0; m < this.data.length; m++) {
-                if (this.data[m]['qishu'] == response.data[response.data.length - 1]['qishu']) {
-                  idx = m;
-                  break;
-                }
-              }
-              this.data.splice(0, idx+1); // 删掉前面的
-              this.data.splice(this.data.length - 1, 1);  // 删掉最后一个
-              this.data = [...response.data, ...this.data];  // 把新的拼在最前面
-              this._allData(this.data); // 处理
-            }
+          if (response.data[0]['balls'] == '' && this.data.length > 0) {
+            // 没结果是吧，那就再来过咯
+            setTimeout(() => {
+              this._getKjCpLogData();
+            }, (this.tag.includes('ff') ? 3000 : this.tag.includes('sf') ? 5000 : 20000));
+            return;
 
           } else {
-            this.data = [...this.data, ...response.data]; // 合并
-
-            if (this.pageid == 5) {  // 请求多少页数据。。。
-              this._allData(this.data);
-
-            } else {
-              this.pageid += 1;
-              this._getKjCpLogData(this.tag, this.pageid);
-            }
+            this.data = response.data;
           }
 
-        } else {
-          
-          if (this.data.length > 0) { 
-            this._allData(this.data);
-          } else {
-            this.setState({ isLoading: false });
-          }
-        }
-      })
-      .catch((err) => {
-
-        if (this.data.length > 0) {
           this._allData(this.data);
+
         } else {
           this.setState({ isLoading: false });
         }
       })
+      .catch((err) => {
+
+        this.setState({ isLoading: false });
+      })
   }
 
   _allData(data) {
-    this.pageid = 0; // 重置。
     console.log('当前总数据 === ', data);
     let dx_ds_hz_wdx = this._handleChangLongPaiHang(data);
     let ba123_hz_hr_wdx = this._handleData(data);
@@ -474,8 +438,8 @@ export default class RoadPaper extends Component {
             // 进入下一期。去请求新的开奖记录
             // 分分的延迟4秒去请求。其它的延迟1多分钟
             setTimeout(() => {
-              this._getKjCpLogData(this.tag, 0, true);
-            }, (this.tag.includes('ff') ? 4000 : 80000));
+              this._getKjCpLogData();
+            }, (this.tag.includes('ff') ? 4000 : this.tag.includes('sf') ? 35000 : 70000));
 
           }}
         >

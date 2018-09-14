@@ -24,7 +24,10 @@ class BindBankCard extends Component {
         header: (
 			<CustomNavBar
 				centerText = {"绑定银行卡"}
-				leftClick={() => {navigation.state.params.callback(),navigation.goBack()} }
+				leftClick={() => {
+					(navigation.state.params && navigation.state.params.callback) ? navigation.state.params.callback():null;
+                    navigation.goBack();
+				}}
 			/>
         ),
 
@@ -60,40 +63,31 @@ class BindBankCard extends Component {
 	}
 
 	componentDidMount() {
-
 		this.loginObject = global.UserLoginObject;
-
-		
 		this._fetchBankList();
-	
-
 	}
 
 	_fetchBankList() {
-
 		let params = new FormData();
 		params.append("ac", "getBankCardList");
-
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
-			.then((responseData) => {
-
-				if (responseData.msg == 0) {
-
+			.then((response) => {
+				if (response.msg == 0) {
 					let nameEdit = this.state.nameEdit;
 					if (this.loginObject.Real_name && this.loginObject.Real_name.length > 0) {
 						this.accountName = this.loginObject.Real_name;
 						nameEdit = false;
 					}
-					responseData.data.push({id:'-1',name:'其它银行'});
+					response.data.push({id:'-1',name:'其它银行'});
 					this.setState({
-						dataSource: responseData.data,
+						dataSource: response.data,
 						nameEdit: nameEdit,
 					});
 
 				} else {
-					if (responseData.param) {
-						Alert.alert(responseData.param ? responseData.param : '');
+					if (response.param) {
+						Alert.alert(response.param ? response.param : '');
 					}
 				}
 
@@ -311,24 +305,15 @@ class BindBankCard extends Component {
 
 		var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 		promise
-			.then((responseData) => {
-
-				if (responseData.msg == 0) {
-
+			.then((response) => {
+				if (response.msg == 0) {
 					this.refs.LoadingView && this.refs.LoadingView.cancer();
-
 					global.UserLoginObject.Card_num = this.accountNumber;
 					global.UserLoginObject.Real_name = this.accountName;
 					global.UserLoginObject.Tkpass_ok = 1;
 
 					let loginStringValue = JSON.stringify(global.UserLoginObject);
 					UserDefalts.setItem('userInfo', loginStringValue, (error) => { });
-
-					//从银行列表进入
-					if (this.props.navigation.state.params.BindBankCardPreviousAction == 'BangBankCar') {
-						this.props.navigation.goBack();
-						return;
-					}
 
 					//点击提款进入
 					if (this.props.navigation.state.params.BindBankCardPreviousAction == 'DrawalCenter') {
@@ -342,8 +327,11 @@ class BindBankCard extends Component {
 						return;
 					}
 
+                    this.props.navigation.goBack();
+                    (this.props.navigation.state.params && this.props.navigation.state.params.callback) ? this.props.navigation.state.params.callback(response.msg) : null;
+
 				} else {
-					this.refs.LoadingView && this.refs.LoadingView.showFaile(responseData.param);
+					this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
 				}
 
 			})

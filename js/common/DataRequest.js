@@ -90,8 +90,6 @@ export default class DataRequest {
             if (result.msg == 0) {
                 global.UserLoginObject = result.data;
                 this._encodeLogin();
-                this._fetchPersonalMessageData();
-                this._fetchMeiRiQianDaoData();
             }
         });
 
@@ -528,7 +526,6 @@ export default class DataRequest {
         //缓存所有彩种列表
         let params = new FormData();
         params.append("ac", "getGameListAtin");
-        params.append('types', 1);
 
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
@@ -549,7 +546,7 @@ export default class DataRequest {
                         for (let i = 0; i < datalist.length; i++) {
                             let model = datalist[i];
 
-                            if (model.enable != 2) {
+                            if (model.enable != 2 && model.type == 1) { //只存type == 1的正常彩票。除了体育彩
                                 openGameList.push(model);
                             }
 
@@ -666,9 +663,6 @@ export default class DataRequest {
                                 'codePWD': response.data.code,  //加密登录
                                 //'rise_lock': response.data.rise_lock, //每日加奖跳动
                             };
-                            
-                        this._fetchGamePianHaoData();  // 拿到uid token后请求游戏偏好
-                        this._updateUserHobby();  // 提交gameid, 用于后台搞游戏偏好的。
 
                     } else {
                        loginObject = {
@@ -686,6 +680,11 @@ export default class DataRequest {
                     }
 
                         global.UserLoginObject = loginObject;
+                        //加密登录成功后用新的uid,token请求
+                        this._fetchGamePianHaoData();  // 拿到uid token后请求游戏偏好
+                        this._updateUserHobby();  // 提交gameid, 用于后台搞游戏偏好的。
+                        // this._fetchPersonalMessageData();
+                        this._fetchMeiRiQianDaoData();
                         PushNotification.emit('LoginSuccess', global.UserLoginObject);
 
                         //将数据存到本地

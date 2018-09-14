@@ -422,7 +422,7 @@ export default class Safetycenter extends Component {
 
                     {/*修改真实姓名*/}
                     <TouchableOpacity activeOpacity={0.65} underlayColor={'#F3F3F3'}
-                                      onPress={() => navigate('ChangeName', {title: (global.UserLoginObject.Real_name.length > 1 ? '修改真实姓名' : '设置真实姓名')})}
+                                      onPress={() => navigate('ChangeName')}
                                       style={styles.touchItem}>
 
                         <View style={styles.touchItem}>

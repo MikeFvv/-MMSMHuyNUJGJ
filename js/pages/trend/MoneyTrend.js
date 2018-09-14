@@ -143,6 +143,7 @@ export default class MoneyTrend extends Component {
                     }
 
                   } else {
+                    global.isInBuyLotVC = true;  //返回上一界面时改为true
                     this.props.navigation.navigate('BuyLotDetail', { gameId: this.game_id });
                   }
                 }

@@ -59,7 +59,7 @@ export default class Home extends Component {
       tabNames: ['热门', '高频彩', '低频彩', '全部'],
       tabIconNames: [require('./img/ic_remen.png'), require('./img/ic_gerenxiaoxi.png'), require('./img/ic_gerenxiaoxi.png'), require('./img/ic_gerenxiaoxi.png')],
       everyDayWinPrice: 0, //每日加奖奖金
-      everyDayDesc : '', //每日加奖描述
+      everyDayDesc: '', //每日加奖描述
     };
 
     this.loginOut = false;
@@ -111,7 +111,7 @@ export default class Home extends Component {
   _repeatRequestData() {
 
     if (this.state.homeArray.length == 0 || this.state.homeArray == null) {
-    //  this._fetchHomeData();
+      //  this._fetchHomeData();
     } else {
       if (this.state.isNoDataLoad) {
         this.setState({
@@ -125,117 +125,117 @@ export default class Home extends Component {
 
 
     if (global.UserLoginObject.Token == '') {
-        //是否首页进入登录和注册
-        global.isHomeVcPush = true;
-        const {navigate} = this.props.navigation;
-        navigate('Login', {title: '登录'});
+      //是否首页进入登录和注册
+      global.isHomeVcPush = true;
+      const { navigate } = this.props.navigation;
+      navigate('Login', { title: '登录' });
     }
     else {
 
-        //表示可以领取优惠派发活动
-        if (Hongbaolihe == 1 && this.wating == false) {
-            this._takeEveryReward();
-            setTimeout(() => {
-                this.wating = false;
-            }, 2000);
-        }
-        else {
+      //表示可以领取优惠派发活动
+      if (Hongbaolihe == 1 && this.wating == false) {
+        this._takeEveryReward();
+        setTimeout(() => {
+          this.wating = false;
+        }, 2000);
+      }
+      else {
 
-            const {navigate} = this.props.navigation;
-            if (this.state.is_GuestShiWan == 2) {
-                Alert.alert(
-                    '温馨提示',
-                    '您的账号是试玩账号,没有权限访问!',
-                    [
-                        {
-                            text: '确定', onPress: () => {
-                        }
-                        },
-                    ]
-                )
-            } else {
-                if (this.canPush) {
-                    this.canPush = false;
-                    navigate('PersonalMessage', {
-                        callback: () => {
-                            this.props.navigation.setParams({});
-                        }
-                    })
-
-                    setTimeout(()=>{
-                        this.canPush  = true;
-                    },1000);
+        const { navigate } = this.props.navigation;
+        if (this.state.is_GuestShiWan == 2) {
+          Alert.alert(
+            '温馨提示',
+            '您的账号是试玩账号,没有权限访问!',
+            [
+              {
+                text: '确定', onPress: () => {
                 }
-            }
+              },
+            ]
+          )
+        } else {
+          if (this.canPush) {
+            this.canPush = false;
+            navigate('PersonalMessage', {
+              callback: () => {
+                this.props.navigation.setParams({});
+              }
+            })
+
+            setTimeout(() => {
+              this.canPush = true;
+            }, 1000);
+          }
         }
+      }
     }
   }
 
   //如果存在每日加奖
-  _takeEveryReward(){
+  _takeEveryReward() {
 
-      this.refs.LoadingView && this.refs.LoadingView.showLoading('领取彩金中..');
-      let params = new FormData();
-      params.append('ac', 'UserGetEventAward');
-      params.append('uid', global.UserLoginObject.Uid);
-      params.append('token', global.UserLoginObject.Token);
-      params.append('sessionkey', global.UserLoginObject.session_key);
+    this.refs.LoadingView && this.refs.LoadingView.showLoading('领取彩金中..');
+    let params = new FormData();
+    params.append('ac', 'UserGetEventAward');
+    params.append('uid', global.UserLoginObject.Uid);
+    params.append('token', global.UserLoginObject.Token);
+    params.append('sessionkey', global.UserLoginObject.session_key);
 
-      var promise = BaseNetwork.sendNetworkRequest(params);
-      promise
+    var promise = BaseNetwork.sendNetworkRequest(params);
+    promise
+      .then(response => {
+
+        this.refs.LoadingView && this.refs.LoadingView.cancer();
+
+        if (response.msg == 0) {
+          // 初始化
+          this.state.everyDayWinPrice = response.data.price;
+          this.state.everyDayDesc = response.data.title;
+        }
+        else {
+
+          if (response.param) {
+            this.state.everyDayDesc = response.param;
+          }
+        }
+
+        //不管成功与否都要刷新导航栏
+        let params = new FormData();
+        params.append("ac", "flushPrice");
+        params.append("uid", global.UserLoginObject.Uid);
+        params.append("token", global.UserLoginObject.Token);
+        params.append('sessionkey', global.UserLoginObject.session_key);
+        var promise = BaseNetwork.sendNetworkRequest(params);
+        promise
           .then(response => {
 
-              this.refs.LoadingView && this.refs.LoadingView.cancer();
+            if (response.msg == 0 && response.data) {
 
-              if (response.msg == 0) {
-                  // 初始化
-                  this.state.everyDayWinPrice = response.data.price;
-                  this.state.everyDayDesc = response.data.title;
-              }
-              else {
-
-                  if (response.param){
-                      this.state.everyDayDesc = response.param;
-                  }
+              if ((1 & response.data.user_flag) > 0) {
+                Hongbaolihe = 1;
+              } else {
+                Hongbaolihe = 0;
               }
 
-              //不管成功与否都要刷新导航栏
-              let params = new FormData();
-              params.append("ac", "flushPrice");
-              params.append("uid", global.UserLoginObject.Uid);
-              params.append("token", global.UserLoginObject.Token);
-              params.append('sessionkey', global.UserLoginObject.session_key);
-              var promise = BaseNetwork.sendNetworkRequest(params);
-              promise
-                  .then(response => {
-
-                      if (response.msg == 0 && response.data){
-
-                          if((1 & response.data.user_flag)>0){
-                              Hongbaolihe = 1;
-                          }else {
-                              Hongbaolihe = 0;
-                          }
-
-                          this.isRefreshView = false;
-                          this.props.navigation.setParams({});
-                      }
-                  })
-
-                  .catch(error => {
-                  })
-
-
-              //点击打开每日嘉奖,登录后
-              setTimeout(() => {
-
-                  this.refs.HomeRedPacketClass && this.refs.HomeRedPacketClass.showRedPacketView(this.state.everyDayDesc, this.state.everyDayWinPrice);
-
-              }, 500);
+              this.isRefreshView = false;
+              this.props.navigation.setParams({});
+            }
           })
-          .catch(err => {
 
-          });
+          .catch(error => {
+          })
+
+
+        //点击打开每日嘉奖,登录后
+        setTimeout(() => {
+
+          this.refs.HomeRedPacketClass && this.refs.HomeRedPacketClass.showRedPacketView(this.state.everyDayDesc, this.state.everyDayWinPrice);
+
+        }, 500);
+      })
+      .catch(err => {
+
+      });
   }
 
   _navigateRightPress = () => {
@@ -247,60 +247,6 @@ export default class Home extends Component {
     navigate('Register', { title: '注册' });
   }
 
-  refshToken() {
-
-    if (global.UserLoginObject.Uid != ''
-      && global.UserLoginObject.Token != '' && global.UserLoginObject.session_key != '') {
-
-      let params = new FormData();
-      params.append("ac", "flushPrice");
-      params.append("uid", global.UserLoginObject.Uid);
-      params.append("token", global.UserLoginObject.Token);
-      params.append('sessionkey', global.UserLoginObject.session_key);
-      var promise = BaseNetwork.sendNetworkRequest(params);
-      promise
-        .then(response => {
-
-          //msg == 40000 则被踢下线
-          if (response.msg == 40000) {
-
-            this.loginOut = true;
-            //清空用户信息
-            global.UserInfo.shareInstance();
-            global.UserInfo.removeUserInfo((result) => {
-
-              if (result == true) {
-                this.props.navigation.setParams({
-                  home_userMoney: null,
-                  navigateLeftPress: this._navigateLeftPress,
-                  navigateRightPress: this._navigateRightPress,
-                  tabBarPress: this._navigateTabBarPress,
-                });
-                //登录被踢下线, 发出通知刷新我的界面
-                PushNotification.emit('LoginOutSuccess');
-                PushNotification.emit('ClearAllBalls'); // 踢下线 不显示赔率
-                this.props.navigation.navigate('Login', { title: '登录', indexR: 1 });
-              }
-            })
-          }
-          else {
-
-           this.loginOut = false;
-           global.UserLoginObject.TotalMoney = response.data.price;
-
-           if((1 & response.data.user_flag)>0){
-              Hongbaolihe = 1;
-           }
-           else {
-              Hongbaolihe = 0;
-           }
-          }
-        })
-        .catch(err => {
-
-        });
-    }
-  }
 
   componentWillMount() {
 
@@ -337,9 +283,12 @@ export default class Home extends Component {
     }
     this.state.is_GuestShiWan = global.UserLoginObject.is_Guest;
 
-    if (HomeArray.length == 0 || HomeArray == undefined ) {
-     this._fetchHomeArray();
-    }else {
+    if (HomeArray.length == 0 || HomeArray == undefined) {
+      if (global.isFirstNetwork == false) {
+        return;
+      }
+      this._fetchHomeArray();
+    } else {
       this.state.homeArray = HomeArray;
     }
     // 缓冲页面停留延时
@@ -394,37 +343,23 @@ export default class Home extends Component {
     })
 
     //输入域名防止过快进入首页不刷新数据导致空白
-    if(CPYuMingShuRu ==1) {
+    if (CPYuMingShuRu == 1) {
       setTimeout(() => {
-      this._fetchHomeArray();
-  
+        this._fetchHomeArray();
+
       }, 2000);
-    
-     } 
 
+    }
 
-    //延迟刷新用户token的接口
-    setTimeout(() => {
+    //   this.subscription222 = PushNotification.addListener('BiaoJiMessageSuccess', () => {
 
-        if (this.time_interval) {
-            return;
-        }
-
-        this.time_interval = setInterval(() => {
-          this.refshToken();
-      }, 10000);
-
-    }, 20000);
-
-    this.subscription4444 = PushNotification.addListener('ShuaXinJinEr', () => {
-          
-      this._fetchPersonalMessageData();
-    });
+    //     this._fetchPersonalMessageData();
+    // });
 
     //接受投注成功时刷新金额的通知
     this.subscription2 = PushNotification.addListener('RefreshUserTotalMoney', (money) => {
 
-        this._renderReFresh();
+      this._renderReFresh();
       if (typeof (money) == 'number') {
 
         money = money.toFixed(2);
@@ -436,7 +371,7 @@ export default class Home extends Component {
     //接受我的界面刷新金额的通知
     this.subscription3 = PushNotification.addListener('RefreshHomeNavRightText', (money) => {
 
-        this._renderReFresh();
+      this._renderReFresh();
       if (typeof (money) == 'number') {
 
         money = money.toFixed(2);
@@ -447,7 +382,7 @@ export default class Home extends Component {
 
     //接受登录的通知
     this.subscription4 = PushNotification.addListener('LoginSuccess', (loginObject) => {
-      this._flatList.scrollToOffset({animated: true, offset: 0});
+      this._flatList.scrollToOffset({ animated: true, offset: 0 });
       this._renderReFresh();
       this.loginOut = false;
       this.state.is_GuestShiWan = loginObject.is_Guest;
@@ -466,57 +401,83 @@ export default class Home extends Component {
 
     })
 
+    //首页监听所有接口请求是否超时的通知
+    this.subscription6 = PushNotification.addListener('ServerLoginOutNotification', () => {
+
+      if (this.loginOut == false) {
+
+        this.loginOut = true;
+        //清空用户信息
+        global.UserInfo.shareInstance();
+        global.UserInfo.removeUserInfo((result) => {
+
+          if (result == true) {
+            this.props.navigation.setParams({
+              home_userMoney: null,
+              navigateLeftPress: this._navigateLeftPress,
+              navigateRightPress: this._navigateRightPress,
+              tabBarPress: this._navigateTabBarPress,
+            });
+            //登录被踢下线, 发出通知刷新我的界面
+            PushNotification.emit('LoginOutSuccess');
+            PushNotification.emit('ClearAllBalls'); // 踢下线 不显示赔率
+            this.props.navigation.navigate('Login', { title: '登录', indexR: 1 });
+          }
+        })
+      }
+    })
+
   }
 
-    _fetchHomeArray() {
-         //请求参数
-         let params = new FormData();
-         params.append("ac", "getGameListAtin");
-         params.append("types", "");
-         var promise = GlobalBaseNetwork.sendNetworkRequest(params, this.lineIPIndex3);
-         promise
-           .then(response => {
-     
-             if (response.msg == 0) {
-     
-               let datalist = response.data;
-               if (datalist != undefined) {
-     
-                 // 初始化
-                 this.lineIPIndex3 = 0;
-                 let datalist = response.data;
-     
-                 let indexArray = [];
-                 let dataBlog = [];
-                 let i = 0;
-     
-                 datalist.map(dict => {
-                   dataBlog.push({ key: i, value: dict });
-                   i++;
-                 });
-                 datalist.map((item) => {
-                 if (item.type == 1) {
-     
-                   if (item.hot == 1 ) {
-                     indexArray.push({key: i, value: item});
-                 }
-               }else {
-                 if (item.hot == 1 ) {
-                   indexArray.push({key: i, value: item});
-                   }
-               }
-                   i++;
-               })
-                indexArray.push({ key: 99, value: {} });
-                 
-               this.setState({homeArray:indexArray})
-               }
-             }
-           })
-           .catch(err => {
-     
-           });
-    }
+  _fetchHomeArray() {
+    //请求参数
+    let params = new FormData();
+    params.append("ac", "getGameListAtin");
+    params.append("types", "");
+    var promise = GlobalBaseNetwork.sendNetworkRequest(params, this.lineIPIndex3);
+    promise
+      .then(response => {
+
+        if (response.msg == 0) {
+
+          let datalist = response.data;
+          if (datalist != undefined) {
+
+            // 初始化
+            this.lineIPIndex3 = 0;
+            let datalist = response.data;
+
+            let indexArray = [];
+            let dataBlog = [];
+            let i = 0;
+
+            datalist.map(dict => {
+              dataBlog.push({ key: i, value: dict });
+              i++;
+            });
+            datalist.map((item) => {
+              if (item.type == 1) {
+
+                if (item.hot == 1) {
+                  indexArray.push({ key: i, value: item });
+                }
+              } else {
+                if (item.hot == 1) {
+                  indexArray.push({ key: i, value: item });
+                }
+              }
+              i++;
+            })
+            indexArray.push({ key: 99, value: {} });
+
+            this.setState({ homeArray: indexArray })
+          }
+        }
+      })
+      .catch(err => {
+
+      });
+  }
 
   _forceRefreshNav = () => {
 
@@ -528,22 +489,23 @@ export default class Home extends Component {
         this.props.navigation.setParams({
           home_userMoney: global.UserLoginObject.TotalMoney,
         });
+        global.isInBuyLotVC = false;  //防止BuyLotDetail销毁时重新DidMount请求数据
       }, 500);
     }
   }
 
   //防止刷新导航栏也会刷新render导致页面出现闪烁
-  _renderReFresh(){
+  _renderReFresh() {
 
-      this.isRefreshView = false;
+    this.isRefreshView = false;
 
-      setTimeout(()=>{this.isRefreshView = true;}, 4000);
+    setTimeout(() => { this.isRefreshView = true; }, 1000);
   }
 
-  shouldComponentUpdate(nextProps,nextState) {
-    
+  shouldComponentUpdate(nextProps, nextState) {
+
     //暂时解决首页刷新页面闪烁的问题
-    if (this.isRefreshView == true){
+    if (this.isRefreshView == true) {
       return true;
     }
     else {
@@ -564,9 +526,9 @@ export default class Home extends Component {
       this.subscription2 && this.subscription2.remove();
     }
 
-    if (typeof (this.subscription4444) == 'object') {
-      this.subscription4444 && this.subscription4444.remove();
-    }
+    // if (typeof (this.subscription4444) == 'object') {
+    //   this.subscription4444 && this.subscription4444.remove();
+    // }
 
     if (typeof (this.subscription3) == 'object') {
       this.subscription3 && this.subscription3.remove();
@@ -580,6 +542,10 @@ export default class Home extends Component {
       this.subscription5 && this.subscription5.remove();
     }
 
+    if (typeof (this.subscription6) == 'object') {
+      this.subscription6 && this.subscription6.remove();
+    }
+
   }
 
 
@@ -588,69 +554,69 @@ export default class Home extends Component {
   _fetchPersonalMessageData() {
     if (global.UserLoginObject.Uid != '' && global.UserLoginObject.Token != '') {
       //请求参数
-  let params = new FormData();
-  params.append("ac", "flushPrice");
-  params.append("uid", global.UserLoginObject.Uid);
-  params.append("token", global.UserLoginObject.Token);
-  params.append("sessionkey", global.UserLoginObject.session_key);
+      let params = new FormData();
+      params.append("ac", "flushPrice");
+      params.append("uid", global.UserLoginObject.Uid);
+      params.append("token", global.UserLoginObject.Token);
+      params.append("sessionkey", global.UserLoginObject.session_key);
 
       var promise = GlobalBaseNetwork.sendNetworkRequest(params);
 
       promise
-          .then(response => {
-              if (response.msg == 0) {
-                  let datalist = response.data;
-                  if (response.data == null ) {
-                      PersonMessageArray=0;
-                      Hongbaolihe = 0;
-                      Gerenfankui = 0;
-                      Fuliqiandao = 0;
-                      AnQuanZhongXin = 0;
+        .then(response => {
+          if (response.msg == 0) {
+            let datalist = response.data;
+            if (response.data == null) {
+              PersonMessageArray = 0;
+              Hongbaolihe = 0;
+              Gerenfankui = 0;
+              Fuliqiandao = 0;
+              AnQuanZhongXin = 0;
 
-                  } else {
+            } else {
 
-                    // 顺便给金额赋一下值。。。。
-                    if (typeof(response.data.price) == 'number') {
-                        response.data.price = response.data.price.toFixed(2);
-                    }
-                    global.UserLoginObject.TotalMoney = response.data.price;
-
-                     if((1 & response.data.user_flag)>0){
-                      Hongbaolihe = 1;
-                     }else {
-                      Hongbaolihe = 0;
-                     }
-                     if((2 & response.data.user_flag)>0){
-                      PersonMessageArray = 1;
-                     }else {
-                      PersonMessageArray = 0;
-                     }
-                     if((4 & response.data.user_flag)>0){
-                      Gerenfankui = 1;
-                     }else {
-                      Gerenfankui = 0;
-                     }
-                     if((8 & response.data.user_flag)>0){
-                      Fuliqiandao = 1;
-                     }else {
-                      Fuliqiandao = 0;
-                     }
-                     if((16 & response.data.user_flag)>0){
-                      AnQuanZhongXin = 1;
-                     }else {
-                      AnQuanZhongXin = 0;
-                     }
-                  }
-
-              } else {
-
+              // 顺便给金额赋一下值。。。。
+              if (typeof (response.data.price) == 'number') {
+                response.data.price = response.data.price.toFixed(2);
               }
+              global.UserLoginObject.TotalMoney = response.data.price;
 
-          })
-          .catch(err => {
-          });
+              if ((1 & response.data.user_flag) > 0) {
+                Hongbaolihe = 1;
+              } else {
+                Hongbaolihe = 0;
+              }
+              if ((2 & response.data.user_flag) > 0) {
+                PersonMessageArray = 1;
+              } else {
+                PersonMessageArray = 0;
+              }
+              if ((4 & response.data.user_flag) > 0) {
+                Gerenfankui = 1;
+              } else {
+                Gerenfankui = 0;
+              }
+              if ((8 & response.data.user_flag) > 0) {
+                Fuliqiandao = 1;
+              } else {
+                Fuliqiandao = 0;
+              }
+              if ((16 & response.data.user_flag) > 0) {
+                AnQuanZhongXin = 1;
+              } else {
+                AnQuanZhongXin = 0;
+              }
+            }
+
+          } else {
+
+          }
+
+        })
+        .catch(err => {
+        });
+    }
   }
-}
 
   // 网络监听方法
   _handleIsConnectedChange = (isConnected) => {
@@ -833,19 +799,19 @@ export default class Home extends Component {
     )
   }
   _xitongweihu() {
-    if(GlobalConfig.service_url()==undefined||GlobalConfig.service_url().length==0) {
-        
+    if (GlobalConfig.service_url() == undefined || GlobalConfig.service_url().length == 0) {
+
       Alert.alert(
         '提示',
         '系统正在维护',
         [
-            {text: '确定', onPress: () => {}},
+          { text: '确定', onPress: () => { } },
         ]
-    )
-    }else {
-    const { navigate } = this.props.navigation;
-    this.setState({ isSystemWeiHu: false })
-    navigate('ChatService', { callback: () => { this._fetchxitonghuidiaoData() }, title: '在线客服', })
+      )
+    } else {
+      const { navigate } = this.props.navigation;
+      this.setState({ isSystemWeiHu: false })
+      navigate('ChatService', { callback: () => { this._fetchxitonghuidiaoData() }, title: '在线客服', })
     }
   }
 
@@ -875,7 +841,7 @@ export default class Home extends Component {
     return (
       <FlatList
         style={{ backgroundColor: 'white' }}
-        ref={(flatList)=>this._flatList = flatList}
+        ref={(flatList) => this._flatList = flatList}
         bounces={false}
         automaticallyAdjustContentInsets={false}
         alwaysBounceHorizontal={false}
@@ -910,7 +876,7 @@ export default class Home extends Component {
       >
       </HomeCaiFootView>
     ) : null;
-  
+
   }
 
   _renderItemView(item) {
@@ -919,7 +885,7 @@ export default class Home extends Component {
 
 
   render() {
-    
+
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>

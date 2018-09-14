@@ -30,6 +30,8 @@ export default {
 
         params.append('client_type', '3');
 
+        console.log(params);
+
         let form_unique_token = Math.random().toString(35).slice(2, 8) + (new Date()).getTime() + Math.random().toString(35).slice(2, 8) + 'E' + Math.random().toString(35).slice(2, 8);
         params.append("form_unique_token", form_unique_token);
 
@@ -38,7 +40,10 @@ export default {
         enParams.append("p", encryptPar);
 
         return new Promise(function (resolve, reject) {
-            fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.phoneApiURL() + '/' + params._parts[0][1], {
+
+            // GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex++);
+            // fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1], {
+            fetch(urlPath ? urlPath + '/' + params._parts[0][1] + '/iOS' : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1] + '/iOS', {
                 method: 'POST',
                 headers: {
                     'BXVIP-UA': 'ios',
@@ -50,10 +55,21 @@ export default {
                 .then((response) => response.json())
                 .then((responseData) => {
 
+                    if (responseData.msg == 40000) {
+
+                        console.log(params);
+
+                        PushNotification.emit('ServerLoginOutNotification');  //任何接口返回40000,都踢下线
+                    }
+
                     resolve(responseData);
 
                 })
                 .catch((err) => {
+
+
+                    global.GlobalLineIPIndex = global.GlobalLineIPIndex + 1;
+                    GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex);
 
                     var array = params._parts;
                     var bodystr = '';
@@ -108,7 +124,7 @@ export default {
         let md5Str = `graylog+${titleStr}+${info}+${currentMomentStr}`;
         let singeStr = ''; //MD5加密字符串
         singeStr = CryptoJS.MD5(md5Str).toString();
-        let LOG_ERL = GlobalConfig.phoneApiURL();
+        let LOG_ERL = GlobalConfig.lineBaseIPURL();
         let newparams = new FormData();
         newparams.append('ac', 'addGrayLog')
         newparams.append('sign', singeStr);
@@ -152,7 +168,7 @@ export default {
         enParams.append("p", encryptPar);
 
         return new Promise(function (resolve, reject) {
-            fetch(GlobalConfig.rebateOddsTableURL() + '/' + params._parts[0][1], {
+            fetch(GlobalConfig.rebateOddsTableURL() + '/' + params._parts[0][1] + '/iOS', {
                 method: 'POST',
                 headers: {
                     'BXVIP-UA': 'ios',
@@ -167,6 +183,8 @@ export default {
                     resolve(responseData);
                 })
                 .catch((err) => {
+                    global.GlobalLineIPIndex = global.GlobalLineIPIndex + 1;
+                    GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex);
                     reject(err);
                 });
         });
@@ -183,7 +201,8 @@ export default {
         enParams.append("p", encryptPar);
 
         return new Promise(function (resolve, reject) {
-            fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.phoneApiURL() + '/' + params._parts[0][1], {
+            // fetch(urlPath ? urlPath : ipIndex != (undefined || null) ? GlobalConfig.lineIPArrayURL(ipIndex) : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1], {
+            fetch(urlPath ? urlPath + '/' + params._parts[0][1] + '/iOS' : GlobalConfig.lineBaseIPURL() + '/' + params._parts[0][1] + '/iOS', {
                 method: 'POST',
                 headers: {
                     'BXVIP-UA': 'ios',
@@ -199,6 +218,8 @@ export default {
                     resolve(strJson);
                 })
                 .catch((err) => {
+                    global.GlobalLineIPIndex = global.GlobalLineIPIndex + 1;
+                    GlobalConfig.lineIPArrayURL(global.GlobalLineIPIndex);
                     console.log(err);
                 });
         })

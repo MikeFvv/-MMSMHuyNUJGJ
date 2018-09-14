@@ -56,7 +56,7 @@ export default class ShopCarDetail extends Component {
             showKeyboard: false,
             addValue: 60,
             currentInputPriceIndex: -1, //当前输入金额的Item
-            isLockFengPan: this.props.navigation.state.params.fengPanTime > 0 ? false : true,  //是否显示已封盘
+            // isLockFengPan: this.props.navigation.state.params.fengPanTime > 0 ? false : true,  //是否显示已封盘
         })
         this.inputPriceLength = '';
         this.comformTouZhuWating = false; //防止快速点击下注按钮
@@ -129,8 +129,8 @@ export default class ShopCarDetail extends Component {
 
     componentDidMount() {
 
-        global.isInShopCarVC = true; //是否在购物车界面
-        global.isInBuyLotVC = false;  //是否在投注界面
+        // global.isInShopCarVC = true; //是否在购物车界面
+        global.isInBuyLotVC = false;  //是否在投注界面,防止在这页面摇一摇也会震动
 
         this.props.navigation.setParams({
             clearShopCar: this._clearShopCar,
@@ -460,7 +460,9 @@ export default class ShopCarDetail extends Component {
                     },
                     {
                         text: '保留下一期', onPress: () => {
-                            dataSource[0].value.qishu = global.CurrentQiShu;
+                           for (let dataModel of dataSource){
+                               dataModel.value.qishu = global.CurrentQiShu;
+                           }
                         }
                     }
                 ])
@@ -528,8 +530,8 @@ export default class ShopCarDetail extends Component {
                             [
                                 {
                                     text: '确定', onPress: () => {
-                                        this.props.navigation.navigate('RechargeCenter')
-                                    }
+                                    this.props.navigation.navigate('RechargeCenter')
+                                }
                                 },
                                 {
                                     text: '取消', onPress: () => { }
@@ -538,7 +540,12 @@ export default class ShopCarDetail extends Component {
                         )
                     } else {
                         if (responseData.param) {
-                            this.refs.Toast && this.refs.Toast.show(responseData.param, 1200);
+
+                            Alert.alert(
+                                '温馨提示',
+                                responseData.param,
+                                [{text: '确定', onPress: () => {}}],
+                            )
                         }
                     }
                 })
@@ -596,8 +603,8 @@ export default class ShopCarDetail extends Component {
         global.ShopHistoryArr = this.state.dataSource;
 
         //手动添加返回改变状态，防止重复弹窗
-        global.isInShopCarVC = false; //是否在购物车界面
-        global.isInBuyLotVC = true;  //是否在投注界面
+        // global.isInShopCarVC = false; //是否在购物车界面
+        // global.isInBuyLotVC = true;  //是否在投注界面
 
         PushNotification.emit('HandAutoAddNotification', global.ShopHistoryArr.length);
         if (global.ShopHistoryArr.length != 0) {
@@ -641,12 +648,12 @@ export default class ShopCarDetail extends Component {
                         finishTime={this.props.navigation.state.params.finishTime}
                         nextTimeList={this.props.navigation.state.params.nextTimeList}
                         theQiShu={global.CurrentQiShu}
-                        currentQiShu={(qishu) => {
-                            global.CurrentQiShu = qishu;
-                        }}
-                        FengPanBlock={(isLock) => {
-                            this.setState({ isLockFengPan: isLock });
-                        }}
+                        // currentQiShu={(qishu) => {
+                        //
+                        // }}
+                        // FengPanBlock={(isLock) => {
+                        //     this.setState({ isLockFengPan: isLock });
+                        // }}
 
                         comformOnPress={() => {
                             this._normalGoBackToBuyLotDetailVC();

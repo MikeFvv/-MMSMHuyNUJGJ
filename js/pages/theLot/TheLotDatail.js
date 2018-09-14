@@ -231,6 +231,7 @@ export default class theLotDatail extends Component {
           if (this.hightEnable != -1) {
             if (click) {
               click = false;
+              global.isInBuyLotVC = true;
               this.props.navigation.navigate('BuyLotDetail', {
                 gameId: this.state.selectedGameID,
               });

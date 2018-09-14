@@ -11,45 +11,36 @@ export default class CusProgressView extends Component {
 		//当前进度
         progress: 1,
 		//进度条颜色
-        progressColor: 'rgb(200,200,200)',
+        progressColor: 'rgb(165,24,32)',
         //buffer进度条颜色
-        bufferColor: COLORS.appColor,
+        bufferColor: 'rgb(254,232,11)',
 	}
 
     constructor(props) {
       super(props);
 
       if (this.props.progress > 100) {
-
         this.state = {
             progress:100,
         };
-
       }else {
-
         this.state = {
             progress:Math.round(this.props.progress * 100) / 100,
         };
-
       }
     
     }
 
     componentWillReceiveProps(nextProps) {
-
         if (nextProps.progress > 100) {
-
             this.setState({
                 progress:100,
-            }); 
-
+            });
         }else {
-
             this.setState({
                 progress:Math.round(nextProps.progress * 100) / 100,
             }); 
         }
-       
     }
 
     render() {
@@ -84,13 +75,11 @@ export default class CusProgressView extends Component {
 
     _onProgressLayout = (event) => {
         this.progresswidth = event.nativeEvent.layout.width;
-
         this.refs.buffer.setNativeProps({
             style:{
                 width:this.progresswidth*this.state.progress,
             }
         });
-
         this.refs.proText.setNativeProps({
             style:{
                 marginLeft:this.progresswidth/2-25,
@@ -99,16 +88,12 @@ export default class CusProgressView extends Component {
     }
 
     _judgeSize = () => {
-
         if (!this.props.style) {
             return false;
         }
-
         if (!this.props.style.flex && !this.props.style.width && !this.props.style.height) {
             return false;
         }
-        // this._width = 150;
-        // this._height = 15;
     }
 
 }
@@ -123,7 +108,7 @@ const styles = StyleSheet.create({
 
     proText:{
         width:50,
-        color:'white',
+        color:'black',
         backgroundColor:'transparent',
         textAlign: 'center',
     },

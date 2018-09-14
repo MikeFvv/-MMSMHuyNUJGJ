@@ -12,7 +12,7 @@ import {
 
 import PayModelList from './PayModelList';
 import BankModelList from './BankModelList';
-import OnlineModelView from './OnlineModelView';
+import OnlineModelList from './OnlineModelList';
 
 export default class RechargeCenter extends Component {
 
@@ -180,18 +180,15 @@ export default class RechargeCenter extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.blankLineViewStyle}></View>
-                 {/* ItemSeparatorComponent={this._renderSeparator} */}
                 <FlatList
                     automaticallyAdjustContentInsets={false}
                     alwaysBounceHorizontal={false}
                     showsVerticalScrollIndicator={false}
                     data={this.state.payTypes}
                     renderItem={this._renderItem}
-                   
                     keyExtractor={this._keyExtractor}
+                    ItemSeparatorComponent={this._renderSeparator}
                 />
-
                 <LoadingView ref="LoadingView" />
             </View>
         );
@@ -212,7 +209,7 @@ export default class RechargeCenter extends Component {
                         } else if (info.item.id == 5) { //支付宝
                             this.props.navigation.navigate('PayModelList', { paytype: info.item.id, defaultTips: this.defaultTips, defaultSteps:this.defaultSteps,title: info.item.name});
                         } else if (info.item.id == 1) { //在线支付
-                            this.props.navigation.navigate('OnlineModelView', { paytype: info.item.id, title: info.item.name});
+                            this.props.navigation.navigate('OnlineModelList', { paytype: info.item.id, title: info.item.name});
                         } else if (info.item.id == 15) { //网银转账
                             this.props.navigation.navigate('BankModelList', { paytype: info.item.id, title: info.item.name});
                         } else if (info.item.id == 13) { //银联快捷
@@ -261,24 +258,22 @@ const styles = StyleSheet.create({
     },
 
     itemSeparator: {
-        backgroundColor: '#cccccc',
-        width: SCREEN_WIDTH,
-        height: 1,
+        height: 12,
+        backgroundColor: '#f0f1f2',
     },
 
     payModelCell: {
         backgroundColor: 'white',
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        width: SCREEN_WIDTH,
-        height: 50,
     },
 
     payModelImg: {
         marginLeft: 30,
         width: 30,
         height: 30,
+        marginTop:10,
+        marginBottom:10,
     },
 
     payModelName: {
@@ -292,8 +287,4 @@ const styles = StyleSheet.create({
         height: 15,
     },
 
-    blankLineViewStyle: {
-        height: 12,
-        backgroundColor: '#f0f1f2',
-    },
 });

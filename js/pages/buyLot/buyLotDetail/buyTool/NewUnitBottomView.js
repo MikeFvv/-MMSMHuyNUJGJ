@@ -21,19 +21,19 @@ export default class NewUnnitBottomView extends Component {
         this.state = ({
 
             isTouZhuClick: false,   // 是否可以点击投注按钮
-            isLockTouZhu: props.isLock,  //是否封盘
+            // isLockTouZhu: props.isLock,  //是否封盘
         })
     }
 
 
     componentWillReceiveProps(nextProps) {
 
-        if (nextProps.selectNumZhuShu != null && nextProps.isLock != null) {
+        if (nextProps.selectNumZhuShu != null) {
 
             this.setState({
 
                 isTouZhuClick: nextProps.selectNumZhuShu != 0 ? true : false,
-                isLockTouZhu: nextProps.isLock,
+                // isLockTouZhu: nextProps.isLock,
             })
         }
     }
@@ -95,13 +95,13 @@ export default class NewUnnitBottomView extends Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity activeOpacity={this.state.isTouZhuClick ? 0.7 : 1}
-                    style={{ flex: 0.21, alignItems: 'center', justifyContent: 'center', backgroundColor: this.state.isTouZhuClick && this.state.isLockTouZhu == false ? '#b52e2f' : '#bfbfbf' }}
+                    style={{ flex: 0.21, alignItems: 'center', justifyContent: 'center', backgroundColor: this.state.isTouZhuClick ? '#b52e2f' : '#bfbfbf' }}
                     onPress={() => {
-                        if (this.state.isTouZhuClick == true && this.state.isLockTouZhu == false) {
+                        if (this.state.isTouZhuClick == true) {
                             this.props.XiaZhuClick ? this.props.XiaZhuClick() : null
                         }
                     }}>
-                    <CusBaseText style={styles.newBottomText}>{this.state.isLockTouZhu ? '已封盘' : '下注'}</CusBaseText>
+                    <CusBaseText style={styles.newBottomText}>下注</CusBaseText>
                 </TouchableOpacity>
             </View>
         )

@@ -315,10 +315,6 @@ class NewBuyCenter extends Component {
         contentArr[a] = contentArr[a].split('|')[0];
       }
     }
-
-    if (this.props.js_tag == 'ssc' && values.playid == 89) {
-      contentArr = ['千位', '百位', '十位', '个位'];
-    }
     
     // 双面盘的 contentArr都要重写。balls也要另外组合
     let sscSMP = this.props.js_tag == 'ssc' && values.playid == 128;

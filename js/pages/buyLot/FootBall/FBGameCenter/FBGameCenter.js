@@ -680,7 +680,7 @@ export default class FBGameCenter extends Component {
                 }
 
                 // 新的。。。让球 / 大小。 0滚球、1今日... 现在只能给QA进入
-                if (GlobalConfig.phoneApiURL().includes('sg04')) {
+                if (GlobalConfig.lineBaseIPURL().includes('sg04')) {
                     // 40 + 140(格高50) + 40.
                     return(
                         <RqDxItemView data={item.item} style={{ height: Adaption.Height(220) }} 
@@ -784,7 +784,7 @@ export default class FBGameCenter extends Component {
 
     _allGameClick = (item) => {
         // 所有玩法。
-        if (!GlobalConfig.phoneApiURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
+        if (!GlobalConfig.lineBaseIPURL().includes('sg04')) {  // 测试阶段，只有QA站可以进入所有玩法。 
             this.refs.Toast && this.refs.Toast.show('暂未开放，敬请期待', 1000);
             return;
         }

@@ -370,6 +370,7 @@ export default class ChangePhoNum extends Component {
                             {
                                 text: '确定', onPress: () => {
                                     this.props.navigation.goBack();
+                                    (this.props.navigation.state.params && this.props.navigation.state.params.callback) ? this.props.navigation.state.params.callback(response.msg) : null;
                                 }
                             },
                         ]

@@ -36,14 +36,11 @@ var options = {
 
 export default class MyInfo extends Component {
 
-    static navigationOptions = ({navigation, screenProps}) => ({
-
+    static navigationOptions = ({navigation}) => ({
         header: (
-
             <CustomNavBar
                 leftClick={() =>  navigation.goBack() }
                 centerView = {
-
                     (global.RiseEvent == 1 ?
                             <View style={{
                                 width: SCREEN_WIDTH - 30 - 65 - 20,
@@ -61,6 +58,8 @@ export default class MyInfo extends Component {
                                     unSelectedColor={COLORS.appColor}
                                     style={{borderColor:'white'}}
                                     onChange={navigation.state.params?navigation.state.params.myInfoNavPress:null}
+                                    selectedIndex={navigation.state.params && navigation.state.params.segmentedPosition?
+                                        navigation.state.params.segmentedPosition:0}
                                 />
                             </View>
                             :
@@ -78,15 +77,11 @@ export default class MyInfo extends Component {
                     <View style = {{width:30}}/>
                 }
             />
-
         ),
-
-
     })
 
     constructor(props) {
         super(props );
-
         this.state = {
             showPageIndex:0,
             headerIcon: global.UserLoginObject.UserHeaderIcon,//用户头像
@@ -99,19 +94,20 @@ export default class MyInfo extends Component {
     }
 
     componentWillMount() {
-
         this.props.navigation.setParams({
             myInfoNavPress:this._showInfo,
+            segmentedPosition:0,
         });
     }
 
     //切换segment
     _showInfo = (position) => {
-
-        if (this.state.showPageIndex === position) {
+        if (this.state.showPageIndex == position) {
             return;
         }
-
+        this.props.navigation.setParams({
+            segmentedPosition:position,
+        });
         if (this.state.showPageIndex == 0) {
             this.setState({
                 showPageIndex:1,
@@ -125,14 +121,13 @@ export default class MyInfo extends Component {
 
 
     render() {
-
         if (this.state.showPageIndex == 0){
             //个人信息界面
             return this._Info();
         }else {
             //等级头衔
             return(
-                <LevelTitle/>
+                <LevelTitle navigation={this.props.navigation}/>
             );
         }
     }
@@ -141,7 +136,6 @@ export default class MyInfo extends Component {
     _Info(){
         return(
             <View style={{flex:1, backgroundColor: '#f2f3f4'}}>
-
                 <View style={{backgroundColor: '#ffffff', height:65,flexDirection:"row",justifyContent:'center',alignItems:'center', marginTop:20}}>
                     <View style = {{flex:0.85}}><CusBaseText style={{fontSize:17,color:'black',marginLeft:15}}>{'头像'}</CusBaseText></View>
                     <TouchableOpacity activeOpacity={0.8}  onPress={this.choosePicture.bind(this)} style={{flex:0.15, alignItems:'center',marginRight:60, flexDirection:'row'}}>
@@ -151,29 +145,24 @@ export default class MyInfo extends Component {
                         <Image style = {{marginLeft:15, width:8, height:16}} source = {require('./img/ic_levelTitle_row.png')} />
                     </TouchableOpacity>
                 </View>
-
                 <View style={{backgroundColor: '#ffffff', width:SCREEN_WIDTH,height:46,flexDirection:"row",justifyContent:'center',alignItems:'center', marginTop:20, borderBottomWidth:0.5, borderColor:'#ebeced'}}>
                     <CusBaseText style={styles.textLeft}>{'真实姓名'}</CusBaseText>
                     <View style={styles.textRightCon}>
                         <CusBaseText style={styles.textRight}>{this.state.realName==''?'未绑定':this.state.realName}</CusBaseText>
                     </View>
                 </View>
-
                 <View style={{backgroundColor: '#ffffff', width:SCREEN_WIDTH,height:46,flexDirection:"row",justifyContent:'center',alignItems:'center',  borderBottomWidth:0.5, borderColor:'#ebeced'}}>
                     <CusBaseText style={styles.textLeft}>{'手机号'}</CusBaseText>
                     <View style={styles.textRightCon}>
                         <CusBaseText style={styles.textRight}>{this.state.phone==''?'未绑定':this.state.phone}</CusBaseText>
                     </View>
                 </View>
-
                 <View style={{backgroundColor: '#ffffff', width:SCREEN_WIDTH,height:46,flexDirection:"row",justifyContent:'center',alignItems:'center',  borderBottomWidth:0.5, borderColor:'#ebeced'}}>
                     <CusBaseText style={styles.textLeft}>{'QQ'}</CusBaseText>
                     <View style={styles.textRightCon}>
                         <CusBaseText style={styles.textRight}>{this.state.qqNum==''?'未绑定':this.state.qqNum}</CusBaseText>
                     </View>
                 </View>
-
-
                 <View style={{backgroundColor: '#ffffff', width:SCREEN_WIDTH,height:46,flexDirection:"row",justifyContent:'center',alignItems:'center',  borderBottomWidth:0.5, borderColor:'#ebeced'}}>
                     <View style={{flex:1}}>
                         <CusBaseText style={styles.textLeft}>{'微信'}</CusBaseText>
@@ -182,36 +171,21 @@ export default class MyInfo extends Component {
                         <CusBaseText style={styles.textRight}>{this.state.weChat==''?'未绑定':this.state.weChat}</CusBaseText>
                     </View>
                 </View>
-
-
                 <View style={{backgroundColor: '#ffffff', width:SCREEN_WIDTH,height:46,flexDirection:"row",justifyContent:'center',alignItems:'center',  borderBottomWidth:0.5, borderColor:'#ebeced'}}>
                     <CusBaseText style={styles.textLeft}>{'邮箱'}</CusBaseText>
                     <View style={styles.textRightCon}>
                         <CusBaseText style={styles.textRight}>{this.state.email==''?'未绑定':this.state.email}</CusBaseText>
                     </View>
                 </View>
-
                 <LoadingView ref = 'LoadingView'/>
             </View>
         );
     }
 
-
-    /**
-     * 接收原生调用
-     */
-    /*componentDidMount() {
-        DeviceEventEmitter.addListener('toBase64',(msg)=>{
-            this.imgUpload('data:image/jpg;base64,' + msg);
-        })
-    }*/
-
     choosePicture() {
-
        //拍照和相机
         ImagePicker.showImagePicker(options, (response) => {
             // console.log('Response = ', response);
-
             if (response.didCancel) {
                 // console.log('用户取消了选择！');
             }
@@ -237,36 +211,28 @@ export default class MyInfo extends Component {
     }
 
     imgUpload(base64data){
-
         this.refs.LoadingView && this.refs.LoadingView.showLoading('正在上传头像...');
-
-            let params = new FormData();
-            params.append("ac", "UploadUserHeadIconByBase64");
-            params.append("token",global.UserLoginObject.Token);
-            params.append("uid", global.UserLoginObject.Uid);
-            params.append("img", base64data);
-            params.append("sessionkey", global.UserLoginObject.session_key);
-            var promise = GlobalBaseNetwork.sendNetworkRequest(params);
-
-            promise
-                .then(response => {
-
-                    this.refs.LoadingView && this.refs.LoadingView.cancer();
-                    //请求成功
-                    if (response.msg == 0) {
-
-                        this._fetchData(response.data);//修改用户资料
-                    }
-                    else {
-                        this._show(response.param);
-                    }
-                })
-                .catch(err => { });
-
+        let params = new FormData();
+        params.append("ac", "UploadUserHeadIconByBase64");
+        params.append("token",global.UserLoginObject.Token);
+        params.append("uid", global.UserLoginObject.Uid);
+        params.append("img", base64data);
+        params.append("sessionkey", global.UserLoginObject.session_key);
+        var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+        promise
+            .then(response => {
+                this.refs.LoadingView && this.refs.LoadingView.cancer();
+                //请求成功
+                if (response.msg == 0) {
+                    this._fetchData(response.data);//修改用户资料
+                }else{
+                    this._show(response.param);
+                }
+            })
+            .catch(err => {});
     }
 
     _fetchData(icon){
-
         let params = new FormData();
         params.append("ac", "updateUserInfo");
         params.append("token",global.UserLoginObject.Token);
@@ -274,31 +240,24 @@ export default class MyInfo extends Component {
         params.append("icon", icon);
         params.append("type", 8);
         params.append("sessionkey", global.UserLoginObject.session_key);
-
         var promise = GlobalBaseNetwork.sendNetworkRequest (params);
-
         promise
             .then(response => {
-                //请求成功
                 if (response.msg == 0 && response.data) {
                     PushNotification.emit('ChangeUserImage', response.data);
                     this._updateInfo(response.data);//更新本地数据
-                    //this.refs.LoadingView && this.refs.LoadingView.showSuccess('上传头像成功');
                     this._show('上传头像成功');
                     this.setState({
                         headerIcon: response.data,
                     });
-                }
-                else {
-
+                } else {
                     this.refs.LoadingView && this.refs.LoadingView.showFaile(response.param);
                 }
             })
-            .catch(err => { });
+            .catch(err => {});
     }
 
     _updateInfo(newHeaderIcon){
-
         global.UserLoginObject.UserHeaderIcon = newHeaderIcon;//更新global状态,否则个人信息界面头像不会即时更新
         global.UserLoginObject.HeaderIcon = newHeaderIcon;//更新global状态,否则个人信息界面头像不会即时更新
         UserInfo.updateUserInfo(global.UserLoginObject, (error) => {});
@@ -308,16 +267,13 @@ export default class MyInfo extends Component {
         Alert.alert(
             '提示',
             title,
-            [
-                {text:'确定', onPress: () => {}},
-            ]
+            [{text:'确定', onPress: () => {}}]
         )
     }
 
 }
 
 const  styles = StyleSheet.create({
-
     textLeft: {
         fontSize:17,color:'black',paddingLeft:15
     },
@@ -327,7 +283,6 @@ const  styles = StyleSheet.create({
     textRight: {
         fontSize:17,color:'black',paddingLeft:15
     },
-
     item:{
         margin:15,
         height:30,
@@ -336,5 +291,4 @@ const  styles = StyleSheet.create({
         borderColor:'#ddd',
         textAlign:'center'
     },
-
 })

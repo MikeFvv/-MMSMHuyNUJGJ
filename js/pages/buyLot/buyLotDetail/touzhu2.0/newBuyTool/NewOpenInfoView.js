@@ -49,7 +49,7 @@ class NewOpenInfoView extends Component {
         let qishu = 0, jieZhiTime = 0, fengPan = 0;
         if (props.nextTimeList.length > 0) {  // 倒计时
             jieZhiTime = props.nextTimeList[0].opentime - (props.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
-            fengPan = props.nextTimeList[0].stoptime - (props.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            //fengPan = props.nextTimeList[0].stoptime - (props.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
             qishu = props.nextTimeList[0].qishu; //下一个期数
             console.log('props.nextTimeList', props.nextTimeList);
         }
@@ -59,6 +59,12 @@ class NewOpenInfoView extends Component {
             let ballStr = props.prevList[0].value.balls;
             openBallsArr = ballStr && ballStr.length > 0 ? ballStr.split('+') : []; //开奖号码
             prevQiShu = props.prevList[0].value.qishu;  //上一期期数
+        }
+
+        //如果期数相差等于2期,说明后台返回的开奖结果有问题。需要本地处理
+        if (qishu - prevQiShu == 2){
+            prevQiShu = prevQiShu + 1;
+            openBallsArr = [];
         }
 
         this.state = ({
@@ -73,7 +79,7 @@ class NewOpenInfoView extends Component {
             nextJieZhi: jieZhiTime,        //下一期截止时间
             isOpenReWard:false,  //是否开奖
             nextCountDownList: props.nextTimeList, //开奖数组10条
-            nextFengPan: fengPan, //距离封盘倒计时
+            // nextFengPan: fengPan, //距离封盘倒计时
             isShowUserMoney:false, //是否显示用户余额
         })
 
@@ -81,21 +87,34 @@ class NewOpenInfoView extends Component {
         this.timer = null;
         this.timerRefresh = null;
         this.historyOpenWating = false;  //点击历史开奖等待
+        this.isRequsetCplogList = true;  // 防止进来时网络慢 nextCountDownList数组没有数据时 执行倒计时时会重复触发N次请求倒计时的方法
+        this.isActiveFromBack = false;  //是否从后台重新进来激活
     }
 
     //属性改变时的方法
     componentWillReceiveProps(nextProps) {
         
+        if (this.state.tag != nextProps.tag) {
+            // 如果不相等 再赋值 再请求
+            this.setState({
+                tag: nextProps.tag,
+                js_tag: nextProps.js_tag,
+            })
+
+            this._fetchCountDownData(nextProps.tag);
+            this._fetchOpenInfoData(nextProps.tag);
+        }
+
         // 本地到计时数组
         if (nextProps.nextTimeList.length > 0 && this.state.nextCountDownList.length <= 0) {
             this.finishTime = nextProps.finishTime;
             let jieZhiTime = nextProps.nextTimeList[0].opentime - (nextProps.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
-            let fengPanTime = nextProps.nextTimeList[0].stoptime - (nextProps.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
+            // let fengPanTime = nextProps.nextTimeList[0].stoptime - (nextProps.nextTimeList[0].server_time - this.finishTime) - Math.round(new Date() / 1000);
             console.log('nextProps.nextTimeList', nextProps.nextTimeList);
             this.setState({
                 nextQiShu: nextProps.nextTimeList[0].qishu,          //下一个期数
                 nextJieZhi: jieZhiTime,        //这一期开奖截止时间
-                nextFengPan: fengPanTime,  //这一期封盘时间
+               // nextFengPan: fengPanTime,  //这一期封盘时间
                 nextCountDownList: nextProps.nextTimeList,
             })
         }
@@ -111,17 +130,22 @@ class NewOpenInfoView extends Component {
             })
         }
 
+        //如果期数相差等于2期,说明后台返回的开奖结果有问题。需要本地处理
+        if (this.state.nextQiShu - this.state.prevQiShu == 2){
+            this.setState({
+                prevQiShu:this.state.prevQiShu + 1,
+                openBallsArr:[],
+            })
+        }
+
     }
 
 
     //创建号码球属性信息的视图
     _initBallDescView(ballsArr){
 
-        let qiShuCha = parseInt(this.state.nextQiShu, 10) - parseInt(this.state.prevQiShu, 10);
-        let isNeedRequest = qiShuCha > 1 && qiShuCha < 3 ? true : false;  //期数差大于1期小于3期,要重新刷新数据.但是隔天的期数就不请求
-
         //分分钟开奖给5秒钟延迟
-        if (((ballsArr.length == 0 || ballsArr.length == 1) && isFreshOpenTime == false) || (isNeedRequest && isFreshOpenTime == false)) {
+        if (((ballsArr.length == 0 || ballsArr.length == 1) && isFreshOpenTime == false)) {
             //如果开奖号码为''字符串并且刷新了，则延迟之后再次进来。防止每秒钟都在刷。
 
             let expire  = 0;
@@ -129,20 +153,12 @@ class NewOpenInfoView extends Component {
 
             this.state.tag.includes('ff') ? expire = 5 : expire = 15;
 
-            if (this.timer1){
-                this.timer1 = null;  //先注销掉, 保证不会生成多个定时器，造成警告
-            }
-
-            this.timer1 = setTimeout(() => {
+             setTimeout(() => {
 
                 isFreshOpenTime = false;
                 this._fetchOpenInfoData(this.state.tag);
 
             }, expire * 1000);
-        }
-
-        if (this.timer1) {
-            this.timer1 = null;  //先注销掉, 保证不会生成多个定时器，造成警告
         }
 
         let isOpening = (ballsArr.length ==0 || ballsArr.length == 1) ? true : false;
@@ -168,7 +184,7 @@ class NewOpenInfoView extends Component {
             } else {
                 if (!isOpening) {
                     for (ba of ballsArr) {
-                        let ballStatus = `${parseInt(ba) <= 5 ? '小' : '大'}${parseInt(ba) % 2 == 0 ? '双' : '单'}`;
+                        let ballStatus = `${parseInt(ba) < 5 ? '小' : '大'}${parseInt(ba) % 2 == 0 ? '双' : '单'}`;
                         cellTitArr.push(ballStatus);
                     }
                     cellTitArr.push(sum);
@@ -440,7 +456,7 @@ class NewOpenInfoView extends Component {
             cellTitArr = [openQiShu, item.item.value.balls.replace(/\+/g,','), sum, maxResult];
 
             for (ba of ballsArr) {
-                let ballStatus = `${parseInt(ba) <= 5 ? '小' : '大'}${parseInt(ba) % 2 == 0 ? '双' : '单'}`;
+                let ballStatus = `${parseInt(ba) < 5 ? '小' : '大'}${parseInt(ba) % 2 == 0 ? '双' : '单'}`;
                 cellTitArr.push(ballStatus);
             }
             if (!isOpen) {
@@ -730,7 +746,7 @@ class NewOpenInfoView extends Component {
         this.subscription = PushNotification.addListener('DidGoToShopCarDetailVC', ()=> {
 
             this.props.getCurrentTime ?  this.props.getCurrentTime(this.state.nextJieZhi) : null;
-            this.props.getCurrentFengPan ? this.props.getCurrentFengPan(this.state.nextFengPan) : null;
+            // this.props.getCurrentFengPan ? this.props.getCurrentFengPan(this.state.nextFengPan) : null;
 
         });
 
@@ -738,6 +754,7 @@ class NewOpenInfoView extends Component {
 
             //活跃状态重新刷数据
             if (appState == 'active'){
+                this.isActiveFromBack = true;
                 this._fetchCountDownData(this.state.tag);
                 this._fetchOpenInfoData(this.state.tag);
             }
@@ -753,7 +770,6 @@ class NewOpenInfoView extends Component {
     componentWillUnmount(){
 
         this.timer && clearInterval(this.timer);
-        this.timer1 && clearTimeout(this.timer1);
         this.timerRefresh && clearTimeout(this.timerRefresh);
         if (typeof(this.subscription) == 'object'){
             this.subscription && this.subscription.remove();
@@ -806,46 +822,49 @@ class NewOpenInfoView extends Component {
                     this.state.prevQiShu = this.state.nextQiShu;  //如果到下一期。则赋值给上一期数
                     this.state.nextQiShu = nextQi;
                     this.state.openBallsArr = [];
-
+                    global.CurrentQiShu = nextQi;
                     this._initBallDescView([]);
                 }
-                // PushNotification.emit('BuyLotDetailCountDown');  //倒计时结束发出通知
+                 PushNotification.emit('BuyLotDetailCountDown');  //倒计时结束发出通知
             }
 
             // 已封盘 倒计时数组已经用到最后一期了。请先去请求了。不等到最后一个数据用完才请求
-            if (this.state.nextFengPan == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 1) {
-                this._fetchCountDownData(this.state.tag);
+            if (this.state.nextJieZhi == 0 && this.currentCountDownIndex >= this.state.nextCountDownList.length - 1) {
+                if (this.isRequsetCplogList == true) {
+                    this._fetchCountDownData(this.state.tag);
+                    this.isRequsetCplogList = false;
+                }
             }
 
-            if (this.state.nextFengPan == 0 && this.state.nextQiShu != 0) {  //走一次就好了。之前判断会一直走。存在未知的问题
-
-                let lockTime = this.state.nextJieZhi;
-
-                PushNotification.emit('isLockTimeEnableTouZhu', lockTime);
-
-                this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(true) : null;
-
-                //设置锁定时间(封盘时间) //再进行正常的倒计时
-                setTimeout(() => {
-
-                    this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(false) : null;
-
-                }, lockTime * 1000)
-            }
+            // if (this.state.nextFengPan == 0 && this.state.nextQiShu != 0) {  //走一次就好了。之前判断会一直走。存在未知的问题
+            //
+            //     let lockTime = this.state.nextJieZhi;
+            //
+            
+            //
+            //     this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(true) : null;
+            //
+            //     //设置锁定时间(封盘时间) //再进行正常的倒计时
+            //     setTimeout(() => {
+            //
+            //         this.props.isRefreshLockStatues ? this.props.isRefreshLockStatues(false) : null;
+            //
+            //     }, lockTime * 1000)
+            // }
 
             // global.random = true;
-            global.CurrentQiShu = this.state.nextQiShu;
 
             let currOpen = 0, currStop = 0;
 
             if (this.currentCountDownIndex < this.state.nextCountDownList.length) {
                 // 倒计时时间直接用opentime 减 手机系统时间。
                 currOpen = this.state.nextCountDownList[this.currentCountDownIndex].opentime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
-                currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
+                //currStop = this.state.nextCountDownList[this.currentCountDownIndex].stoptime - (this.state.nextCountDownList[this.currentCountDownIndex].server_time - this.finishTime)  - Math.round(new Date() / 1000);
+                global.CurrentQiShu = this.state.nextCountDownList[this.currentCountDownIndex].qishu; // 直接从当前倒计时数组里面拿吧。 只要倒计时正确，这个期数敢错 我也无奈了
             }
 
             this.state.nextJieZhi = currOpen;
-            this.state.nextFengPan = currStop;
+            //this.state.nextFengPan = currStop;
 
         }, 332);
     }
@@ -887,7 +906,7 @@ class NewOpenInfoView extends Component {
     }
 
     //获取历史开奖数据接口
-    _fetchOpenInfoData(tag){
+    _fetchOpenInfoData = (tag) =>{
 
         let params = new FormData();
         params.append('ac','getKjCpLog');
@@ -909,6 +928,15 @@ class NewOpenInfoView extends Component {
                     if (prevList.length != 0) {
 
                         let prevModel = prevList[0];
+
+                        if (prevModel.value.qishu != this.state.prevQiShu && this.isActiveFromBack == false){
+                            return;  //请求回来跟要请求的开奖期数不一致。就不刷新界面
+                        }
+
+                        //开奖后刷新金额
+                        this._refreshUserLessMoney();
+
+                        this.isActiveFromBack = false;
 
                         let ballStr = prevModel.value.balls;
                         let splitArr = [];
@@ -941,6 +969,8 @@ class NewOpenInfoView extends Component {
         var promise = GlobalBaseNetwork.sendNetworkRequest(params);
         promise
             .then((responseData) => {
+                
+                this.isRequsetCplogList = true;  // 请求返回后 重置为true.
 
                 if (responseData.msg == 0) {
 
@@ -953,15 +983,16 @@ class NewOpenInfoView extends Component {
 
                         // 倒计时时间直接用opentime 减 手机系统时间。
                         let currOpen = nextModel.opentime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
-                        let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
+                        //let currStop = nextModel.stoptime - (nextModel.server_time - this.finishTime) - Math.round(new Date() / 1000);
                         this.currentCountDownIndex = 0;//当前下标
                         this.props.againRequestTime ? this.props.againRequestTime(this.finishTime, nextList) : null;
                         console.log('请求的nextList。。。', nextList);
-
+                        global.CurrentQiShu = nextModel.qishu;
+                        
                         this.state.nextCountDownList = nextList;
                         this.state.nextQiShu = nextModel.qishu;
                         this.state.nextJieZhi = currOpen;
-                        this.state.nextFengPan = currStop;
+                        //this.state.nextFengPan = currStop;
                     }
                 } else {
                     this.refs.Toast && this.refs.Toast.show(responseData.param, 1000);
@@ -970,6 +1001,40 @@ class NewOpenInfoView extends Component {
 
             .catch((err) => {
             })
+    }
+
+    //开奖后刷新用户金额接口
+    _refreshUserLessMoney(){
+
+       //请求参数
+       if (global.UserLoginObject.Uid != '' && global.UserLoginObject.Token != ''){
+
+           let params = new FormData();
+           params.append("ac", "flushPrice");
+           params.append("uid", global.UserLoginObject.Uid);
+           params.append("token", global.UserLoginObject.Token);
+           params.append('sessionkey', global.UserLoginObject.session_key);
+           var promise = GlobalBaseNetwork.sendNetworkRequest(params);
+           promise
+               .then(response => {
+
+                   if (response.msg == 0) {
+
+                       //数字类型的取两位小数
+                       if (typeof(response.data.price) == 'number') {
+
+                           response.data.price = response.data.price.toFixed(2);
+                       }
+
+                       global.UserLoginObject.TotalMoney = response.data.price;
+
+                   }
+               })
+               .catch(err => {
+
+               });
+       }
+
     }
 
 
